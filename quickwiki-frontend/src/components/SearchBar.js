@@ -3,7 +3,7 @@
 
 // Dependencies 
 import React, { useState, usetEffect } from 'react';
-import { Box, Button, FormControl, TextField, Typography } from '@mui/material';
+import { Box, Button, FormControl, TextField, Typography, ThemeProvider, createTheme } from '@mui/material';
 
 
 // Components & Necessary Files 
@@ -11,6 +11,39 @@ import '../static/SearchBar.css';
 
 
 // SearchBar Component 
+const customTheme = createTheme({
+    palette: {
+      primary: {
+        main: '#26a69a',
+      },
+    },
+    components: {
+      MuiTextField: {
+        styleOverrides: {
+          root: {
+            '& label.Mui-focused': {
+              color: '#26a69a',
+            },
+            '& .MuiInput-underline:after': {
+              borderBottomColor: '#26a69a',
+            },
+            '& .MuiOutlinedInput-root': {
+              '& fieldset': {
+                borderColor: '#26a69a',
+              },
+              '&:hover fieldset': {
+                borderColor: '#26a69a',
+              },
+              '&.Mui-focused fieldset': {
+                borderColor: '#26a69a',
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+  
 function SearchBar() {
 
     const [ search, setSearch ] = useState( '' );
@@ -20,6 +53,7 @@ function SearchBar() {
     }
 
     return (
+        <ThemeProvider theme = { customTheme }>
         <div className='form-container'>
             <Box
                 component='form'
@@ -54,7 +88,7 @@ function SearchBar() {
                         }}
                         value = { search }
                         onChange = { handleChange }
-                    >
+                        >
                     </TextField>
                 </FormControl>
                 <div>
@@ -80,6 +114,7 @@ function SearchBar() {
                 </div>
             </Box>
         </div>
+    </ThemeProvider>
     )
 }
 
