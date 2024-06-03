@@ -1,0 +1,13 @@
+.form-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.search-input {
+    border-color: #26a69a;
+    color: #26a69a;
+    width: 20rem;
+}
+
+
