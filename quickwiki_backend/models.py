@@ -1,144 +1,221 @@
-# Models for QuickWiki 
+# Models 
 
 
 # Dependencies 
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship  
+from sqlalchemy.orm import relationship
+from sqlalchemy import Column, String, DateTime, ForeignKey, Integer
 from sqlalchemy.dialects.postgresql import UUID, JSONB
-from sqlalchemy import func, ForeignKey
+from sqlalchemy import func
 import uuid
-import datetime
 
 
+# Necessary Files 
+
+
+# Other Settings 
 db = SQLAlchemy()
+Base = db.Model
 
 
-# Models 
-class Base( DeclarativeBase ):
-    pass 
 
 
-class User ( Base ):
+
+class User( Base ):
     """ User Model """
 
     __tablename__ = 'users'
-    id: Mapped[ uuid.UUID ] = mapped_column( UUID( as_uuid = True ), primary_key = True, default = uuid.uuid4 )
-    username: Mapped[ str ] = mapped_column( unique = True, nullable = False )
-    email: Mapped[ str ] = mapped_column( unique = True, nullable = False )
-    password_hash: Mapped[ str ] = mapped_column( nullable = False )
-    image_url: Mapped[ str ] = mapped_column( nullable = True )
-    created_at: Mapped[ datetime.datetime ] = mapped_column( server_default = func.now() )
-    updated_at: Mapped[ datetime.datetime ] = mapped_column( server_default = func.now(), onupdate = func.now() )
+    id = Column( UUID( as_uuid = True ), primary_key = True, default = uuid.uuid4 )
+    username = Column( String, unique = True, nullable = False )
+    email = Column( String, unique = True, nullable = False )
+    password_hash = Column( String, nullable = False )
+    image_url = Column( String, nullable = True )
+    created_at = Column( DateTime, server_default = func.now() )
+    updated_at = Column( DateTime, onupdate = func.now() )
+
+    def __init__( self, username, email, password_hash, image_url = None ):
+        self.username = username
+        self.email = email
+        self.password_hash = password_hash
+        self.image_url = image_url
 
 
-class Search ( Base ): 
+class Search( Base ):
     """ Search Model """
 
     __tablename__ = 'searches'
-    id: Mapped[ uuid.UUID ] = mapped_column( UUID( as_uuid = True ), primary_key = True, default = uuid.uuid4 )
-    user_id: Mapped[ uuid.UUID ] = mapped_column( ForeignKey( 'users.id' ), nullable = False )
-    search_query: Mapped[ str ] = mapped_column( nullable = False )
-    created_at: Mapped[ datetime.datetime ] = mapped_column( server_default = func.now() )
+    id = Column( UUID( as_uuid = True) , primary_key = True, default = uuid.uuid4 )
+    user_id = Column( UUID( as_uuid = True ), ForeignKey( 'users.id' ), nullable = False )
+    search_query = Column( String, nullable = False )
+    created_at = Column( DateTime, server_default = func.now() )
 
-    # Relationships 
+    # Relationships     
     user = relationship( 'User', back_populates = 'searches' )
-    result = relationship( 'SearchResult', back_populates = 'search' )
+
+    def __init__( self, user_id, search_query, created_at ):
+        self.user_id = user_id
+        self.search_query = search_query
+        self.created_at = created_at 
 
 
-class SearchResult ( Base ): 
+class SearchResult( Base ):
     """ Search Results Model """
 
     __tablename__ = 'search_results'
-    id: Mapped[ int ] = mapped_column( primary_key = True, autoincrement = True )
-    search_id: Mapped[ uuid.UUID ] = mapped_column( ForeignKey( 'searches.id' ), nullable = False )
-    key: Mapped[ str ] = mapped_column( nullable = False )
-    title: Mapped[ str ] = mapped_column( nullable = False )
-    excerpt: Mapped[ str ] = mapped_column( nullable = False )
-    description: Mapped[ str ] = mapped_column( nullable = False )
-    thumbnail: Mapped[ dict ] = mapped_column( JSONB, nullable = True )
-    created_at: Mapped[ datetime.datetime ] = mapped_column( server_default = func.now() )
+    id = Column( Integer, primary_key = True, autoincrement = True )
+    search_id = Column( UUID( as_uuid = True ), ForeignKey( 'searches.id' ), nullable = False )
+    key = Column( String, nullable = False )
+    title = Column( String, nullable = False )
+    excerpt = Column( String, nullable = False )
+    description = Column( String, nullable = False )
+    thumbnail = Column( JSONB, nullable = True )
+    created_at = Column( DateTime, server_default = func.now() )
 
     # Relationships 
     search = relationship( 'Search', back_populates = 'results' )
 
+    def __init__( self, search_id, key, title, excerpt, description, thumbnail, created_at ):
+        self.search_id = search_id 
+        self.key = key 
+        self.title = title 
+        self.excerpt = excerpt 
+        self.description = description 
+        self.thumbnail = thumbnail 
+        self.created_at = created_at 
 
-class Page ( Base ):
+
+class Page( Base ):
     """ Page Model """
 
     __tablename__ = 'pages'
-    id: Mapped[ int ] = mapped_column( primary_key = True, autoincrement = True )
-    key: Mapped[ str ] = mapped_column( nullable = False, unique = True )
-    title: Mapped[ str ] = mapped_column( nullable = False )
-    latest_id: Mapped[ int ] = mapped_column( nullable = False )
-    latest_timestamp: Mapped[ datetime.datetime ] = mapped_column( nullable = False )
-    content_model: Mapped[ str ] = mapped_column( nullable = False )
-    liscense_url: Mapped[ str ] = mapped_column( nullable = False )
-    liscense_title: Mapped[ str ] = mapped_column( nullable = False )
-    html_url: Mapped[ str ] = mapped_column( nullable = False )
-    created_at: Mapped[ datetime.datetime ] = mapped_column( server_default = func.now() ) 
+    id = Column( Integer, primary_key = True, autoincrement = True )
+    key = Column( String, nullable = False, unique = True )
+    title = Column( String, nullable = False )
+    latest_id = Column( Integer, nullable = False )
+    latest_timestamp = Column( DateTime, nullable = False )
+    content_model = Column( String, nullable = False )
+    license_url = Column( String, nullable = False )
+    license_title = Column( String, nullable = False )
+    html_url = Column( String, nullable = False )
+    created_at = Column( DateTime, server_default = func.now() )
+
+    # Relationships 
+    user = relationship( 'User', back_populates = 'saved_info' )
+
+    def __init__( self, key, title, latest_id, latest_timestamp, content_model, liscense_url, liscense_title, html_url, created_at ):
+        self.key = key 
+        self.title = title 
+        self.latest_id = latest_id 
+        self.latest_timestamp = latest_timestamp 
+        self.content_model = content_model 
+        self.liscense_url = liscense_url
+        self.liscense_title = liscense_title 
+        self.html_url = html_url 
+        self.created_at = created_at  
 
 
-class Bookmark ( Base ): 
+class SavedInfo( Base ):
+    """ Saved Information Model """
+
+    __tablename__ = 'saved_information'
+    id = Column( UUID( as_uuid = True ), primary_key = True, default = uuid.uuid4 )
+    user_id = Column( UUID( as_uuid = True ), ForeignKey( 'users.id' ), nullable = False )
+    info_type = Column( String, nullable = False )
+    info_content = Column( String, nullable = False )
+    created_at = Column( DateTime, server_default = func.now() ) 
+
+    # Relationships 
+    user = relationship( 'User', back_populates = 'saved_information.user_id' )
+
+    def __init__( self, user_id, info_type, info_content, created_at ):
+        self.user_id = user_id 
+        self.info_type = info_type 
+        self.info_content = info_content 
+        self.created_at = created_at 
+
+
+class Bookmark( Base ):
     """ Bookmark Model """
 
     __tablename__ = 'bookmarks'
-    id: Mapped[ uuid.UUID ] = mapped_column( UUID( as_uuid = True ), primary_key = True, default = uuid.uuid4 )
-    user_id: Mapped[ str ] = mapped_column( ForeignKey( 'users.id' ), nullable = False )
-    page_id: Mapped[ int ] = mapped_column( ForeignKey( 'pages.id' ), nullable = False )
-    created_at: Mapped[ datetime.datetime ] = mapped_column( server_default = func.now() )
+    id = Column( UUID( as_uuid = True ), primary_key = True, default = uuid.uuid4 )
+    user_id = Column( UUID( as_uuid = True ), ForeignKey( 'users.id' ), nullable = False )
+    page_id = Column( Integer, ForeignKey('pages.id'), nullable = False )
+    created_at = Column( DateTime, server_default = func.now() )
 
     # Relationships 
     user = relationship( 'User' )
     page = relationship( 'Page' )
+
+    def __init__( self, user_id, page_id, created_at ):
+        self.user_id = user_id 
+        self.page_id = page_id 
+        self.created_at = created_at 
 
 
 class Authorization( Base ):
     """ Authorization Info Model """
 
     __tablename__ = 'authorizations'
-    id: Mapped[ uuid.UUID ] = mapped_column( UUID( as_uuid=True ), primary_key = True, default = uuid.uuid4 )
-    user_id: Mapped[ uuid.UUID ] = mapped_column( ForeignKey( 'users.id' ), nullable = False)
-    role: Mapped[ str ] = mapped_column( nullable=False )
-    permissions: Mapped[ str ] = mapped_column( nullable=False )
-    created_at: Mapped[ datetime.datetime ] = mapped_column( server_default = func.now() )
-    updated_at: Mapped[ datetime.datetime ] = mapped_column( server_default = func.now(), onupdate = func.now() )
+    id = Column( UUID( as_uuid = True ), primary_key = True, default = uuid.uuid4 )
+    user_id = Column( UUID( as_uuid = True ), ForeignKey( 'users.id' ), nullable = False )
+    role = Column( String, nullable = False )
+    permissions = Column( String, nullable = False )
+    created_at = Column( DateTime, server_default = func.now() )
+    updated_at = Column( DateTime, onupdate = func.now() )
+
+    # Relationships 
+    user = relationship( 'User', back_populates = 'authorizations.user_id' )
+
+    def __init__( self, user_id, role, permissions, created_at, updated_at ):
+        self.user_id = user_id 
+        self.role = role 
+        self.permissions = permissions 
+        self.created_at = created_at 
+        self.updated_at = updated_at 
 
 
-class SessionInfo ( Base ):
-    """ Session Info Model """
-
-    __tablename__ = 'sessions'
-    id: Mapped[ uuid.UUID ] = mapped_column( UUID( as_uuid = True ), primary_key = True, default = uuid.uuid4 )
-    user_id: Mapped[ uuid.UUID ] = mapped_column( ForeignKey( 'users.id' ), nullable = False )
-    session_token: Mapped[ str ] = mapped_column( nullable = False, unique = True )
-    created_at: Mapped[ datetime.datetime ] = mapped_column( server_default = func.now() )
-    expires_at: Mapped[ datetime.datetime ] = mapped_column( nullable = False )
-
-
-class ActivityLog ( Base ):
+class ActivityLog( Base ):
     """ Activity Log Model """
 
     __tablename__ = 'activity_logs'
-    id: Mapped[ uuid.UUID ] = mapped_column( UUID( as_uuid = True), primary_key = True, default = uuid.uuid4 )
-    user_id: Mapped[ uuid.UUID ] = mapped_column( ForeignKey( 'users.id' ), nullable = False )
-    activity_type: Mapped[ str ] = mapped_column( nullable = False )
-    activity_description: Mapped[ str ] = mapped_column( nullable = True )
-    created_at: Mapped[ datetime.datetime ] = mapped_column( server_default = func.now() )
+    id = Column( UUID( as_uuid = True ), primary_key = True, default = uuid.uuid4 )
+    user_id = Column( UUID( as_uuid = True ), ForeignKey( 'users.id' ), nullable = False )
+    action = Column( String, nullable = False )
+    description = Column( String, nullable = True )
+    created_at = Column( DateTime, server_default = func.now() )
+
+    # Relationships 
+    user = relationship('User', back_populates='activity_logs')
+
+    def __init__( self, user_id, action, description, created_at ):
+        self.user_id = user_id 
+        self.action = action 
+        self.description = description 
+        self.created_at = created_at 
 
 
-class SavedInfo ( Base ):
-    """ Saved Information Model """
+class SessionInfo(Base):
+    """ Session Info Model """
 
-    __tablename__ = 'saved_information'
-    id: Mapped[ uuid.UUID ] = mapped_column( UUID( as_uuid = True ), primary_key = True, default = uuid.uuid4 )
-    user_id: Mapped[ uuid.UUID ] = mapped_column( ForeignKey( 'users.id' ), nullable = False )
-    info_type: Mapped[ str ] = mapped_column( nullable = False )  
-    info_content: Mapped[ str ] = mapped_column( nullable = False )
-    created_at: Mapped[ datetime.datetime ] = mapped_column( server_default=func.now() )
- 
+    __tablename__ = 'sessions'
+    id = Column( UUID( as_uuid = True ), primary_key = True, default = uuid.uuid4 )
+    user_id = Column( UUID( as_uuid = True ), ForeignKey('users.id'), nullable = False )
+    session_token = Column( String, nullable = False, unique = True )
+    created_at = Column( DateTime, server_default = func.now() )
+    expires_at = Column( DateTime, nullable = False )
 
-def connect_db( app ):
-    db.app = app
-    db.init_app( app )
+    # Relationships 
+    user = relationship('User')
 
+    def __init__( self, user_id, session_token, created_at, expires_at ):
+        self.user_id = user_id 
+        self.session_token = session_token 
+        self.created_at = created_at 
+        self.expires_at = expires_at 
+        
 
+def create_tables():
+    print( 'Creating Tables' )
+    Base.metadata.create_all( db.engine )
+    db.session.commit()
