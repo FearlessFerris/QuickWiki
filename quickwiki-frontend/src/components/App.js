@@ -9,6 +9,7 @@ import { Button, Container, Typography } from '@mui/material';
 
 // Components & Necessary Files 
 import Home from './Home';
+import Navbar from './Navbar';
 import '../static/App.css';
 
 
@@ -17,6 +18,7 @@ function App() {
   return (
     <div className = "App">
       <div className = 'title'>
+        <Navbar /> 
         <h1> Welcome to QuickWiki </h1>
       </div>
       <Router>

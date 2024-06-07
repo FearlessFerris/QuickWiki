@@ -8,7 +8,7 @@ from sqlalchemy import Column, String, DateTime, ForeignKey, Integer
 from sqlalchemy.dialects.postgresql import UUID, JSONB
 from sqlalchemy import func
 import uuid
-
+import bcrypt 
 
 # Necessary Files 
 
@@ -39,6 +39,20 @@ class User( Base ):
         self.password_hash = password_hash
         self.image_url = image_url
 
+    @classmethod 
+    def create_user( cls, username, email, password, confirm_password, image_url = None ):
+        """ Create New User """
+
+        if password != confirm_password:
+            raise ValueError( 'Passwords do not match!' )
+        
+        hashed_pw = bcrypt.hashpw( password, bcrypt.gensalt( 12 ) )
+        print( f'Congratulations { username }, you have successfully hashed your password! Look at it! { hashed_pw }' ) 
+        new_user = User( username = username, email = email, password = hashed_pw, image_url = image_url )
+        db.session.add( new_user )
+        db.session.commit()
+        return new_user
+    
 
 class Search( Base ):
     """ Search Model """

@@ -30,7 +30,14 @@ with app.app_context():
 @app.route( "/" )
 def homepage(): 
     """ Homepage of Application """ 
-
-
+    
+    
     return ''' Welcome to QuickWiki '''
+
+
+@app.route( '/create', methods = [ 'GET', 'POST' ] )
+def create():
+    """ Create a new user account """
+
+    
 
