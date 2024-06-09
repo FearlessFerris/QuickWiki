@@ -12,37 +12,53 @@ import '../static/SearchBar.css';
 
 // SearchBar Component 
 const customTheme = createTheme({
-    palette: {
-      primary: {
-        main: '#00bcd4',
-      },
+  palette: {
+    primary: {
+      main: '#00bcd4',
     },
-    components: {
-      MuiTextField: {
-        styleOverrides: {
-          root: {
-            '& label.Mui-focused': {
-              color: '#00bcd4',
+  },
+  components: {
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          '& label.Mui-focused': {
+            color: '#00bcd4',
+          },
+          '& .MuiInput-underline:after': {
+            borderBottomColor: '#00bcd4',
+          },
+          '& .MuiOutlinedInput-root': {
+            '& fieldset': {
+              borderColor: '#00bcd4',
             },
-            '& .MuiInput-underline:after': {
-              borderBottomColor: '#00bcd4',
+            '&:hover fieldset': {
+              borderColor: '#00bcd4',
             },
-            '& .MuiOutlinedInput-root': {
-              '& fieldset': {
-                borderColor: '#00bcd4',
-              },
-              '&:hover fieldset': {
-                borderColor: '#00bcd4',
-              },
-              '&.Mui-focused fieldset': {
-                borderColor: '#00bcd4',
-              },
+            '&.Mui-focused fieldset': {
+              borderColor: '#00bcd4',
             },
           },
         },
       },
     },
-  });
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          backgroundColor: '#212121',
+          border: '.2rem solid #212121',
+          fontSize: 'large',
+          color: '#00bcd4',
+          padding: '.6rem 1rem',
+          '&:hover': {
+            border: '.2rem solid #00bcd4',
+            color: '#00bcd4',
+            fontSize: 'large'
+          }
+        }
+      }
+    }
+  },
+});
   
 function SearchBar() {
 
@@ -76,13 +92,13 @@ function SearchBar() {
                             sx: {
                                 color: '#00bcd4',
                                 '& fieldset': {
-                                    borderColor: '#00bcd4',
+                                  border: '.2rem solid #00bcd4',
                                 },
                                 '&:hover fieldset': {
-                                    borderColor: '#00bcd4',
+                                  border: '.2rem solid #00bcd4',
                                 },
                                 '&.Mui-focused fieldset': {
-                                    borderColor: '#00bcd4',
+                                  border: '.2rem solid #00bcd4',
                                 },
                             },
                         }}
@@ -94,21 +110,9 @@ function SearchBar() {
                 <div>
 
                 <Button
-                    className='search-button'
-                    variant='outlined'
-                    
-                    style={{
-                        fontSize: '1.2rem',
-                        padding: '.6rem 1.5rem',
-                        color: '#00bcd4',
-                        borderColor: '#00bcd4',
-                        '&:hover': {
-                            backgroundColor: '#00bcd4', 
-                            borderColor: '#00bcd4',
-                            color: '#00bcd4', 
-                        }
-                    }}
-                    >
+                    className = 'search-button'
+                    variant = 'outlined'
+                >
                 Search
                 </Button>
                 </div>

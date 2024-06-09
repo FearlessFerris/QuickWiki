@@ -3,17 +3,41 @@
 
 // Dependencies 
 import React, { useState, useEffect } from 'react';
-import { Box, Button, InputLabel, TextField, PasswordField, Typography } from '@mui/material';
+import { Box, Button, Input, TextField, PasswordField, Typography } from '@mui/material';
 
 
 // Components & Necessary Files 
 function CreateUserForm() {
 
+    const [ formData, setFormData ] = useState({
+        username: '',
+        password: '',
+        confirmPassword: '',
+        email: '',
+        imageUrl: '',
+        uploadImage: ''
+    })
+
+    const handleChange = ( e ) => {
+        const { name, value } = e.target;
+        setFormData(( previousData ) => ({
+            ...previousData,
+            [ name ]: value
+        }));  
+        console.log( value )
+    };
+
+    const handleSubmit = ( e ) => {
+        e.preventDefault();
+        console.log( formData );
+    } 
+
     return (
         <div
             className='createUserform-container'
         >
-            <form
+            <form 
+                onSubmit = { handleSubmit }
                 style = {{
                     border: '.2rem solid #212121',
                     borderRadius: '.6rem',
@@ -48,7 +72,9 @@ function CreateUserForm() {
                     >
                         <TextField
                             label = 'Username'
-                            name = 'Username'
+                            name = 'username'
+                            value = { formData.username }
+                            onChange = { handleChange }
                             placeholder = 'Ex: Jack Sparrow'
                             sx={{ 
                                 '& .MuiOutlinedInput-root': {
@@ -102,8 +128,10 @@ function CreateUserForm() {
                     >
                         <TextField
                             label = 'Password'
-                            name = 'Password'
+                            name = 'password'
                             type = 'password'
+                            value = { formData.password }
+                            onChange = { handleChange }
                             placeholder = 'Ex: NotEzPassword123'
                             sx={{ 
                                 '& .MuiOutlinedInput-root': {
@@ -157,8 +185,10 @@ function CreateUserForm() {
                     >
                         <TextField
                             label = 'Confirm Password'
-                            name = 'Confirm Password'
+                            name = 'confirm-password'
                             type = 'password'
+                            value = { formData.confirmPassword }
+                            onChange = { handleChange }
                             placeholder = 'Ex: superSecret198*'
                             sx={{ 
                                 '& .MuiOutlinedInput-root': {
@@ -212,8 +242,10 @@ function CreateUserForm() {
                     >
                         <TextField
                             label = 'Email'
-                            name = 'Email'
+                            name = 'email'
                             type = 'email'
+                            value = { formData.email }
+                            onChange = { handleChange }
                             placeholder = 'Ex: GeorgeontheDelaware@gmail.com'
                             sx={{ 
                                 '& .MuiOutlinedInput-root': {
@@ -267,8 +299,10 @@ function CreateUserForm() {
                     >
                         <TextField
                             label = 'Image URL'
-                            name = 'Image URL'
+                            name = 'imageurl'
                             type = 'text'
+                            value = { formData.imageUrl }
+                            onChange = { handleChange }
                             placeholder = 'Ex: coolpicture@coolimages.net'
                             sx={{ 
                                 '& .MuiOutlinedInput-root': {
@@ -320,23 +354,6 @@ function CreateUserForm() {
                         }}
                     >   
 
-                        <Button 
-                            variant = 'outlined'
-                            sx = {{
-                                backgroundColor: '#212121',
-                                border: '.2rem solid #212121',
-                                color: '#00bcd4',
-                                fontSize: 'large',
-                                margin: '.5rem',
-                                '&:hover': {
-                                    border: '.2rem solid #00bcd4',
-                                    color: '#00bcd4', 
-                                    fontSize: 'large'
-                                },
-                            }}
-                        >
-                        Create   
-                        </Button>
 
                         <Button 
                             variant = 'outlined'
@@ -352,7 +369,36 @@ function CreateUserForm() {
                                     fontSize: 'large'
                                 },
                             }}
+                            >
+                        Create   
+                        </Button>
+
+
+                        <Input 
+                            name = 'upload-image'
+                            type = 'file'
+                            value = { formData.uploadImage }
+                            onChange = { handleChange }
+                            style = {{
+                                display: 'none'
+                            }}
                         >
+                        </Input>
+                        <Button 
+                            variant = 'outlined'
+                            sx = {{
+                                backgroundColor: '#212121',
+                                border: '.2rem solid #212121',
+                                color: '#00bcd4',
+                                fontSize: 'large',
+                                margin: '.5rem',
+                                '&:hover': {
+                                    border: '.2rem solid #00bcd4',
+                                    color: '#00bcd4', 
+                                    fontSize: 'large'
+                                },
+                            }}
+                            >
                         Upload Image   
                         </Button>
                     </div>
