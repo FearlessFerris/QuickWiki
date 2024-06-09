@@ -9,8 +9,9 @@ import { Button, Container, Typography } from '@mui/material';
 
 // Components & Necessary Files 
 import Home from './Home';
-import Navbar from './Navbar';
 import CreateUserForm from './CreateUser';
+import Login from './Login';
+import Navbar from './Navbar';
 import '../static/App.css';
 
 
@@ -23,6 +24,7 @@ function App() {
         <Routes>
           <Route exact path = '/' element = { <Home /> } />
           <Route exact path = '/user/create' element = { <CreateUserForm /> } /> 
+          <Route exact path = '/user/login' element = { <Login /> } /> 
         </Routes>
       </Router>
     </div>

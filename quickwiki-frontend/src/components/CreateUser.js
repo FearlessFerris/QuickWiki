@@ -39,9 +39,11 @@ function CreateUserForm() {
             <form 
                 onSubmit = { handleSubmit }
                 style = {{
-                    border: '.2rem solid #212121',
+                    backgroundColor: '#212121',
+                    border: '.2rem solid #00bcd4',
                     borderRadius: '.6rem',
-                    marginTop: '8rem'
+                    marginTop: '8rem',
+                    marginBottom: '2rem'
                 }}
             >
 
@@ -369,7 +371,7 @@ function CreateUserForm() {
                                     fontSize: 'large'
                                 },
                             }}
-                            >
+                        >
                         Create   
                         </Button>
 
