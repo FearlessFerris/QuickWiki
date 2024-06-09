@@ -30,6 +30,7 @@ class User( Base ):
     email = Column( String, unique = True, nullable = False )
     password_hash = Column( String, nullable = False )
     image_url = Column( String, nullable = True )
+    upload_image = Column( String, nullable = True )
     created_at = Column( DateTime, server_default = func.now() )
     updated_at = Column( DateTime, onupdate = func.now() )
 

@@ -10,6 +10,7 @@ import { Button, Container, Typography } from '@mui/material';
 // Components & Necessary Files 
 import Home from './Home';
 import Navbar from './Navbar';
+import CreateUserForm from './CreateUser';
 import '../static/App.css';
 
 
@@ -17,13 +18,11 @@ import '../static/App.css';
 function App() {
   return (
     <div className = "App">
-      <div className = 'title'>
-        <Navbar /> 
-        <h1> Welcome to QuickWiki </h1>
-      </div>
       <Router>
+      <Navbar /> 
         <Routes>
           <Route exact path = '/' element = { <Home /> } />
+          <Route exact path = '/user/create' element = { <CreateUserForm /> } /> 
         </Routes>
       </Router>
     </div>

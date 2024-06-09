@@ -14,7 +14,7 @@ import '../static/SearchBar.css';
 const customTheme = createTheme({
     palette: {
       primary: {
-        main: '#26a69a',
+        main: '#00bcd4',
       },
     },
     components: {
@@ -22,20 +22,20 @@ const customTheme = createTheme({
         styleOverrides: {
           root: {
             '& label.Mui-focused': {
-              color: '#26a69a',
+              color: '#00bcd4',
             },
             '& .MuiInput-underline:after': {
-              borderBottomColor: '#26a69a',
+              borderBottomColor: '#00bcd4',
             },
             '& .MuiOutlinedInput-root': {
               '& fieldset': {
-                borderColor: '#26a69a',
+                borderColor: '#00bcd4',
               },
               '&:hover fieldset': {
-                borderColor: '#26a69a',
+                borderColor: '#00bcd4',
               },
               '&.Mui-focused fieldset': {
-                borderColor: '#26a69a',
+                borderColor: '#00bcd4',
               },
             },
           },
@@ -70,19 +70,19 @@ function SearchBar() {
                         placeholder = 'Something amazing loading...'
                         className='search-input'
                         InputLabelProps={{
-                            style: { color: '#26a69a' },
+                            style: { color: '#00bcd4' },
                         }}
                         InputProps={{
                             sx: {
-                                color: '#26a69a',
+                                color: '#00bcd4',
                                 '& fieldset': {
-                                    borderColor: '#26a69a',
+                                    borderColor: '#00bcd4',
                                 },
                                 '&:hover fieldset': {
-                                    borderColor: '#26a69a',
+                                    borderColor: '#00bcd4',
                                 },
                                 '&.Mui-focused fieldset': {
-                                    borderColor: '#26a69a',
+                                    borderColor: '#00bcd4',
                                 },
                             },
                         }}
@@ -100,12 +100,12 @@ function SearchBar() {
                     style={{
                         fontSize: '1.2rem',
                         padding: '.6rem 1.5rem',
-                        color: '#26a69a',
-                        borderColor: '#26a69a',
+                        color: '#00bcd4',
+                        borderColor: '#00bcd4',
                         '&:hover': {
-                            backgroundColor: '#26a69a', 
-                            borderColor: '#26a69a',
-                            color: '#263238', 
+                            backgroundColor: '#00bcd4', 
+                            borderColor: '#00bcd4',
+                            color: '#00bcd4', 
                         }
                     }}
                     >

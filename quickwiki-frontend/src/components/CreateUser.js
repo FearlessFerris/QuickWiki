@@ -1,0 +1,369 @@
+// Implementation of Create User Form Component 
+
+
+// Dependencies 
+import React, { useState, useEffect } from 'react';
+import { Box, Button, InputLabel, TextField, PasswordField, Typography } from '@mui/material';
+
+
+// Components & Necessary Files 
+function CreateUserForm() {
+
+    return (
+        <div
+            className='createUserform-container'
+        >
+            <form
+                style = {{
+                    border: '.2rem solid #212121',
+                    borderRadius: '.6rem',
+                    marginTop: '8rem'
+                }}
+            >
+
+                <Box
+                    sx={{
+                        paddingTop: '2rem',
+                        paddingBottom: '2rem',
+                        paddingLeft: '6rem',
+                        paddingRight: '6rem'
+                    }}
+                >
+                    <Typography
+                        variant='h2'
+                        color='#00bcd4'
+                        sx = {{
+                            marginBottom: '6rem'
+                        }}
+                    >
+                    Create User
+                    </Typography>
+                    <div
+                        style={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            flexDirection: 'column',
+                            marginTop: '1.5rem'
+                        }}
+                    >
+                        <TextField
+                            label = 'Username'
+                            name = 'Username'
+                            placeholder = 'Ex: Jack Sparrow'
+                            sx={{ 
+                                '& .MuiOutlinedInput-root': {
+                                    '& fieldset': {
+                                        borderColor: '#00bcd4',
+                                        borderWidth: '.2rem',
+                                        width: '20rem'
+                                    },
+                                    '&:hover fieldset': {
+                                        borderColor: '#00bcd4',
+                                        borderWidth: '.2rem',
+                                        width: '20rem'
+                                    },
+                                    '&.Mui-focused fieldset': {
+                                        borderColor: '#00bcd4',
+                                        borderWidth: '.2rem',
+                                        width: '20rem'
+                                    },
+                                },
+                                '& .MuiInputLabel-root': {
+                                    color: '#00bcd4',
+                                },
+                                '& .MuiInputLabel-root.Mui-focused': {
+                                    color: '#00bcd4',
+                                },
+                            }}
+                            InputProps={{
+                                style: {
+                                    color: 'white'
+                                },
+                                inputProps: {
+                                    style: {
+                                        color: '#00bcd4',
+                                        '&::placeholder': {
+                                            color: '#00bcd4',
+                                            opacity: 1,
+                                        }
+                                    },
+                                    autoComplete: 'current-username'
+                                }
+                            }}
+                        ></TextField>
+                    </div>
+                    <div
+                        style={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            flexDirection: 'column',
+                            marginTop: '1.5rem'
+                        }}
+                    >
+                        <TextField
+                            label = 'Password'
+                            name = 'Password'
+                            type = 'password'
+                            placeholder = 'Ex: NotEzPassword123'
+                            sx={{ 
+                                '& .MuiOutlinedInput-root': {
+                                    '& fieldset': {
+                                        borderColor: '#00bcd4',
+                                        borderWidth: '.2rem',
+                                        width: '20rem'
+                                    },
+                                    '&:hover fieldset': {
+                                        borderColor: '#00bcd4',
+                                        borderWidth: '.2rem',
+                                        width: '20rem'
+                                    },
+                                    '&.Mui-focused fieldset': {
+                                        borderColor: '#00bcd4',
+                                        borderWidth: '.2rem',
+                                        width: '20rem'  
+                                    },
+                                },
+                                '& .MuiInputLabel-root': {
+                                    color: '#00bcd4',
+                                },
+                                '& .MuiInputLabel-root.Mui-focused': {
+                                    color: '#00bcd4',
+                                },
+                            }}
+                            InputProps={{
+                                style: {
+                                    color: 'white'
+                                },
+                                inputProps: {
+                                    style: {
+                                        color: '#00bcd4',
+                                        '&::placeholder': {
+                                            color: '#00bcd4',
+                                            opacity: 1,
+                                        }
+                                    },
+                                    autoComplete: 'current-password'
+                                }
+                            }}
+                        ></TextField>
+                    </div>
+                    <div
+                        style={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            flexDirection: 'column',
+                            marginTop: '1.5rem'
+                        }}
+                    >
+                        <TextField
+                            label = 'Confirm Password'
+                            name = 'Confirm Password'
+                            type = 'password'
+                            placeholder = 'Ex: superSecret198*'
+                            sx={{ 
+                                '& .MuiOutlinedInput-root': {
+                                    '& fieldset': {
+                                        borderColor: '#00bcd4',
+                                        borderWidth: '.2rem',
+                                        width: '20rem'
+                                    },
+                                    '&:hover fieldset': {
+                                        borderColor: '#00bcd4',
+                                        borderWidth: '.2rem',
+                                        width: '20rem'
+                                    },
+                                    '&.Mui-focused fieldset': {
+                                        borderColor: '#00bcd4',
+                                        borderWidth: '.2rem',
+                                        width: '20rem'  
+                                    },
+                                },
+                                '& .MuiInputLabel-root': {
+                                    color: '#00bcd4',
+                                },
+                                '& .MuiInputLabel-root.Mui-focused': {
+                                    color: '#00bcd4',
+                                },
+                            }}
+                            InputProps={{
+                                style: {
+                                    color: 'white'
+                                },
+                                inputProps: {
+                                    style: {
+                                        color: '#00bcd4',
+                                        '&::placeholder': {
+                                            color: '#00bcd4',
+                                            opacity: 1,
+                                        }
+                                    },
+                                    autoComplete: 'current-password'
+                                }
+                            }}
+                        ></TextField>
+                    </div>
+                    <div
+                        style={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            flexDirection: 'column',
+                            marginTop: '1.5rem'
+                        }}
+                    >
+                        <TextField
+                            label = 'Email'
+                            name = 'Email'
+                            type = 'email'
+                            placeholder = 'Ex: GeorgeontheDelaware@gmail.com'
+                            sx={{ 
+                                '& .MuiOutlinedInput-root': {
+                                    '& fieldset': {
+                                        borderColor: '#00bcd4',
+                                        borderWidth: '.2rem',
+                                        width: '20rem'
+                                    },
+                                    '&:hover fieldset': {
+                                        borderColor: '#00bcd4',
+                                        borderWidth: '.2rem',
+                                        width: '20rem'
+                                    },
+                                    '&.Mui-focused fieldset': {
+                                        borderColor: '#00bcd4',
+                                        borderWidth: '.2rem',
+                                        width: '20rem'  
+                                    },
+                                },
+                                '& .MuiInputLabel-root': {
+                                    color: '#00bcd4',
+                                },
+                                '& .MuiInputLabel-root.Mui-focused': {
+                                    color: '#00bcd4',
+                                },
+                            }}
+                            InputProps={{
+                                style: {
+                                    color: 'white'
+                                },
+                                inputProps: {
+                                    style: {
+                                        color: '#00bcd4',
+                                        '&::placeholder': {
+                                            color: '#00bcd4',
+                                            opacity: 1,
+                                        }
+                                    },
+                                    autoComplete: 'email'
+                                }
+                            }}
+                        ></TextField>
+                    </div>
+                    <div
+                        style={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            flexDirection: 'column',
+                            marginTop: '1.5rem'
+                        }}
+                    >
+                        <TextField
+                            label = 'Image URL'
+                            name = 'Image URL'
+                            type = 'text'
+                            placeholder = 'Ex: coolpicture@coolimages.net'
+                            sx={{ 
+                                '& .MuiOutlinedInput-root': {
+                                    '& fieldset': {
+                                        borderColor: '#00bcd4',
+                                        borderWidth: '.2rem',
+                                        width: '20rem'
+                                    },
+                                    '&:hover fieldset': {
+                                        borderColor: '#00bcd4',
+                                        borderWidth: '.2rem',
+                                        width: '20rem'
+                                    },
+                                    '&.Mui-focused fieldset': {
+                                        borderColor: '#00bcd4',
+                                        borderWidth: '.2rem',
+                                        width: '20rem'  
+                                    },
+                                },
+                                '& .MuiInputLabel-root': {
+                                    color: '#00bcd4',
+                                },
+                                '& .MuiInputLabel-root.Mui-focused': {
+                                    color: '#00bcd4',
+                                },
+                            }}
+                            InputProps={{
+                                style: {
+                                    color: 'white'
+                                },
+                                inputProps: {
+                                    style: {
+                                        color: '#00bcd4',
+                                        '&::placeholder': {
+                                            color: '#00bcd4',
+                                            opacity: 1,
+                                        }
+                                    },
+                                    autoComplete: 'email'
+                                }
+                            }}
+                        ></TextField>
+                    </div>
+                    <div
+                        style = {{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            marginTop: '3rem'
+                        }}
+                    >   
+
+                        <Button 
+                            variant = 'outlined'
+                            sx = {{
+                                backgroundColor: '#212121',
+                                border: '.2rem solid #212121',
+                                color: '#00bcd4',
+                                fontSize: 'large',
+                                margin: '.5rem',
+                                '&:hover': {
+                                    border: '.2rem solid #00bcd4',
+                                    color: '#00bcd4', 
+                                    fontSize: 'large'
+                                },
+                            }}
+                        >
+                        Create   
+                        </Button>
+
+                        <Button 
+                            variant = 'outlined'
+                            sx = {{
+                                backgroundColor: '#212121',
+                                border: '.2rem solid #212121',
+                                color: '#00bcd4',
+                                fontSize: 'large',
+                                margin: '.5rem',
+                                '&:hover': {
+                                    border: '.2rem solid #00bcd4',
+                                    color: '#00bcd4', 
+                                    fontSize: 'large'
+                                },
+                            }}
+                        >
+                        Upload Image   
+                        </Button>
+                    </div>
+                </Box>
+            </form>
+        </div>
+    )
+
+}
+
+export default CreateUserForm;
+
+
+

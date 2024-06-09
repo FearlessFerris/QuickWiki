@@ -8,13 +8,6 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: center;
-}
-
-.title {
-    color: #26a69a;
-    align-items:start;
-    margin-top: 2rem;
-    text-align: center;
-    height: 30vh;
+    /* width: auto; */
 }
 
