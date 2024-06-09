@@ -7,8 +7,13 @@ import { Box, Button, Input, TextField, PasswordField, Typography } from '@mui/m
 
 
 // Components & Necessary Files 
+import apiClient from '../api/apiClient';
+
+
+// Create User Component 
 function CreateUserForm() {
 
+    const [ errors, setErrors ] = useState({});
     const [ formData, setFormData ] = useState({
         username: '',
         password: '',
@@ -24,14 +29,59 @@ function CreateUserForm() {
             ...previousData,
             [ name ]: value
         }));  
-        console.log( value )
+        setErrors((previousErrors) => ({
+            ...previousErrors,
+            [name]: undefined
+        }));
     };
 
-    const handleSubmit = ( e ) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log( formData );
-    } 
-
+        try {
+            const newErrors = {};
+            if (formData.username === '') {
+                newErrors.username = 'Username is a required field';
+            }
+            if (formData.password === '') {
+                newErrors.password = 'Password is a required field';
+            }
+            if (formData.confirmPassword === '') {
+                newErrors.confirmPassword = 'Confirm Password is a required field';
+            }
+            if (formData.email === '') {
+                newErrors.email = 'Email is a required field';
+            }
+            if (formData.password !== formData.confirmPassword) {
+                newErrors.confirmPassword = 'Passwords do not match';
+            }
+    
+            if (Object.keys(newErrors).length > 0) {
+                setErrors(newErrors);
+                return;
+            }
+    
+            const response = await apiClient.post('/create', formData);
+            console.log(response.data);
+            setFormData({
+                username: '',
+                password: '',
+                confirmPassword: '',
+                email: '',
+                imageUrl: '',
+                uploadImage: ''
+            });
+            setErrors({});
+        } catch (error) {
+            console.error('Error Creating User Profile:', error.message);
+            if (error.response && error.response.status === 400) {
+                const { errors } = error.response.data;
+                setErrors(errors);
+            } else {
+                setErrors({ message: 'An error occurred. Please try again later.' });
+            }
+        }
+    };
+    
     return (
         <div
             className='createUserform-container'
@@ -46,7 +96,6 @@ function CreateUserForm() {
                     marginBottom: '2rem'
                 }}
             >
-
                 <Box
                     sx={{
                         paddingTop: '2rem',
@@ -73,12 +122,14 @@ function CreateUserForm() {
                         }}
                     >
                         <TextField
+                            error = { !!errors.username }
+                            helperText = { errors.username || '' }
                             label = 'Username'
                             name = 'username'
                             value = { formData.username }
                             onChange = { handleChange }
                             placeholder = 'Ex: Jack Sparrow'
-                            sx={{ 
+                            sx={{
                                 '& .MuiOutlinedInput-root': {
                                     '& fieldset': {
                                         borderColor: '#00bcd4',
@@ -129,6 +180,8 @@ function CreateUserForm() {
                         }}
                     >
                         <TextField
+                            error = { !!errors.password }
+                            helperText = { errors.password || '' }
                             label = 'Password'
                             name = 'password'
                             type = 'password'
@@ -186,8 +239,10 @@ function CreateUserForm() {
                         }}
                     >
                         <TextField
+                            error = { !!errors.confirmPassword }
+                            helperText = { errors.confirmPassword || '' }
                             label = 'Confirm Password'
-                            name = 'confirm-password'
+                            name = 'confirmPassword'
                             type = 'password'
                             value = { formData.confirmPassword }
                             onChange = { handleChange }
@@ -243,6 +298,8 @@ function CreateUserForm() {
                         }}
                     >
                         <TextField
+                            error = { !!errors.email }
+                            helperText = { errors.email || '' }
                             label = 'Email'
                             name = 'email'
                             type = 'email'
@@ -301,7 +358,7 @@ function CreateUserForm() {
                     >
                         <TextField
                             label = 'Image URL'
-                            name = 'imageurl'
+                            name = 'imageUrl'
                             type = 'text'
                             value = { formData.imageUrl }
                             onChange = { handleChange }
@@ -358,6 +415,7 @@ function CreateUserForm() {
 
 
                         <Button 
+                            type = 'submit'
                             variant = 'outlined'
                             sx = {{
                                 backgroundColor: '#212121',
