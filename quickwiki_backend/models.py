@@ -45,12 +45,20 @@ class User(Base):
     def create_user(cls, username, email, password, image_url=None, upload_image=None):
         """ Create New User """
 
-        hashed_pw = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt(12))
+        hashed_pw = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt(12)).decode( 'utf-8' )
         new_user = cls(username=username, email=email, password_hash=hashed_pw, image_url=image_url, upload_image=upload_image)
         db.session.add(new_user)
         db.session.commit()
         return new_user 
 
+    @classmethod
+    def authenticate( cls, username, password ):
+        """ Authenticate User """
+
+        user = User.query.filter_by( username = username ).first();
+        if user and bcrypt.checkpw( password.encode( 'utf-8' ), user.password_hash.encode( 'utf-8' )):
+            return user
+        return None
 
 class Search(Base):
     """ Search Model """
@@ -102,7 +110,7 @@ class Page(Base):
 
     __tablename__ = 'pages'
     id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(UUID(as_uuid=True), ForeignKey('users.id'), nullable=False)  # Foreign key added here
+    user_id = Column(UUID(as_uuid=True), ForeignKey('users.id'), nullable=False) 
     key = Column(String, nullable=False, unique=True)
     title = Column(String, nullable=False)
     latest_id = Column(Integer, nullable=False)
@@ -114,8 +122,8 @@ class Page(Base):
     created_at = Column(DateTime, server_default=func.now())
 
     # Relationships
-    user = relationship('User', back_populates='pages')  # Updated back_populates
-    bookmarks = relationship('Bookmark', back_populates='page')  # Added back_populates for bookmarks
+    user = relationship('User', back_populates='pages')  
+    bookmarks = relationship('Bookmark', back_populates='page')  
 
     def __init__(self, user_id, key, title, latest_id, latest_timestamp, content_model, license_url, license_title, html_url, created_at):
         self.user_id = user_id

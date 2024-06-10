@@ -5,12 +5,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, Button, Input, TextField, PasswordField, Typography } from '@mui/material';
+import apiClient from '../api/apiClient';
 
 
 // Components & Necessary Files 
 function Login() {
 
     const navigate = useNavigate();
+    const [ errors, setErrors ] = useState({});
     const [ formData, setFormData ] = useState({ 
         username: '',
         password: ''
@@ -22,12 +24,38 @@ function Login() {
             ...previousData,
             [ name ]: value 
         }));
+        setErrors((previousErrors) => ({
+            ...previousErrors,
+            [name]: undefined
+        }));
     };
 
-    const handleSubmit = ( e ) => {
+    const handleSubmit = async ( e ) => {
         e.preventDefault();
-        console.log( formData );
-        setFormData({ username: '', password: '' });
+        try{
+            const newErrors = {};
+            if( formData.username === '' ){
+                newErrors.username = 'Username is a required field';
+            }
+            if ( formData.password === '' ){
+                newErrors.password = 'Password is a required field';
+            }
+            if (Object.keys(newErrors).length > 0) {
+                setErrors(newErrors);
+                return;
+            }
+            const response = await apiClient.post( '/login', formData )
+            console.log( response.data );
+            console.log( formData );
+            setFormData({ 
+                username: '', 
+                password: '' 
+            });
+
+        }
+        catch( error ){
+            console.error( 'Error logging in!' );
+        }
     };
 
 
@@ -76,6 +104,8 @@ function Login() {
                         }}
                     >
                         <TextField
+                            error = { !!errors.username }
+                            helperText = { errors.username || '' }
                             label = 'Username'
                             name = 'username'
                             value = { formData.username } 
@@ -130,6 +160,8 @@ function Login() {
                         }}
                     >
                         <TextField
+                            error = { !!errors.password }
+                            helperText = { errors.password || '' }
                             type = 'password'
                             label = 'Password'
                             name = 'password'

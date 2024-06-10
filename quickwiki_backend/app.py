@@ -2,7 +2,7 @@
 
 
 # Dependencies 
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, session
 from flask_cors import CORS
 from models import db, create_tables, User, Search, SearchResult, Page, Bookmark, Authorization, SessionInfo, ActivityLog, SavedInfo 
 
@@ -38,9 +38,9 @@ def homepage():
 
 
 # User Routes
-@app.route( '/api/create', methods = [ 'POST' ] )
+@app.route( '/api/create', methods = [ 'POST' ])
 def create():
-    """ Create a new user account """
+    """ Create New User Route """
 
     data = request.get_json();
     print( f'Data: { data }' )
@@ -71,3 +71,18 @@ def create():
     except Exception as e:
         print( f'500: { e }' )
         return jsonify({'errors': {'message': str(e)}}), 500
+
+
+@app.route( '/api/login', methods = [ 'POST' ])
+def login(): 
+    """ Login User Route """
+
+    data = request.get_json();
+    username = data.get( 'username' )
+    password = data.get( 'password' )
+    user = User.authenticate( username, password )
+    if user:
+        session[ 'user_id' ] = str( user.id )
+        return jsonify({ 'message': f'Welcome back { username }', 'user_id': str( user.id )}), 200 
+    else: 
+        return jsonify({ 'message': f'Incorrect Login, Please try again!' }), 401
