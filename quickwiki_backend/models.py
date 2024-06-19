@@ -3,8 +3,10 @@ from sqlalchemy.orm import relationship
 from sqlalchemy import Column, String, DateTime, ForeignKey, Integer
 from sqlalchemy.dialects.postgresql import UUID, JSONB
 from sqlalchemy import func
+from datetime import datetime, timedelta
 import uuid
 import bcrypt 
+import secrets
 
 # Necessary Files 
 
@@ -227,18 +229,34 @@ class SessionInfo(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     user_id = Column(UUID(as_uuid=True), ForeignKey('users.id'), nullable=False)
     session_token = Column(String, nullable=False, unique=True)
-    created_at = Column(DateTime, server_default=func.now())
+    created_at = Column(DateTime, server_default=func.now(), nullable = False )
     expires_at = Column(DateTime, nullable=False)
 
     # Relationships 
     user = relationship('User', back_populates='sessions')
 
-    def __init__(self, user_id, session_token, created_at, expires_at):
+    def __init__(self, user_id, session_token, created_at = None, expires_at = None ):
         self.user_id = user_id 
-        self.session_token = session_token 
-        self.created_at = created_at 
-        self.expires_at = expires_at 
+        self.session_token = session_token
+        self.created_at = created_at or datetime.utcnow()
+        self.expires_at = expires_at or self.created_at + timedelta( days = 1 )
 
+    @classmethod 
+    def create_session_token( cls ):
+        """ Create a random Session Token """
+        
+        return secrets.token_urlsafe( 32 )
+
+    @classmethod 
+    def create_session_info( cls, user_id = None ):
+        """ Create a new SessionInfo Instance """
+
+        session_token = cls.create_session_token();
+        new_session = cls( user_id = user_id, session_token = session_token )
+        db.session.add( new_session )
+        db.session.commit()
+        return new_session
+        
 
 def create_tables():
     print('Creating Tables')

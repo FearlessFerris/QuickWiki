@@ -82,7 +82,10 @@ def login():
     password = data.get( 'password' )
     user = User.authenticate( username, password )
     if user:
+        new_session = SessionInfo.create_session_info( user.id )
         session[ 'user_id' ] = str( user.id )
-        return jsonify({ 'message': f'Welcome back { username }', 'user_id': str( user.id )}), 200 
+        return jsonify({ 'message': f'Welcome back { username }', 'user_id': str( user.id ), 'session_token': new_session.session_token }), 200 
     else: 
         return jsonify({ 'message': f'Incorrect Login, Please try again!' }), 401
+    
+

@@ -32,26 +32,29 @@ function Login() {
 
     const handleSubmit = async ( e ) => {
         e.preventDefault();
+        const newErrors = {};
+        if( formData.username === '' ){
+            newErrors.username = 'Username is a required field';
+        }
+        if ( formData.password === '' ){
+            newErrors.password = 'Password is a required field';
+        }
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
+            return;
+        }
         try{
-            const newErrors = {};
-            if( formData.username === '' ){
-                newErrors.username = 'Username is a required field';
-            }
-            if ( formData.password === '' ){
-                newErrors.password = 'Password is a required field';
-            }
-            if (Object.keys(newErrors).length > 0) {
-                setErrors(newErrors);
-                return;
-            }
             const response = await apiClient.post( '/login', formData )
             console.log( response.data );
             console.log( formData );
-            setFormData({ 
-                username: '', 
-                password: '' 
-            });
-
+            if( response.ok ){
+                localStorage.setItem( 'userSessionToken', response.data.session_token )
+                setFormData({ 
+                    username: '', 
+                    password: '' 
+                });
+                navigate( '/' );
+            }
         }
         catch( error ){
             console.error( 'Error logging in!' );
