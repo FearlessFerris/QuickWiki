@@ -215,11 +215,20 @@ class ActivityLog(Base):
     # Relationships 
     user = relationship('User', back_populates='activity_logs')
 
-    def __init__(self, user_id, action, description, created_at):
+    def __init__(self, user_id, action, description = None ):
         self.user_id = user_id 
         self.action = action 
         self.description = description 
-        self.created_at = created_at 
+
+    @classmethod
+    def create_activity_log( cls, user_id, action, description ):
+        """ Create a user ActivityLog Instance """
+
+        new_activity_log = cls( user_id = user_id, action = action, description = description )
+        print( new_activity_log )
+        db.session.add( new_activity_log )
+        db.session.commit()
+        return new_activity_log
 
 
 class SessionInfo(Base):

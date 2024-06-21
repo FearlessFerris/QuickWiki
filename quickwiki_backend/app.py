@@ -80,12 +80,19 @@ def login():
     data = request.get_json();
     username = data.get( 'username' )
     password = data.get( 'password' )
-    user = User.authenticate( username, password )
+    user = User.query.filter_by( username = username )
     if user:
-        new_session = SessionInfo.create_session_info( user.id )
-        session[ 'user_id' ] = str( user.id )
-        return jsonify({ 'message': f'Welcome back { username }', 'user_id': str( user.id ), 'session_token': new_session.session_token }), 200 
+        if User.authenticate( username, password ):
+            new_session = SessionInfo.create_session_info( user.id )
+            session[ 'user_id' ] = str( user.id )
+            new_activity_log = ActivityLog.create_activity_log( user.id, 'login', 'User login successful' )
+            return jsonify({ 'message': f'Welcome back { username }', 'user_id': str( user.id ), 'session_token': new_session.session_token }), 200
+        else:
+            new_activity_log = ActivityLog.create_activity_log( user.id, 'login failed', 'User login failed' )
+            return jsonify({ 'message': f'Incorrect Login, Please Try again!' }), 401 
     else: 
-        return jsonify({ 'message': f'Incorrect Login, Please try again!' }), 401
+        general_log = ActivityLog.create_activity_log( None, 'login failed', '')
+        
+        
     
 
