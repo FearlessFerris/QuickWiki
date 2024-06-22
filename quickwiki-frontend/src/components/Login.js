@@ -47,6 +47,7 @@ function Login() {
             const response = await apiClient.post( '/login', formData )
             console.log( response.data );
             console.log( formData );
+            console.log( response.data.ok );
             if( response.ok ){
                 localStorage.setItem( 'userSessionToken', response.data.session_token )
                 setFormData({ 

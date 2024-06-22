@@ -400,7 +400,7 @@ function CreateUserForm() {
                                             opacity: 1,
                                         }
                                     },
-                                    autoComplete: 'email'
+                                    autoComplete: 'url'
                                 }
                             }}
                         ></TextField>
