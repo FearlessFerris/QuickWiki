@@ -44,7 +44,6 @@ def create():
 
     data = request.get_json();
     print( f'Data: { data }' )
-
     username = data.get( 'username' )
     password = data.get( 'password' )
     confirm_password = data.get( 'confirmPassword' )

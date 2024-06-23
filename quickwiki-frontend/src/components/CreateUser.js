@@ -3,7 +3,7 @@
 
 // Dependencies 
 import React, { useState, useEffect } from 'react';
-import { Box, Button, Input, TextField, PasswordField, Typography } from '@mui/material';
+import { Alert, Box, Button, Input, TextField, PasswordField, Typography } from '@mui/material';
 
 
 // Components & Necessary Files 
@@ -61,6 +61,7 @@ function CreateUserForm() {
             }
     
             const response = await apiClient.post('/create', formData);
+            localStorage.setItem( 'userCreatedAlert', 'true' )
             console.log(response.data);
             setFormData({
                 username: '',
