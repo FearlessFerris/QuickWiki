@@ -2,7 +2,7 @@
 
 
 // Dependencies 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Alert, Box, Button, TextField } from '@mui/material';
 
 // Components & Necessary Files 
@@ -16,8 +16,9 @@ function Home() {
     const [ alerts, setAlerts ] = useState({});
 
     useEffect( () => {
-        
-    })
+        console.log( localStorage.getItem( 'userCreatedAlert' ) );
+    });
+
     return( 
         <div className = 'home-container'> 
             <div className = 'centered'>

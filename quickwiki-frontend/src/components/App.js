@@ -12,12 +12,18 @@ import Home from './Home';
 import CreateUserForm from './CreateUser';
 import Login from './Login';
 import Navbar from './Navbar';
+import AlertComponent from './Alert';
 import '../static/App.css';
+
+
+// Context Providers 
+import { AlertProvider } from './ContextDirectory.js/AlertContext';
 
 
 // QuickWiki Component 
 function App() {
   return (
+    <AlertProvider>
     <div className = "App">
       <Router>
       <Navbar /> 
@@ -27,7 +33,9 @@ function App() {
           <Route exact path = '/user/login' element = { <Login /> } /> 
         </Routes>
       </Router>
+      <AlertComponent /> 
     </div>
+    </AlertProvider>
   );
 }
 

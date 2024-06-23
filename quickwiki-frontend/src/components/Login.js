@@ -9,14 +9,19 @@ import apiClient from '../api/apiClient';
 
 
 // Components & Necessary Files 
+import { useAlert } from './ContextDirectory.js/AlertContext';
+
+
+// Login Component 
 function Login() {
 
-    const navigate = useNavigate();
     const [ errors, setErrors ] = useState({});
     const [ formData, setFormData ] = useState({ 
         username: '',
         password: ''
     });
+    const navigate = useNavigate();
+    const { displayAlert } = useAlert();
 
     const handleChange = ( e ) => {
         const { name, value } = e.target; 
@@ -45,11 +50,11 @@ function Login() {
         }
         try{
             const response = await apiClient.post( '/login', formData )
+            console.log( response )
             console.log( response.data );
             console.log( formData );
-            console.log( response.data.ok );
-            if( response.ok ){
-                localStorage.setItem( 'userSessionToken', response.data.session_token )
+            if( response.status === 200 ){
+                displayAlert( `Welcome back ${ formData.username }, hope you are well today!`, 'success' );
                 setFormData({ 
                     username: '', 
                     password: '' 

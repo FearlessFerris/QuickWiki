@@ -3,11 +3,13 @@
 
 // Dependencies 
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Alert, Box, Button, Input, TextField, PasswordField, Typography } from '@mui/material';
 
 
 // Components & Necessary Files 
 import apiClient from '../api/apiClient';
+import { useAlert } from './ContextDirectory.js/AlertContext';
 
 
 // Create User Component 
@@ -21,7 +23,10 @@ function CreateUserForm() {
         email: '',
         imageUrl: '',
         uploadImage: ''
-    })
+    });
+
+    const navigate = useNavigate();
+    const { displayAlert } = useAlert();
 
     const handleChange = ( e ) => {
         const { name, value } = e.target;
@@ -61,8 +66,8 @@ function CreateUserForm() {
             }
     
             const response = await apiClient.post('/create', formData);
-            localStorage.setItem( 'userCreatedAlert', 'true' )
-            console.log(response.data);
+            displayAlert( `User ${ formData.username } Successfully Created!`, 'success' )
+            console.log(response.data); 
             setFormData({
                 username: '',
                 password: '',
@@ -72,6 +77,7 @@ function CreateUserForm() {
                 uploadImage: ''
             });
             setErrors({});
+            navigate( '/user/login' );
         } catch (error) {
             console.error('Error Creating User Profile:', error.message);
             if (error.response && error.response.status === 400) {
