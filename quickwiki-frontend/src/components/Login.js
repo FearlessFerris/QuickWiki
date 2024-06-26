@@ -50,11 +50,11 @@ function Login() {
         }
         try{
             const response = await apiClient.post( '/login', formData )
-            console.log( response )
-            console.log( response.data );
-            console.log( formData );
             if( response.status === 200 ){
-                displayAlert( `Welcome back ${ formData.username }, hope you are well today!`, 'success' );
+                const { access_token, user_id, message } = response.data;
+                localStorage.setItem( 'access_token', access_token );
+                localStorage.setItem( 'user_id', user_id );
+                displayAlert( message, 'success' );
                 setFormData({ 
                     username: '', 
                     password: '' 
@@ -64,6 +64,7 @@ function Login() {
         }
         catch( error ){
             console.error( 'Error logging in!' );
+            displayAlert( 'Error logging in. Please try again!', 'error' );
         }
     };
 

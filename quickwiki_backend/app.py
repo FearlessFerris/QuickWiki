@@ -4,12 +4,14 @@
 # Dependencies 
 from flask import Flask, request, jsonify, session
 from flask_cors import CORS
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 from models import db, create_tables, User, Search, SearchResult, Page, Bookmark, Authorization, SessionInfo, ActivityLog, SavedInfo 
 
 
 # Create Flask Application Object 
 app = Flask( __name__ )
 CORS( app )
+jwt = JWTManager( app )
 
 
 # Environmental Variables / Configuration 
@@ -89,7 +91,13 @@ def login():
            new_session = SessionInfo.create_session_info( authenticated_user.id )
            session[ 'user_id' ] = str( authenticated_user.id )
            ActivityLog.create_activity_log( authenticated_user.id, 'login', 'User Login Successful' )
-           return jsonify({ 'message': f'Welcome back { username }', 'user_id': str( authenticated_user.id ), 'session_token': new_session.session_token }), 200
+           access_token = create_access_token( identity = { 'username': username })
+           print( f'Access Token: { access_token }' )
+           return jsonify({ 
+               'message': f'Welcome back { username }, hope you are well today!', 
+               'user_id': str( authenticated_user.id ),  
+               'access_token': access_token 
+            }), 200
        else: 
            ActivityLog.create_activity_log( user.id, 'login failed', 'User Login Failed' ) 
            return jsonify({ 'message': 'Incorrect Login, Please try again' }), 401 

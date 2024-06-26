@@ -15,10 +15,6 @@ function Home() {
 
     const [ alerts, setAlerts ] = useState({});
 
-    useEffect( () => {
-        console.log( localStorage.getItem( 'userCreatedAlert' ) );
-    });
-
     return( 
         <div className = 'home-container'> 
             <div className = 'centered'>
