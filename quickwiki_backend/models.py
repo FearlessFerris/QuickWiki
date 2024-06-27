@@ -43,6 +43,17 @@ class User(Base):
         self.image_url = image_url
         self.upload_image = upload_image
 
+    def get_user_profile( self ):
+        """ Retrieve entire User Profile """
+
+        user_info = {
+            'id': str( self.id ),
+            'username': self.username,
+            'email': self.email
+        }
+        return user_info
+
+
     @classmethod 
     def create_user(cls, username, email, password, image_url=None, upload_image=None):
         """ Create New User """
@@ -61,6 +72,7 @@ class User(Base):
         if user and bcrypt.checkpw( password.encode( 'utf-8' ), user.password_hash.encode( 'utf-8' )):
             return user
         return None
+
 
 class Search(Base):
     """ Search Model """

@@ -106,6 +106,23 @@ def login():
         return jsonify({ 'message': f'Profile with username: { username } was not found, please try again' })
 
 
+@app.route( '/api/profile', methods = [ 'GET' ])
+@jwt_required()
+def profile():
+    """ Retrieve User Profile """
+
+    current_user = get_jwt_identity()
+    print( current_user )
+
+    # user = User.query.filter_by( username = current_user )
+    # print( user )
+  
+
+
+    return jsonify({ 'message': 'User was successfully found!' })
+
+
+
 
 
 

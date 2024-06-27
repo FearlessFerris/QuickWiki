@@ -10,6 +10,7 @@ import apiClient from '../api/apiClient';
 
 // Components & Necessary Files 
 import { useAlert } from './ContextDirectory.js/AlertContext';
+import { useLoggedIn } from './ContextDirectory.js/LoggedInContext';
 
 
 // Login Component 
@@ -22,6 +23,7 @@ function Login() {
     });
     const navigate = useNavigate();
     const { displayAlert } = useAlert();
+    const { login } = useLoggedIn();
 
     const handleChange = ( e ) => {
         const { name, value } = e.target; 
@@ -50,10 +52,12 @@ function Login() {
         }
         try{
             const response = await apiClient.post( '/login', formData )
+            console.log( response.data );
             if( response.status === 200 ){
                 const { access_token, user_id, message } = response.data;
                 localStorage.setItem( 'access_token', access_token );
                 localStorage.setItem( 'user_id', user_id );
+                login();
                 displayAlert( message, 'success' );
                 setFormData({ 
                     username: '', 

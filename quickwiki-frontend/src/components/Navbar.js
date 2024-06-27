@@ -8,13 +8,18 @@ import { AppBar, Box, Button, Container, createTheme, IconButton, Menu, MenuItem
 
 
 // Components & Necessary Files 
-
+import { useLoggedIn } from './ContextDirectory.js/LoggedInContext';
 
 // Navbar Component 
 function Navbar() {
 
-    
+    const navigate = useNavigate();
+    const { isLoggedIn, logout } = useLoggedIn();
 
+    const handleLogout = () => {
+        logout();
+        navigate( '/user/login' );
+    }
 
     return (
         <div className='navbar-container'
@@ -93,23 +98,61 @@ function Navbar() {
                         >
                             Articles
                         </Button>
-                        <Button
-                            component={Link}
-                            to='/user/login'
-                            variant="outlined"
-                            size="large"
-                            sx={{
-                                color: '#00bcd4',
-                                border: '.2rem solid #212121',
-                                fontSize: 'large',
-                                margin: '0 8px',
-                                '&:hover': {
-                                    border: '.2rem solid #00bcd4',
-                                },
-                            }}
-                        >
-                            Login
-                        </Button>
+                        {isLoggedIn ? (
+                            <>
+                                <Button
+                                    component={Link}
+                                    to='/user/profile'
+                                    variant="outlined"
+                                    size="large"
+                                    sx={{
+                                        color: '#00bcd4',
+                                        border: '.2rem solid #212121',
+                                        fontSize: 'large',
+                                        margin: '0 8px',
+                                        '&:hover': {
+                                            border: '.2rem solid #00bcd4',
+                                        },
+                                    }}
+                                >
+                                    Profile
+                                </Button>
+                                <Button
+                                    onClick={handleLogout}
+                                    variant="outlined"
+                                    size="large"
+                                    sx={{
+                                        color: '#00bcd4',
+                                        border: '.2rem solid #212121',
+                                        fontSize: 'large',
+                                        margin: '0 8px',
+                                        '&:hover': {
+                                            border: '.2rem solid #00bcd4',
+                                        },
+                                    }}
+                                >
+                                    Logout
+                                </Button>
+                            </>
+                        ) : (
+                            <Button
+                                component={Link}
+                                to='/user/login'
+                                variant="outlined"
+                                size="large"
+                                sx={{
+                                    color: '#00bcd4',
+                                    border: '.2rem solid #212121',
+                                    fontSize: 'large',
+                                    margin: '0 8px',
+                                    '&:hover': {
+                                        border: '.2rem solid #00bcd4',
+                                    },
+                                }}
+                            >
+                                Login
+                            </Button>
+                        )}
                     </Box>
                 </Toolbar>
             </AppBar>
