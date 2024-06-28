@@ -14,13 +14,35 @@ import apiClient from '../api/apiClient';
 // Profile Component 
 function Profile() {
 
-    const [ profile, setProfile ] = useState({});
+    const [ profile, setProfile ] = useState({
+        username: '',
+        password: '',
+        confirmPassword: '',
+        email: '',
+        image_url: '',
+        upload_image: ''
+    });
+
+    const handleChange = ( e ) => {
+        const { name, value } = e.target;
+        setProfile(( previousData ) => ({
+            ...previousData,
+            [ name ]: value
+        }));
+    }
 
     useEffect( () => {
         const fetchProfile = async () => {
             try{
                 const response = await apiClient.get( '/profile' );
-                console.log( response );
+                console.log( response )
+                console.log( response.data.user )
+                const { username, email, image_url, upload_image } = response.data.user;
+                console.log( username )
+                // setProfile(( previousData ) => ({
+                //     ...previousData,
+                //     username: 
+                // }))
             }
             catch( error ){
                 console.error( 'Error fetching user profile' );
@@ -61,8 +83,65 @@ function Profile() {
                     User Profile 
                     </Typography>
                     
+                    <div
+                        style={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            flexDirection: 'column',
+                            marginTop: '1.5rem'
+                        }}
+                    >
+                        <TextField
+                            // error = { !!errors.username }
+                            // helperText = { errors.username || '' }
+                            label = 'Username'
+                            name = 'username'
+                            value = { profile.username }
+                            onChange = { handleChange }
+                            placeholder = 'Ex: Jack Sparrow'
+                            sx={{
+                                '& .MuiOutlinedInput-root': {
+                                    '& fieldset': {
+                                        borderColor: '#00bcd4',
+                                        borderWidth: '.2rem',
+                                        width: '20rem'
+                                    },
+                                    '&:hover fieldset': {
+                                        borderColor: '#00bcd4',
+                                        borderWidth: '.2rem',
+                                        width: '20rem'
+                                    },
+                                    '&.Mui-focused fieldset': {
+                                        borderColor: '#00bcd4',
+                                        borderWidth: '.2rem',
+                                        width: '20rem'
+                                    },
+                                },
+                                '& .MuiInputLabel-root': {
+                                    color: '#00bcd4',
+                                },
+                                '& .MuiInputLabel-root.Mui-focused': {
+                                    color: '#00bcd4',
+                                },
+                            }}
+                            InputProps={{
+                                style: {
+                                    color: 'white'
+                                },
+                                inputProps: {
+                                    style: {
+                                        color: '#00bcd4',
+                                        '&::placeholder': {
+                                            color: '#00bcd4',
+                                            opacity: 1,
+                                        }
+                                    },
+                                    autoComplete: 'current-username'
+                                }
+                            }}
+                        ></TextField>
+                    </div>
                 </Box>
-
             </form>
         </div>
     )

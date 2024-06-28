@@ -112,14 +112,13 @@ def profile():
     """ Retrieve User Profile """
 
     current_user = get_jwt_identity()
-    print( current_user )
-
-    # user = User.query.filter_by( username = current_user )
-    # print( user )
-  
-
-
-    return jsonify({ 'message': 'User was successfully found!' })
+    username = current_user.get( 'username' )
+    user = User.query.filter_by( username = username ).first()
+    if user: 
+        user_info = user.get_user_profile()
+        print( f'User Info: ', user_info )
+        return jsonify({ 'message': f'User: { username } was successfully found!',  'user': user_info }), 200
+    return jsonify({ 'message': 'User not found' }), 404
 
 
 

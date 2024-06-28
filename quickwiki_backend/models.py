@@ -49,7 +49,9 @@ class User(Base):
         user_info = {
             'id': str( self.id ),
             'username': self.username,
-            'email': self.email
+            'email': self.email,
+            'image_url': self.image_url,
+            'upload_image': self.upload_image
         }
         return user_info
 
