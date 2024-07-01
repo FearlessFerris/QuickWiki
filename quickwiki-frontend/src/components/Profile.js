@@ -4,11 +4,13 @@
 // Dependencies 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Alert, Box, Button, Input, TextField, PasswordField, Typography } from '@mui/material';
+import { Alert, Avatar, Box, Button, Input, TextField, Tooltip, PasswordField, Typography } from '@mui/material';
 
 
 // Components & Necessary Files 
 import apiClient from '../api/apiClient';
+import { useAlert } from './ContextDirectory.js/AlertContext';
+import UserForm from './UserForm';
 
 
 // Profile Component 
@@ -22,27 +24,24 @@ function Profile() {
         image_url: '',
         upload_image: ''
     });
-
-    const handleChange = ( e ) => {
-        const { name, value } = e.target;
-        setProfile(( previousData ) => ({
-            ...previousData,
-            [ name ]: value
-        }));
-    }
+    
+    const [ formVisible, setFormVisible ] = useState( false );
+    const [ errors, setErrors ] = useState({});
+    const navigate = useNavigate();
 
     useEffect( () => {
         const fetchProfile = async () => {
             try{
                 const response = await apiClient.get( '/profile' );
                 console.log( response )
-                console.log( response.data.user )
                 const { username, email, image_url, upload_image } = response.data.user;
-                console.log( username )
-                // setProfile(( previousData ) => ({
-                //     ...previousData,
-                //     username: 
-                // }))
+                setProfile(( previousData ) => ({
+                    ...previousData,
+                    username, 
+                    email,
+                    image_url, 
+                    upload_image 
+                }));
             }
             catch( error ){
                 console.error( 'Error fetching user profile' );
@@ -52,97 +51,195 @@ function Profile() {
         fetchProfile();
     }, []);
 
+    useEffect( () => {
+        console.log( 'Profile state updated' );
+    }, [ profile ] );
+
+    // const handleChange = ( e ) => {
+    //     const { name, value } = e.target;
+    //     setProfile(( previousData ) => ({
+    //         ...previousData,
+    //         [ name ]: value
+    //     }));
+    // }
+
+    const handleEditChange = () => {
+        setFormVisible( !formVisible );
+        console.log( formVisible );
+    }
+
+
+    const truncateText = (text, maxLength) => {
+        if (text.length <= maxLength) return text;
+        return text.slice(0, maxLength) + '...';
+    }
+
     return(
         <div
             className = 'profile-container'
+            style = {{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center'
+            }}
         > 
-            <form
-                style = {{
-                    backgroundColor: '#212121',
-                    border: '.2rem solid #00bcd4',
-                    borderRadius: '.6rem',
-                    marginTop: '8rem',
-                    marginBottom: '2rem'
-                }}
-            >
-                <Box
+        { formVisible ? (
+                <UserForm initialData = { profile } setFormVisible = { setFormVisible } />
+            ): (
+                <>
+                <Box 
                     sx = {{
-                        paddingTop: '2rem',
-                        paddingBottom: '2rem',
-                        paddingLeft: '6rem',
-                        paddingRight: '6rem'
-                    }} 
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'center',
+                        backgroundColor: '#212121',
+                        border: '.2rem solid #00bcd4',
+                        borderRadius: '.6rem',
+                        marginTop: '8rem',
+                        marginBottom: '2rem',
+                        width: '36rem'
+                    }}
                 >
                     <Typography 
                         variant = 'h2'
                         color = '#00bcd4'
                         sx = {{
-                            marginBottom: '6rem'
+                            textAlign: 'center',
+                            marginTop: '2rem',
+                            marginBottom: '4rem'
                         }}
                     >
-                    User Profile 
+                    User Profile      
                     </Typography>
-                    
+                    <Box 
+                        sx={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            marginBottom: '2rem'
+                        }}
+                    >
+                        <Avatar
+                            alt={profile.username}
+                            src={profile.image_url}
+                            sx={{
+                                aspectRatio: '1/1',
+                                backgroundColor: 'white',
+                                border: '.2rem solid #00bcd4',
+                                objectFit: 'contain',
+                                height: '16rem',
+                                width: 'auto'
+                            }}
+                        />
+                    </Box>
+                    <div 
+                        style={{
+                            display: 'flex',
+                            justifyContent: 'start',
+                            flexDirection: 'row',
+                            margin: '.2rem',
+                            marginLeft: '4rem'
+                        }}
+                    >
+                        <Typography 
+                            variant = 'h5'
+                            color = 'white'
+                        >
+                        Username:     
+                        </Typography>
+
+                        <Typography
+                            variant = 'h5'
+                            color = '#00bcd4'
+                            sx = {{
+                                marginLeft: '1rem'
+                            }}
+                        >
+                        { profile.username }    
+                        </Typography>
+                    </div>
+                    <div 
+                        style={{
+                            display: 'flex',
+                            justifyContent: 'start',
+                            flexDirection: 'row',
+                            margin: '.2rem',
+                            marginLeft: '4rem'
+                        }}
+                    >
+                        <Typography 
+                            variant = 'h5'
+                            color = 'white'
+                        >
+                        Email:     
+                        </Typography>
+
+                        <Typography
+                            variant = 'h5'
+                            color = '#00bcd4'
+                            sx = {{
+                                marginLeft: '1rem'
+                            }}
+                        >
+                        { profile.email }    
+                        </Typography>
+                    </div>
+                    <div 
+                        style={{
+                            display: 'flex',
+                            justifyContent: 'start',
+                            flexDirection: 'row',
+                            margin: '.2rem',
+                            marginLeft: '4rem'
+                        }}
+                    >
+                        <Typography 
+                            variant = 'h5'
+                            color = 'white'
+                        >
+                        Image Url:     
+                        </Typography>
+
+                        <Typography
+                            variant = 'h5'
+                            color = '#00bcd4'
+                            sx = {{
+                                marginLeft: '1rem'
+                            }}
+                        >
+                        { truncateText( profile.image_url, 28 )}    
+                        </Typography>
+                    </div>
                     <div
                         style={{
                             display: 'flex',
                             justifyContent: 'center',
-                            flexDirection: 'column',
-                            marginTop: '1.5rem'
+                            flexDirection: 'row',
+                            marginTop: '2rem',
+                            marginBottom: '2rem'
                         }}
                     >
-                        <TextField
-                            // error = { !!errors.username }
-                            // helperText = { errors.username || '' }
-                            label = 'Username'
-                            name = 'username'
-                            value = { profile.username }
-                            onChange = { handleChange }
-                            placeholder = 'Ex: Jack Sparrow'
+                        <Button
+                            variant = 'outlined'
+                            onClick = { handleEditChange }
                             sx={{
-                                '& .MuiOutlinedInput-root': {
-                                    '& fieldset': {
-                                        borderColor: '#00bcd4',
-                                        borderWidth: '.2rem',
-                                        width: '20rem'
-                                    },
-                                    '&:hover fieldset': {
-                                        borderColor: '#00bcd4',
-                                        borderWidth: '.2rem',
-                                        width: '20rem'
-                                    },
-                                    '&.Mui-focused fieldset': {
-                                        borderColor: '#00bcd4',
-                                        borderWidth: '.2rem',
-                                        width: '20rem'
-                                    },
-                                },
-                                '& .MuiInputLabel-root': {
+                                backgroundColor: '#212121',
+                                border: '.2rem solid #212121',
+                                color: '#00bcd4',
+                                fontSize: 'large',
+                                width: '12rem',
+                                '&:hover': {
+                                    border: '.2rem solid #00bcd4',
                                     color: '#00bcd4',
-                                },
-                                '& .MuiInputLabel-root.Mui-focused': {
-                                    color: '#00bcd4',
+                                    fontSize: 'large'
                                 },
                             }}
-                            InputProps={{
-                                style: {
-                                    color: 'white'
-                                },
-                                inputProps: {
-                                    style: {
-                                        color: '#00bcd4',
-                                        '&::placeholder': {
-                                            color: '#00bcd4',
-                                            opacity: 1,
-                                        }
-                                    },
-                                    autoComplete: 'current-username'
-                                }
-                            }}
-                        ></TextField>
+                        >
+                        Edit
+                        </Button>
                     </div>
                 </Box>
-            </form>
+            </>
+            )}
         </div>
     )
 }

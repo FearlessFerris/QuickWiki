@@ -1,24 +1,23 @@
-// Implementation of Create User Form Component 
+// User Form Component Implementation 
 
 
 // Dependencies 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Alert, Box, Button, IconButton, Input, InputAdornment, TextField, PasswordField, Typography } from '@mui/material';
-import { CheckCircle } from '@mui/icons-material';
-import { Error } from '@mui/icons-material';
+import { Alert, Box, Button, IconButton, Input, InputAdornment, TextField, Typography } from '@mui/material';
+import { CheckCircle, Error } from '@mui/icons-material';
 
 
 // Components & Necessary Files 
 import apiClient from '../api/apiClient';
 import { useAlert } from './ContextDirectory.js/AlertContext';
-import UserForm from './UserForm';
 
 
-// Create User Component 
-function CreateUserForm() {
+// User Form Component 
+function UserForm({ initialData = {}, setFormVisible }) {
 
-    const [formData, setFormData] = useState({
+    const [errors, setErrors] = useState({});
+    const [formData, setFormData] = useState(initialData || {
         username: '',
         password: '',
         confirmPassword: '',
@@ -27,20 +26,29 @@ function CreateUserForm() {
         upload_image: ''
     });
 
-    const [errors, setErrors] = useState({});
     const [usernameValid, setUsernameValid] = useState(false);
     const [passwordValid, setPasswordValid] = useState(false);
     const [confirmPasswordValid, setConfirmPasswordValid] = useState(false);
     const [emailValid, setEmailValid] = useState(false)
     const { displayAlert } = useAlert();
     const navigate = useNavigate();
+    const [touchedFields, setTouchedFields] = useState({
+        username: false,
+        password: false,
+        confirmPassword: false,
+        email: false,
+    });
 
-    const handleFileChange = (e) => {
-        setFormData((previousData) => ({
-            ...previousData,
-            uploadImage: e.target.files[0],
-        }));
-    };
+    useEffect(() => {
+        setFormData(initialData || {
+            username: '',
+            password: '',
+            confirmPassword: '',
+            email: '',
+            image_url: '',
+            upload_image: ''
+        });
+    }, [initialData]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -50,7 +58,7 @@ function CreateUserForm() {
         }));
         switch (name) {
             case 'username':
-                setUsernameValid(value.length >= 5); 
+                setUsernameValid(value.length >= 5);
                 break;
             case 'password':
                 setPasswordValid(value.length >= 8);
@@ -66,12 +74,32 @@ function CreateUserForm() {
         }
     };
 
+    const handleBlur = (e) => {
+        const { name } = e.target;
+        setTouchedFields((prev) => ({
+            ...prev,
+            [name]: true,
+        }));
+        setErrors((prevErrors) => ({
+            ...prevErrors,
+            [name]: formData[name] ? '' : `${name.charAt(0).toUpperCase() + name.slice(1)} is a required field`,
+        }));
+    };
+
+    const handleFileChange = (e) => {
+        setFormData((previousData) => ({
+            ...previousData,
+            uploadImage: e.target.files[0],
+        }));
+    };
+
     const handleUploadButtonClick = () => {
         document.getElementById('upload-button').click();
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        console.log(formData);
         try {
             const newErrors = {};
             if (formData.username === '') {
@@ -89,24 +117,21 @@ function CreateUserForm() {
             if (formData.password !== formData.confirmPassword) {
                 newErrors.confirmPassword = 'Passwords do not match';
             }
-
             if (Object.keys(newErrors).length > 0) {
                 setErrors(newErrors);
                 return;
             }
 
-            const response = await apiClient.post( '/create', formData );
-            displayAlert(`User ${formData.username} Successfully Created!`, 'success');
-            setFormData({
-                username: '',
+            const response = await apiClient.patch('/profile', formData);
+            console.log(response);
+            displayAlert(`User ${formData.username} Successfully Updated!`, 'success');
+            setFormData(( previousData ) => ({
+                ...previousData,
                 password: '',
-                confirmPassword: '',
-                email: '',
-                image_url: '',
-                upload_image: ''
-            });
+                confirmPassword: ''
+            }));
             setErrors({});
-            navigate('/user/login');
+            navigate('/user/profile');
         } catch (error) {
             console.error('Error Creating User Profile:', error.message);
             if (error.response && error.response.status === 400) {
@@ -117,6 +142,7 @@ function CreateUserForm() {
             }
         }
     };
+
     return (
         <div
             className='userform-container'
@@ -127,7 +153,7 @@ function CreateUserForm() {
             }}
         >
             <form
-                onSubmit = { handleSubmit }
+                onSubmit={handleSubmit}
                 style={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -149,7 +175,7 @@ function CreateUserForm() {
                         marginTop: '2rem'
                     }}
                 >
-                Create User
+                    Edit Form
                 </Typography>
 
                 <Box
@@ -169,112 +195,26 @@ function CreateUserForm() {
                         }}
                     >
                         <TextField
-                    error={!!errors.username && usernameValid }
-                    helperText={errors.username}
-                    label='Username'
-                    name='username'
-                    placeholder='Ex: Jack Sparrow'
-                    onBlur={() => setErrors({ ...errors, username: formData.username ? '' : 'Username is a required field' })}
-                    onChange={handleChange}
-                    value={formData.username}
-                    InputProps={{
-                        endAdornment: (
-                            <InputAdornment position='end'>
-                                {usernameValid && formData.username ? (
-                                    <IconButton size='small'>
-                                        <CheckCircle style={{ color: '#00bcd4' }} />
-                                    </IconButton>
-                                ) : (
-                                    formData.username && (
-                                        <IconButton size='small'>
-                                            <Error style = {{ color: '#6a1b9a' }} />
-                                        </IconButton>
-                                    )
-                                )}
-                            </InputAdornment>
-                        ),
-                        style: {
-                            color: 'white',
-                        },
-                        inputProps: {
-                            style: {
-                                color: '#00bcd4',
-                                '&::placeholder': {
-                                    color: '#00bcd4',
-                                    opacity: 1,
-                                }
-                            },
-                            autoComplete: 'current-username'
-                        }
-                    }}
-                    sx={{
-                        width: '20rem',
-                        '& .MuiOutlinedInput-root': {
-                            '& fieldset': {
-                                borderColor: usernameValid ? '#00bcd4' : '#6a1b9a',
-                                borderWidth: '.2rem'
-                            },
-                            '&:hover fieldset': {
-                                borderColor: '#00bcd4',
-                                borderWidth: '.2rem'
-                            },
-                            '&.Mui-focused fieldset': {
-                                borderColor: '#00bcd4',
-                                borderWidth: '.2rem'
-                            },
-                            '&.Mui-error .MuiOutlinedInput-notchedOutline': {
-                                borderColor: '#6a1b9a',
-                            },
-                        },
-                        '& .MuiInputLabel-root': {
-                            color: '#00bcd4',
-                        },
-                        '& .MuiInputLabel-root.Mui-focused': {
-                            color: '#00bcd4',
-                        },
-                        '& .MuiFormHelperText-root': {
-                            color: '#6a1b9a',
-                            fontSize: '1rem',
-                            '&.Mui-error': {
-                                color: '#6a1b9a',
-                            }
-                        },
-                    }}
-                />
-                    </div>
-
-                    <div
-                        style={{
-                            display: 'flex',
-                            justifyContent: 'center',
-                            flexDirection: 'column',
-                            margin: '.8rem'
-                        }}
-                    >
-
-                        <TextField
-                            error = { !!errors.password && passwordValid }
-                            helperText = { errors.password }
-                            label='Password'
-                            name='password'
-                            type='password'
+                            error={touchedFields.username && !!errors.username}
+                            helperText={touchedFields.username && errors.username}
+                            label='Username'
+                            name='username'
+                            placeholder='Enter username'
+                            onBlur={handleBlur}
                             onChange={handleChange}
-                            placeholder='Ex: NotEzPassword123'
-                            onBlur={() => setErrors({ ...errors, password: formData.password ? '' : 'Password is a required field' })}
-                            value={formData.password}
+                            value={formData.username}
                             InputProps={{
                                 endAdornment: (
                                     <InputAdornment position='end'>
-                                        {passwordValid && formData.password ? (
+                                        {formData.username && !errors.username && (
                                             <IconButton size='small'>
                                                 <CheckCircle style={{ color: '#00bcd4' }} />
                                             </IconButton>
-                                        ) : (
-                                            formData.password && (
-                                                <IconButton size='small'>
-                                                    <Error style = {{ color: '#6a1b9a' }} />
-                                                </IconButton>
-                                            )
+                                        )}
+                                        {formData.username && errors.username && (
+                                            <IconButton size='small'>
+                                                <Error style={{ color: '#6a1b9a' }} />
+                                            </IconButton>
                                         )}
                                     </InputAdornment>
                                 ),
@@ -289,14 +229,14 @@ function CreateUserForm() {
                                             opacity: 1,
                                         }
                                     },
-                                    autoComplete: 'current-password'
+                                    autoComplete: 'current-username'
                                 }
                             }}
                             sx={{
                                 width: '20rem',
                                 '& .MuiOutlinedInput-root': {
                                     '& fieldset': {
-                                        borderColor: passwordValid ? '#00bcd4' : '#6a1b9a',
+                                        borderColor: formData.username && !errors.username ? '#00bcd4' : '#6a1b9a',
                                         borderWidth: '.2rem'
                                     },
                                     '&:hover fieldset': {
@@ -326,7 +266,96 @@ function CreateUserForm() {
                                 },
                             }}
                         />
+
+
                     </div>
+
+                    <div
+                        style={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            flexDirection: 'column',
+                            margin: '.8rem'
+                        }}
+                    >
+
+                        <TextField
+                            error={touchedFields.password && !!errors.password}
+                            helperText={touchedFields.password && errors.password}
+                            label='Password'
+                            name='password'
+                            type='password'
+                            placeholder='Enter password'
+                            onBlur={handleBlur}
+                            onChange={handleChange}
+                            value={formData.password}
+                            InputProps={{
+                                endAdornment: (
+                                    <InputAdornment position='end'>
+                                        {passwordValid && formData.password && (
+                                            <IconButton size='small'>
+                                                <CheckCircle style={{ color: '#00bcd4' }} />
+                                            </IconButton>
+                                        )}
+                                        {!passwordValid && formData.password && (
+                                            <IconButton size='small'>
+                                                <Error style={{ color: '#6a1b9a' }} />
+                                            </IconButton>
+                                        )}
+                                    </InputAdornment>
+                                ),
+                                style: {
+                                    color: 'white',
+                                },
+                                inputProps: {
+                                    style: {
+                                        color: '#00bcd4',
+                                        '&::placeholder': {
+                                            color: '#00bcd4',
+                                            opacity: 1,
+                                        }
+                                    },
+                                    autoComplete: 'new-password'
+                                }
+                            }}
+                            sx={{
+                                width: '20rem',
+                                '& .MuiOutlinedInput-root': {
+                                    '& fieldset': {
+                                        borderColor: '#00bcd4',
+                                        borderWidth: '.2rem'
+                                    },
+                                    '&:hover fieldset': {
+                                        borderColor: '#00bcd4',
+                                        borderWidth: '.2rem'
+                                    },
+                                    '&.Mui-focused fieldset': {
+                                        borderColor: '#00bcd4',
+                                        borderWidth: '.2rem'
+                                    },
+                                },
+                                '& .MuiInputLabel-root': {
+                                    color: '#00bcd4',
+                                },
+                                '& .MuiInputLabel-root.Mui-focused': {
+                                    color: '#00bcd4',
+                                },
+                                '& .MuiFormHelperText-root': {
+                                    color: '#6a1b9a',
+                                    fontSize: '1rem',
+                                    '&.Mui-error': {
+                                        color: '#6a1b9a',
+                                    }
+                                },
+                                '& .Mui-error .MuiOutlinedInput-notchedOutline': {
+                                    borderColor: '#6a1b9a',
+                                },
+                            }}
+                        />
+
+
+                    </div>
+
                     <div
                         style={{
                             display: 'flex',
@@ -336,28 +365,27 @@ function CreateUserForm() {
                         }}
                     >
                         <TextField
-                            error = { !!errors.confirmPassword && confirmPasswordValid }
-                            helperText = { errors.confirmPassword }
+                            error={touchedFields.confirmPassword && !!errors.confirmPassword}
+                            helperText={touchedFields.confirmPassword && errors.confirmPassword}
                             label='Confirm Password'
                             name='confirmPassword'
                             type='password'
-                            placeholder='Ex: superSecret198*'
-                            onBlur = { () => setErrors({ ...errors, confirmPassword: formData.confirmPassword ? '' : 'Confirm Password Field is Required' })}
+                            placeholder='Confirm password'
+                            onBlur={handleBlur}
                             onChange={handleChange}
                             value={formData.confirmPassword}
                             InputProps={{
                                 endAdornment: (
                                     <InputAdornment position='end'>
-                                        {confirmPasswordValid && formData.confirmPassword ? (
+                                        {confirmPasswordValid && formData.confirmPassword && (
                                             <IconButton size='small'>
                                                 <CheckCircle style={{ color: '#00bcd4' }} />
                                             </IconButton>
-                                        ) : (
-                                            formData.confirmPassword && (
-                                                <IconButton size='small'>
-                                                    <Error style = {{ color: '#6a1b9a' }} />
-                                                </IconButton>
-                                            )
+                                        )}
+                                        {!confirmPasswordValid && formData.confirmPassword && (
+                                            <IconButton size='small'>
+                                                <Error style={{ color: '#6a1b9a' }} />
+                                            </IconButton>
                                         )}
                                     </InputAdornment>
                                 ),
@@ -372,14 +400,97 @@ function CreateUserForm() {
                                             opacity: 1,
                                         }
                                     },
-                                    autoComplete: 'current-password'
+                                    autoComplete: 'new-password'
                                 }
                             }}
                             sx={{
                                 width: '20rem',
                                 '& .MuiOutlinedInput-root': {
                                     '& fieldset': {
-                                        borderColor: confirmPasswordValid ? '#00bcd4' : '#6a1b9a',
+                                        borderColor: '#00bcd4',
+                                        borderWidth: '.2rem'
+                                    },
+                                    '&:hover fieldset': {
+                                        borderColor: '#00bcd4',
+                                        borderWidth: '.2rem'
+                                    },
+                                    '&.Mui-focused fieldset': {
+                                        borderColor: '#00bcd4',
+                                        borderWidth: '.2rem'
+                                    },
+                                },
+                                '& .MuiInputLabel-root': {
+                                    color: '#00bcd4',
+                                },
+                                '& .MuiInputLabel-root.Mui-focused': {
+                                    color: '#00bcd4',
+                                },
+                                '& .MuiFormHelperText-root': {
+                                    color: '#6a1b9a',
+                                    fontSize: '1rem',
+                                    '&.Mui-error': {
+                                        color: '#6a1b9a',
+                                    }
+                                },
+                                '& .Mui-error .MuiOutlinedInput-notchedOutline': {
+                                    borderColor: '#6a1b9a',
+                                },
+                            }}
+                        />
+
+                    </div>
+                    <div
+                        style={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            flexDirection: 'column',
+                            margin: '.8rem'
+                        }}
+                    >
+                        <TextField
+                            error={!!errors.email}
+                            helperText={errors.email}
+                            label='Email'
+                            name='email'
+                            type='email'
+                            placeholder='Enter email'
+                            onBlur={handleBlur}
+                            onChange={handleChange}
+                            value={formData.email}
+                            InputProps={{
+                                endAdornment: (
+                                    <InputAdornment position='end'>
+                                        {formData.email && !errors.email && (
+                                            <IconButton size='small'>
+                                                <CheckCircle style={{ color: '#00bcd4' }} />
+                                            </IconButton>
+                                        )}
+                                        {formData.email && errors.email && (
+                                            <IconButton size='small'>
+                                                <Error style={{ color: '#6a1b9a' }} />
+                                            </IconButton>
+                                        )}
+                                    </InputAdornment>
+                                ),
+                                style: {
+                                    color: 'white',
+                                },
+                                inputProps: {
+                                    style: {
+                                        color: '#00bcd4',
+                                        '&::placeholder': {
+                                            color: '#00bcd4',
+                                            opacity: 1,
+                                        }
+                                    },
+                                    autoComplete: 'email'
+                                }
+                            }}
+                            sx={{
+                                width: '20rem',
+                                '& .MuiOutlinedInput-root': {
+                                    '& fieldset': {
+                                        borderColor: formData.email && !errors.email ? '#00bcd4' : '#6a1b9a',
                                         borderWidth: '.2rem'
                                     },
                                     '&:hover fieldset': {
@@ -409,6 +520,8 @@ function CreateUserForm() {
                                 },
                             }}
                         />
+
+
                     </div>
                     <div
                         style={{
@@ -419,91 +532,8 @@ function CreateUserForm() {
                         }}
                     >
                         <TextField
-                        error={!!errors.email}
-                        helperText={errors.email}
-                        label='Email'
-                        name='email'
-                        type='email'
-                        placeholder='Ex: GeorgeontheDelaware@gmail.com'
-                        onBlur={() => setErrors({ ...errors, email: formData.email ? '' : 'Email Field is Required' })}
-                        onChange={handleChange}
-                        value={formData.email}
-                        InputProps={{
-                            endAdornment: (
-                                <InputAdornment position='end'>
-                                    {emailValid && formData.email ? (
-                                        <IconButton size='small'>
-                                            <CheckCircle style={{ color: '#00bcd4' }} />
-                                        </IconButton>
-                                    ) : (
-                                        formData.email && (
-                                            <IconButton size='small'>
-                                                <Error style={{ color: '#6a1b9a' }} />
-                                            </IconButton>
-                                        )
-                                    )}
-                                </InputAdornment>
-                            ),
-                            style: {
-                                color: 'white',
-                            },
-                            inputProps: {
-                                style: {
-                                    color: '#00bcd4',
-                                    '&::placeholder': {
-                                        color: '#00bcd4',
-                                        opacity: 1,
-                                    }
-                                },
-                                autoComplete: 'email'
-                            }
-                        }}
-                        sx={{
-                            width: '20rem',
-                            '& .MuiOutlinedInput-root': {
-                                '& fieldset': {
-                                    borderColor: emailValid ? '#00bcd4' : '#6a1b9a',
-                                    borderWidth: '.2rem'
-                                },
-                                '&:hover fieldset': {
-                                    borderColor: '#00bcd4',
-                                    borderWidth: '.2rem'
-                                },
-                                '&.Mui-focused fieldset': {
-                                    borderColor: '#00bcd4',
-                                    borderWidth: '.2rem'
-                                },
-                                '&.Mui-error .MuiOutlinedInput-notchedOutline': {
-                                    borderColor: '#6a1b9a',
-                                },
-                            },
-                            '& .MuiInputLabel-root': {
-                                color: '#00bcd4',
-                            },
-                            '& .MuiInputLabel-root.Mui-focused': {
-                                color: '#00bcd4',
-                            },
-                            '& .MuiFormHelperText-root': {
-                                color: '#6a1b9a',
-                                fontSize: '1rem',
-                                '&.Mui-error': {
-                                    color: '#6a1b9a',
-                                }
-                            },
-                        }}
-                    />
-                    </div>
-                    <div
-                        style={{
-                            display: 'flex',
-                            justifyContent: 'center',
-                            flexDirection: 'column',
-                            margin: '.8rem'
-                        }}
-                    >
-                        <TextField
-                            error = { !!errors.image_url }
-                            helperText = { errors.image_url }
+                            error={!!errors.image_url}
+                            helperText={errors.image_url}
                             label='Image URL'
                             name='image_url'
                             type='text'
@@ -600,8 +630,9 @@ function CreateUserForm() {
                         }}
                     >
                         <Button
+                            type='submit'
+                            onClick={handleSubmit}
                             variant='outlined'
-                            onClick = { handleSubmit }
                             sx={{
                                 backgroundColor: '#212121',
                                 border: '.2rem solid #212121',
@@ -614,7 +645,24 @@ function CreateUserForm() {
                                 },
                             }}
                         >
-                        Create
+                            Apply Changes
+                        </Button>
+                        <Button
+                            variant='outlined'
+                            onClick={() => setFormVisible(false)}
+                            sx={{
+                                backgroundColor: '#212121',
+                                border: '.2rem solid #212121',
+                                color: '#00bcd4',
+                                fontSize: 'large',
+                                '&:hover': {
+                                    border: '.2rem solid #00bcd4',
+                                    color: '#00bcd4',
+                                    fontSize: 'large'
+                                },
+                            }}
+                        >
+                            Back
                         </Button>
                     </div>
                 </Box>
@@ -622,7 +670,5 @@ function CreateUserForm() {
         </div>
     )
 }
-export default CreateUserForm;
 
-
-
+export default UserForm;

@@ -64,7 +64,8 @@ function Navbar() {
                         >
                             Home
                         </Button>
-                        <Button
+                        { !isLoggedIn && (
+                            <Button
                             component={Link}
                             to='/user/create'
                             variant="outlined"
@@ -78,11 +79,12 @@ function Navbar() {
                                     border: '.2rem solid #00bcd4',
                                 },
                             }}
-                        >
+                            >
                             Create
                         </Button>
+                        )}
                         <Button
-                            component={Link}
+                        component={Link}
                             to='/searches'
                             variant="outlined"
                             size="large"

@@ -1,5 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy import Column, String, DateTime, ForeignKey, Integer
 from sqlalchemy.dialects.postgresql import UUID, JSONB
 from sqlalchemy import func
@@ -55,7 +56,22 @@ class User(Base):
         }
         return user_info
 
+    def update_user_profile( self, username, password, email, image_url, upload_image ):
+        """ Update Users Profile """
 
+        print( username, password, email, image_url, upload_image )
+        if username and password and email and image_url and upload_image:
+            self.username = username
+            self.email = email
+            self.image_url = image_url
+            self.upload_image = upload_image
+        self.updated_at = func.now()
+        
+        try:    
+            db.session.commit()
+        except:
+                 
+        
     @classmethod 
     def create_user(cls, username, email, password, image_url=None, upload_image=None):
         """ Create New User """
@@ -224,21 +240,23 @@ class ActivityLog(Base):
     user_id = Column(UUID(as_uuid=True), ForeignKey('users.id'), nullable=False)
     action = Column(String, nullable=False)
     description = Column(String, nullable=True)
+    endpoint = Column( String, nullable = False )
     created_at = Column(DateTime, server_default=func.now())
 
     # Relationships 
     user = relationship('User', back_populates='activity_logs')
 
-    def __init__(self, user_id, action, description = None ):
+    def __init__(self, user_id, action, endpoint, description = None ):
         self.user_id = user_id 
         self.action = action 
-        self.description = description 
+        self.endpoint = endpoint 
+        self.description = description
 
     @classmethod
-    def create_activity_log( cls, user_id, action, description ):
+    def create_activity_log( cls, user_id, action, endpoint, description ):
         """ Create a user ActivityLog Instance """
 
-        new_activity_log = cls( user_id = user_id, action = action, description = description )
+        new_activity_log = cls( user_id = user_id, action = action, endpoint = endpoint, description = description )
         print( new_activity_log )
         db.session.add( new_activity_log )
         db.session.commit()

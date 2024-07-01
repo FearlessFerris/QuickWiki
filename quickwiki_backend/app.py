@@ -35,7 +35,7 @@ with app.app_context():
 def homepage(): 
     """ Homepage of Application """ 
     
-    
+    print( 'hello' )
     return ''' Welcome to QuickWiki '''
 
 
@@ -50,17 +50,18 @@ def create():
     password = data.get( 'password' )
     confirm_password = data.get( 'confirmPassword' )
     email = data.get( 'email' )
-    image_url = data.get( 'imageUrl' )
-    upload_image = data.get( 'uploadImage' )
+    image_url = data.get( 'image_url' )
+    upload_image = data.get( 'upload_image' )
+
 
     if not ( username and password and confirm_password and email ):
         return jsonify({ 'errors': { 'message': 'Please complete all required fields' }}), 400 
     
     if password != confirm_password:
         return jsonify({ 'errors': { 'confirmPassword': 'Passwords do not match!' }}), 400 
-    
     try:
         new_user = User.create_user(username=username, email=email, password=password, image_url = image_url, upload_image = upload_image )
+        ActivityLog.create_activity_log( new_user.id, 'create', '/api/create', 'User Successfully Created' )
         print( f'New User: { new_user }' )
         return jsonify({'message': f'User {new_user.username} Successfully Created!', 'data': {
             'id': new_user.id,
@@ -90,7 +91,7 @@ def login():
        if authenticated_user:
            new_session = SessionInfo.create_session_info( authenticated_user.id )
            session[ 'user_id' ] = str( authenticated_user.id )
-           ActivityLog.create_activity_log( authenticated_user.id, 'login', 'User Login Successful' )
+           ActivityLog.create_activity_log( authenticated_user.id, 'login', '/api/login', 'User Login Successful' )
            access_token = create_access_token( identity = { 'username': username })
            print( f'Access Token: { access_token }' )
            return jsonify({ 
@@ -99,10 +100,10 @@ def login():
                'access_token': access_token 
             }), 200
        else: 
-           ActivityLog.create_activity_log( user.id, 'login failed', 'User Login Failed' ) 
+           ActivityLog.create_activity_log( user.id, 'login failed', '/api/login', 'User Login Failed' ) 
            return jsonify({ 'message': 'Incorrect Login, Please try again' }), 401 
     else: 
-        ActivityLog.create_activity_log( None, 'login failed', f'Login attempt for username: { username } failed' )
+        ActivityLog.create_activity_log( None, 'login failed', '/users/login', f'Login attempt for username: { username } failed' )
         return jsonify({ 'message': f'Profile with username: { username } was not found, please try again' })
 
 
@@ -116,11 +117,39 @@ def profile():
     user = User.query.filter_by( username = username ).first()
     if user: 
         user_info = user.get_user_profile()
+        ActivityLog.create_activity_log( user.id, 'profile', '/api/profile', 'User Profile Successful' )
         print( f'User Info: ', user_info )
         return jsonify({ 'message': f'User: { username } was successfully found!',  'user': user_info }), 200
     return jsonify({ 'message': 'User not found' }), 404
 
 
+@app.route( '/api/profile', methods = [ 'PATCH' ])
+@jwt_required()
+def update_profile():
+    """ Update User Profile """
+
+    current_user = get_jwt_identity()
+    username = current_user.get( 'username' )
+    user = User.query.filter_by( username = username ).first()
+    if user :
+        data = request.json
+        print( f'Responde Data: ', data )
+        try:
+            user.update_user_profile( 
+                username = data.get( 'username' ),
+                password = data.get( 'password' ),
+                confirm_password = data.get( 'confirmPassword' ),
+                email = data.get( 'email' ),
+                image_url = data.get( 'image_url' ),
+                upload_image = data.get( 'upload_image' )
+            )
+            db.session.commit()
+            return jsonify({ 'message': 'User was successfully updated!', 'user': user }), 200
+        except Exception as e: 
+            db.session.rollback()
+            return jsonify({ 'message': str(e)}), 500
+
+    return jsonify({ 'message': f'User: { username }, Not Found!' }), 404 
 
 
 
