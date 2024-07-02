@@ -33,7 +33,6 @@ function Profile() {
         const fetchProfile = async () => {
             try{
                 const response = await apiClient.get( '/profile' );
-                console.log( response )
                 const { username, email, image_url, upload_image } = response.data.user;
                 setProfile(( previousData ) => ({
                     ...previousData,
@@ -52,14 +51,19 @@ function Profile() {
     }, []);
 
     useEffect( () => {
-        console.log( 'Profile state updated' );
     }, [ profile ] );
 
     const handleEditChange = () => {
         setFormVisible( !formVisible );
-        console.log( formVisible );
     }
 
+    const updateProfileData = (updatedData) => {
+        setProfile((prevData) => ({
+            ...prevData,
+            ...updatedData
+        }));
+        setFormVisible(false);
+    }
 
     const truncateText = (text, maxLength) => {
         if (text.length <= maxLength) return text;
@@ -76,7 +80,7 @@ function Profile() {
             }}
         > 
         { formVisible ? (
-                <UserForm initialData = { profile } setFormVisible = { setFormVisible } />
+                <UserForm initialData = { profile } setFormVisible = { setFormVisible } updateProfileData = { updateProfileData } />
             ): (
                 <>
                 <Box 

@@ -61,7 +61,7 @@ def create():
         return jsonify({ 'errors': { 'confirmPassword': 'Passwords do not match!' }}), 400 
     try:
         new_user = User.create_user(username=username, email=email, password=password, image_url = image_url, upload_image = upload_image )
-        ActivityLog.create_activity_log( new_user.id, 'create', '/api/create', 'User Successfully Created' )
+        ActivityLog.create_activity_log( new_user.id, 'create', '/api/create', 'User Create POST Successful' )
         print( f'New User: { new_user }' )
         return jsonify({'message': f'User {new_user.username} Successfully Created!', 'data': {
             'id': new_user.id,
@@ -91,7 +91,7 @@ def login():
        if authenticated_user:
            new_session = SessionInfo.create_session_info( authenticated_user.id )
            session[ 'user_id' ] = str( authenticated_user.id )
-           ActivityLog.create_activity_log( authenticated_user.id, 'login', '/api/login', 'User Login Successful' )
+           ActivityLog.create_activity_log( authenticated_user.id, 'login', '/api/login', 'User Login POST Successful' )
            access_token = create_access_token( identity = { 'username': username })
            print( f'Access Token: { access_token }' )
            return jsonify({ 
@@ -100,10 +100,10 @@ def login():
                'access_token': access_token 
             }), 200
        else: 
-           ActivityLog.create_activity_log( user.id, 'login failed', '/api/login', 'User Login Failed' ) 
+           ActivityLog.create_activity_log( user.id, 'login failed', '/api/login', 'User Login POST Failed' ) 
            return jsonify({ 'message': 'Incorrect Login, Please try again' }), 401 
     else: 
-        ActivityLog.create_activity_log( None, 'login failed', '/users/login', f'Login attempt for username: { username } failed' )
+        ActivityLog.create_activity_log( None, 'login failed', '/users/login', 'User Login POST Failed' )
         return jsonify({ 'message': f'Profile with username: { username } was not found, please try again' })
 
 
@@ -117,7 +117,7 @@ def profile():
     user = User.query.filter_by( username = username ).first()
     if user: 
         user_info = user.get_user_profile()
-        ActivityLog.create_activity_log( user.id, 'profile', '/api/profile', 'User Profile Successful' )
+        ActivityLog.create_activity_log( user.id, 'profile', '/api/profile', 'User Profile GET Successful' )
         print( f'User Info: ', user_info )
         return jsonify({ 'message': f'User: { username } was successfully found!',  'user': user_info }), 200
     return jsonify({ 'message': 'User not found' }), 404
@@ -142,9 +142,11 @@ def update_profile():
                 image_url = data.get( 'image_url' ),
                 upload_image = data.get( 'upload_image' )
             )
+            ActivityLog.create_activity_log( user.id, 'profile', '/api/profile', 'User Profile PATCH Successful' )
             db.session.commit()
             return jsonify({ 'message': 'User was successfully updated!', 'user': user.get_user_profile() }), 200
         except Exception as e: 
+            ActivityLog.create_activity_log( user.id, 'profile', '/api/profile', 'User Profile PATCH Failed' )
             db.session.rollback()
             print( f'Error: { e }');
             return jsonify({ 'message': str(e)}), 500
@@ -152,7 +154,15 @@ def update_profile():
     return jsonify({ 'message': f'User: { username }, Not Found!' }), 404 
 
 
+# Search Routes 
+@app.route( '/api/search/<query>', methods = [ 'GET' ])
+def search( query ):
+    """ Search results based on Query """
 
+    # query = request.args[ 'query' ]
+    print( f'Query: ', query )
+
+    return jsonify({ 'message': 'You have successfully made a search!' })
 
 
 

@@ -8,6 +8,7 @@ import { Box, Button, FormControl, TextField, Typography, ThemeProvider, createT
 
 // Components & Necessary Files 
 import '../static/SearchBar.css';
+import apiClient from '../api/apiClient';
 
 
 // SearchBar Component 
@@ -68,10 +69,22 @@ function SearchBar() {
         setSearch( e.target.value );
     }
 
+    const handleSubmit = async ( e  ) => {
+      e.preventDefault();
+      try{
+        const response = await apiClient.get( `/search/${ search }` )
+        console.log( response );
+      }
+      catch( error ){
+        console.error( 'Error:', error );
+      }
+    }
+
     return (
         <ThemeProvider theme = { customTheme }>
         <div className='form-container'>
             <Box
+                onSubmit = { handleSubmit }
                 component='form'
                 sx={{
                     display: 'flex',
@@ -86,21 +99,21 @@ function SearchBar() {
                         placeholder = 'Something amazing loading...'
                         className='search-input'
                         InputLabelProps={{
-                            style: { color: '#00bcd4' },
+                          style: { color: '#00bcd4' },
                         }}
                         InputProps={{
-                            sx: {
-                                color: '#00bcd4',
-                                '& fieldset': {
-                                  border: '.2rem solid #00bcd4',
-                                },
-                                '&:hover fieldset': {
-                                  border: '.2rem solid #00bcd4',
-                                },
-                                '&.Mui-focused fieldset': {
-                                  border: '.2rem solid #00bcd4',
-                                },
+                          sx: {
+                            color: '#00bcd4',
+                            '& fieldset': {
+                              border: '.2rem solid #00bcd4',
                             },
+                            '&:hover fieldset': {
+                              border: '.2rem solid #00bcd4',
+                            },
+                            '&.Mui-focused fieldset': {
+                              border: '.2rem solid #00bcd4',
+                            },
+                          },
                         }}
                         value = { search }
                         onChange = { handleChange }
@@ -110,9 +123,10 @@ function SearchBar() {
                 <div>
 
                 <Button
+                    type = 'submit'
                     className = 'search-button'
                     variant = 'outlined'
-                >
+                    >
                 Search
                 </Button>
                 </div>

@@ -14,7 +14,7 @@ import { useAlert } from './ContextDirectory.js/AlertContext';
 
 
 // User Form Component 
-function UserForm({ initialData = {}, setFormVisible }) {
+function UserForm({ initialData = {}, setFormVisible, updateProfileData }) {
 
     const [errors, setErrors] = useState({});
     const [formData, setFormData] = useState(initialData || {
@@ -124,6 +124,9 @@ function UserForm({ initialData = {}, setFormVisible }) {
 
             const response = await apiClient.patch('/profile', formData);
             console.log(response);
+            if( response.status === 200 ){
+                updateProfileData( response.data.user );
+            }
             displayAlert(`User ${formData.username} Successfully Updated!`, 'success');
             setFormData(( previousData ) => ({
                 ...previousData,
