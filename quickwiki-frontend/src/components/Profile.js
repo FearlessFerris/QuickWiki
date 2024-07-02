@@ -55,14 +55,6 @@ function Profile() {
         console.log( 'Profile state updated' );
     }, [ profile ] );
 
-    // const handleChange = ( e ) => {
-    //     const { name, value } = e.target;
-    //     setProfile(( previousData ) => ({
-    //         ...previousData,
-    //         [ name ]: value
-    //     }));
-    // }
-
     const handleEditChange = () => {
         setFormVisible( !formVisible );
         console.log( formVisible );

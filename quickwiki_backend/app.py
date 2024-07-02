@@ -138,15 +138,15 @@ def update_profile():
             user.update_user_profile( 
                 username = data.get( 'username' ),
                 password = data.get( 'password' ),
-                confirm_password = data.get( 'confirmPassword' ),
                 email = data.get( 'email' ),
                 image_url = data.get( 'image_url' ),
                 upload_image = data.get( 'upload_image' )
             )
             db.session.commit()
-            return jsonify({ 'message': 'User was successfully updated!', 'user': user }), 200
+            return jsonify({ 'message': 'User was successfully updated!', 'user': user.get_user_profile() }), 200
         except Exception as e: 
             db.session.rollback()
+            print( f'Error: { e }');
             return jsonify({ 'message': str(e)}), 500
 
     return jsonify({ 'message': f'User: { username }, Not Found!' }), 404 

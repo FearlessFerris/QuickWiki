@@ -56,21 +56,21 @@ class User(Base):
         }
         return user_info
 
-    def update_user_profile( self, username, password, email, image_url, upload_image ):
+    def update_user_profile( self, username = None, password = None, email = None, image_url = None, upload_image = None ):
         """ Update Users Profile """
 
-        print( username, password, email, image_url, upload_image )
-        if username and password and email and image_url and upload_image:
+        if self.username:
             self.username = username
+        if password: 
+            self.password_hash = bcrypt.hashpw( password.encode( 'utf-8'), bcrypt.gensalt( 12 )).decode( 'utf-8')
+        if self.email:
             self.email = email
+        if self.image_url:
             self.image_url = image_url
+        if self.upload_image:
             self.upload_image = upload_image
         self.updated_at = func.now()
-        
-        try:    
-            db.session.commit()
-        except:
-                 
+
         
     @classmethod 
     def create_user(cls, username, email, password, image_url=None, upload_image=None):
