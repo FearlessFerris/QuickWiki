@@ -4,6 +4,7 @@
 // Dependencies 
 import React, { useCallback, useEffect, useState, usetEffect } from 'react';
 import { Box, Button, FormControl, TextField, Typography, ThemeProvider, createTheme } from '@mui/material';
+import { debounce } from 'lodash';
 
 
 // Components & Necessary Files 
@@ -66,13 +67,20 @@ function SearchBar({ results, setResults }) {
     const [ search, setSearch ] = useState( '' );
 
     const handleChange = ( e ) => {
-        setSearch( e.target.value );
+        const { value } = e.target;
+        setSearch( value );
+        if( value.trim() === '' ){
+          setResults([]);
+        }
     }
 
     const fetchResults = async ( query ) => {
+      if( query.trim() === '' ){
+        setResults([]);
+        return;
+      }
       try{
         const response = await apiClient.get( `/search/${ query }` );
-        console.log( response.data.data.pages );
         const pages = response.data.data.pages;
         setResults( pages );
       }
@@ -81,20 +89,31 @@ function SearchBar({ results, setResults }) {
       }
     }
 
-    const memoizedFetchResults = useCallback(( query ) => fetchResults( query ), [] );
-    
-    useEffect( () => {
-      if( search ){
-        memoizedFetchResults( search );
-      }
-    }, [ search, memoizedFetchResults ]);
+    const debouncedFetchResults = useCallback(
+      debounce((query) => {
+          if (query.trim() !== '') {
+              fetchResults(query);
+          }
+      }, 300),
+      []
+  );
 
-    const handleSubmit = async ( e ) => {
-      e.preventDefault();
-      if( search.trim() !== '' ){
-        memoizedFetchResults( search );
+  useEffect(() => {
+      if (search.trim() === '') {
+          setResults([]);
+      } else {
+          debouncedFetchResults(search);
       }
-    };
+  }, [search, debouncedFetchResults]);
+
+  const handleSubmit = async (e) => {
+      e.preventDefault();
+      if (search.trim() !== '') {
+          fetchResults(search);
+      } else {
+          setResults([]);
+      }
+  };
 
     return (
         <ThemeProvider theme = { customTheme }>

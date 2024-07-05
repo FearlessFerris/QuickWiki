@@ -32,7 +32,7 @@ function Home() {
                                 padding: '1rem', 
                                 boxShadow: '0 3px 5px rgba(0, 0, 0, 0.1)',
                                 width: '50rem',
-                                height: '8rem', // fixed height
+                                height: '8rem',
                                 flexGrow: 1,
                             }}
                         >
@@ -46,10 +46,10 @@ function Home() {
                                     WebkitBoxOrient: 'vertical'
                                 }}
                             >
-                                <Typography variant='h5' color='#00bcd4' noWrap>
+                                <Typography variant='h4' color='#00bcd4' noWrap>
                                     {item.title}
                                 </Typography>
-                                <Typography variant='body2' color='#6a1b9a' noWrap>
+                                <Typography variant='h6' color='#6a1b9a' noWrap>
                                     {item.description}
                                 </Typography>
                             </CardContent>
