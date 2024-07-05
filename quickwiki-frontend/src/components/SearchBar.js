@@ -94,7 +94,7 @@ function SearchBar({ results, setResults }) {
           if (query.trim() !== '') {
               fetchResults(query);
           }
-      }, 300),
+      }, 100),
       []
   );
 

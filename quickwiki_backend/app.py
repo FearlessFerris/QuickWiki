@@ -167,7 +167,7 @@ def search( query ):
     """ Search results based on Query """
     
     headers = get_headers()
-    params = { 'q': query, 'limit': '10' }
+    params = { 'q': query, 'limit': '100' }
     res = requests.get( search_pages_base, headers = headers, params = params )
     data = res.json()
 
