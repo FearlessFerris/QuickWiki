@@ -2,7 +2,7 @@
 
 
 // Dependencies 
-import React, { useState, usetEffect } from 'react';
+import React, { useCallback, useEffect, useState, usetEffect } from 'react';
 import { Box, Button, FormControl, TextField, Typography, ThemeProvider, createTheme } from '@mui/material';
 
 
@@ -61,7 +61,7 @@ const customTheme = createTheme({
   },
 });
   
-function SearchBar() {
+function SearchBar({ results, setResults }) {
 
     const [ search, setSearch ] = useState( '' );
 
@@ -69,26 +69,45 @@ function SearchBar() {
         setSearch( e.target.value );
     }
 
-    const handleSubmit = async ( e  ) => {
-      e.preventDefault();
+    const fetchResults = async ( query ) => {
       try{
-        const response = await apiClient.get( `/search/${ search }` )
-        console.log( response );
+        const response = await apiClient.get( `/search/${ query }` );
+        console.log( response.data.data.pages );
+        const pages = response.data.data.pages;
+        setResults( pages );
       }
       catch( error ){
-        console.error( 'Error:', error );
+        console.error( 'Error occured fetching results!' );
       }
     }
 
+    const memoizedFetchResults = useCallback(( query ) => fetchResults( query ), [] );
+    
+    useEffect( () => {
+      if( search ){
+        memoizedFetchResults( search );
+      }
+    }, [ search, memoizedFetchResults ]);
+
+    const handleSubmit = async ( e ) => {
+      e.preventDefault();
+      if( search.trim() !== '' ){
+        memoizedFetchResults( search );
+      }
+    };
+
     return (
         <ThemeProvider theme = { customTheme }>
-        <div className='form-container'>
+        <div 
+          className='form-container'
+        >
             <Box
                 onSubmit = { handleSubmit }
                 component='form'
                 sx={{
                     display: 'flex',
-                    alignItems: 'center'
+                    alignItems: 'center',
+                    marginBottom: '4rem'
                 }}
             >
                 <FormControl variant='outlined' fullWidth>

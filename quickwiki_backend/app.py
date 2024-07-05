@@ -6,6 +6,12 @@ from flask import Flask, request, jsonify, session
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 from models import db, create_tables, User, Search, SearchResult, Page, Bookmark, Authorization, SessionInfo, ActivityLog, SavedInfo 
+import requests
+
+
+# Necessary Files 
+from config import Config 
+from utils import get_headers
 
 
 # Create Flask Application Object 
@@ -27,7 +33,8 @@ with app.app_context():
     create_tables()
 
 
-
+# URLS
+search_pages_base = 'https://en.wikipedia.org/w/rest.php/v1/search/page'
 
 
 
@@ -158,11 +165,13 @@ def update_profile():
 @app.route( '/api/search/<query>', methods = [ 'GET' ])
 def search( query ):
     """ Search results based on Query """
+    
+    headers = get_headers()
+    params = { 'q': query, 'limit': '10' }
+    res = requests.get( search_pages_base, headers = headers, params = params )
+    data = res.json()
 
-    # query = request.args[ 'query' ]
-    print( f'Query: ', query )
-
-    return jsonify({ 'message': 'You have successfully made a search!' })
+    return jsonify({ 'message': 'You have successfully made a search!', 'data': data })
 
 
 
