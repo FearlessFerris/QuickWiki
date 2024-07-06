@@ -16,7 +16,7 @@ from utils import get_headers
 
 # Create Flask Application Object 
 app = Flask( __name__ )
-CORS( app )
+CORS( app, origins="http://localhost:3000" )
 jwt = JWTManager( app )
 
 
@@ -89,7 +89,7 @@ def create():
 def login(): 
     """ Login User Route """
 
-    data = request.get_json();
+    data = request.get_json()
     username = data.get( 'username' )
     password = data.get( 'password' )
     user = User.query.filter_by( username = username ).first()
@@ -138,7 +138,7 @@ def update_profile():
     current_user = get_jwt_identity()
     username = current_user.get( 'username' )
     user = User.query.filter_by( username = username ).first()
-    if user :
+    if user:
         data = request.json
         print( f'Responde Data: ', data )
         try:
@@ -155,7 +155,7 @@ def update_profile():
         except Exception as e: 
             ActivityLog.create_activity_log( user.id, 'profile', '/api/profile', 'User Profile PATCH Failed' )
             db.session.rollback()
-            print( f'Error: { e }');
+            print( f'Error: { e }')
             return jsonify({ 'message': str(e)}), 500
 
     return jsonify({ 'message': f'User: { username }, Not Found!' }), 404 
@@ -163,15 +163,36 @@ def update_profile():
 
 # Search Routes 
 @app.route( '/api/search/<query>', methods = [ 'GET' ])
+@jwt_required( optional = True )
 def search( query ):
     """ Search results based on Query """
     
-    headers = get_headers()
-    params = { 'q': query, 'limit': '100' }
-    res = requests.get( search_pages_base, headers = headers, params = params )
-    data = res.json()
+    
+    current_user = get_jwt_identity()
+    user_id = current_user.get( 'user_id' ) if current_user else None
+    
+    try:
+        headers = get_headers()
+        params = { 'q': query, 'limit': '100' }
+        res = requests.get( search_pages_base, headers = headers, params = params )
+        data = res.json()
 
-    return jsonify({ 'message': 'You have successfully made a search!', 'data': data })
+        if user_id:
+            user = User.query.get( user_id )
+            ActivityLog.create_activity_log( user.id, 'search', '/api/search', 'Search GET Successful' )
+            db.session.commit()
+        else:
+            ActivityLog.create_activity_log( None, 'search', '/api/search', 'Search GET Failed' )
+            db.session.commit()
+        return jsonify({ 'message': 'You have successfully made a search!', 'data': data }), 200
+    except Exception as e: 
+        if user_id: 
+            user = User.query.get( user_id )
+            ActivityLog.create_activity_log( user.id, 'search', '/api/search', 'Search GET Failed' )
+        else:
+            ActivityLog.create_activity_log( None, 'search', '/api/search', 'Search GET Failed' )
+        db.session.rollback()
+        return jsonify({ 'message': str( e )}), 500
 
 
 

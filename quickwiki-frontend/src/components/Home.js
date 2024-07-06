@@ -39,8 +39,7 @@ function Home() {
         const nextPage = page + 1;
         const startIndex = nextPage * itemsPerPage - itemsPerPage;
         const endIndex = startIndex + itemsPerPage;
-        const moreResults = results.slice(startIndex, endIndex);
-        
+        const moreResults = results.slice(startIndex, endIndex); 
         setDisplayedResults(prevResults => [...prevResults, ...moreResults]);
         setPage(nextPage);
     };

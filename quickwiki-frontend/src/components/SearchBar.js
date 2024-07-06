@@ -10,6 +10,7 @@ import { debounce } from 'lodash';
 // Components & Necessary Files 
 import '../static/SearchBar.css';
 import apiClient from '../api/apiClient';
+import { useLoggedIn } from './ContextDirectory.js/LoggedInContext';
 
 
 // SearchBar Component 
@@ -65,6 +66,8 @@ const customTheme = createTheme({
 function SearchBar({ results, setResults }) {
 
     const [ search, setSearch ] = useState( '' );
+    const { userId } = useLoggedIn();
+
 
     const handleChange = ( e ) => {
         const { value } = e.target;
@@ -74,13 +77,16 @@ function SearchBar({ results, setResults }) {
         }
     }
 
-    const fetchResults = async ( query ) => {
+    const fetchResults = async ( query, userId ) => {
       if( query.trim() === '' ){
         setResults([]);
         return;
       }
       try{
-        const response = await apiClient.get( `/search/${ query }` );
+        const headers = userId ? { 'user_id': userId } : {};
+        const response = await apiClient.get( `/search/${ query }`, {
+          headers: headers,
+        });
         const pages = response.data.data.pages;
         setResults( pages );
       }
@@ -92,10 +98,10 @@ function SearchBar({ results, setResults }) {
     const debouncedFetchResults = useCallback(
       debounce((query) => {
           if (query.trim() !== '') {
-              fetchResults(query);
+              fetchResults( query, userId );
           }
       }, 100),
-      []
+      [ userId ]
   );
 
   useEffect(() => {
@@ -109,7 +115,7 @@ function SearchBar({ results, setResults }) {
   const handleSubmit = async (e) => {
       e.preventDefault();
       if (search.trim() !== '') {
-          fetchResults(search);
+          fetchResults( search, userId );
       } else {
           setResults([]);
       }

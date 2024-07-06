@@ -56,8 +56,7 @@ function Login() {
             if( response.status === 200 ){
                 const { access_token, user_id, message } = response.data;
                 localStorage.setItem( 'access_token', access_token );
-                localStorage.setItem( 'user_id', user_id );
-                login();
+                login( user_id );
                 displayAlert( message, 'success' );
                 setFormData({ 
                     username: '', 

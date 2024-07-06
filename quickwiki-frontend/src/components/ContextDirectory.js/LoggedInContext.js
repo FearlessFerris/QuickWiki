@@ -28,18 +28,24 @@ export const useLoggedIn = () => useContext( LoggedInContext );
 export const LoggedInProvider = ({ children }) => {
 
     const [ isLoggedIn, setIsLoggedIn ] = useState( false );
+    const [ userId, setUserId ] = useState( null );
 
     useEffect( () => {
         const token = localStorage.getItem( 'access_token' );
-        if( token ){
+        const storedUserId = localStorage.getItem( 'user_id' );
+
+        if( token && storedUserId ){
             console.log( 'We found the token!!!' );
             setIsLoggedIn( true );
+            setUserId( storedUserId );
         }
     }, []);
 
-    const login = () => {
+    const login = ( id ) => {
         console.log( 'Logging in!' );
         setIsLoggedIn( true );
+        setUserId( id );
+        localStorage.getItem( 'user_id', id );
     }
 
     const logout = () => {
@@ -47,10 +53,11 @@ export const LoggedInProvider = ({ children }) => {
         localStorage.removeItem( 'access_token' );
         localStorage.removeItem( 'user_id' );
         setIsLoggedIn( false );
+        setUserId( null );
     }
 
     return(
-        <LoggedInContext.Provider value = {{ isLoggedIn, login, logout }}>
+        <LoggedInContext.Provider value = {{ isLoggedIn, userId, login, logout }}>
             { children }
         </LoggedInContext.Provider>
     )

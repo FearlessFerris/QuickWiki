@@ -10,6 +10,8 @@ import bcrypt
 import secrets
 
 # Necessary Files 
+from utils import create_system_user
+
 
 # Other Settings 
 db = SQLAlchemy()
@@ -256,6 +258,8 @@ class ActivityLog(Base):
     def create_activity_log( cls, user_id, action, endpoint, description ):
         """ Create a user ActivityLog Instance """
 
+        if user_id is None: 
+            user_id = get_system_user_id()
         new_activity_log = cls( user_id = user_id, action = action, endpoint = endpoint, description = description )
         print( new_activity_log )
         db.session.add( new_activity_log )
