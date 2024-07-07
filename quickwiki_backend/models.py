@@ -73,7 +73,6 @@ class User(Base):
             self.upload_image = upload_image
         self.updated_at = func.now()
 
-        
     @classmethod 
     def create_user(cls, username, email, password, image_url=None, upload_image=None):
         """ Create New User """
@@ -259,7 +258,8 @@ class ActivityLog(Base):
         """ Create a user ActivityLog Instance """
 
         if user_id is None: 
-            user_id = get_system_user_id()
+            user_id = create_system_user()
+            print( f'User ID: { user_id }' )
         new_activity_log = cls( user_id = user_id, action = action, endpoint = endpoint, description = description )
         print( new_activity_log )
         db.session.add( new_activity_log )

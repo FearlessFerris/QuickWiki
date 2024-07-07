@@ -107,10 +107,10 @@ def login():
                'access_token': access_token 
             }), 200
        else: 
-           ActivityLog.create_activity_log( user.id, 'login failed', '/api/login', 'User Login POST Failed' ) 
+           ActivityLog.create_activity_log( user.id, 'login', '/api/login', 'User Login POST Failed' ) 
            return jsonify({ 'message': 'Incorrect Login, Please try again' }), 401 
     else: 
-        ActivityLog.create_activity_log( None, 'login failed', '/users/login', 'User Login POST Failed' )
+        ActivityLog.create_activity_log( None, 'login', '/users/login', 'User Login POST Failed' )
         return jsonify({ 'message': f'Profile with username: { username } was not found, please try again' })
 
 
@@ -167,22 +167,23 @@ def update_profile():
 def search( query ):
     """ Search results based on Query """
     
-    
     current_user = get_jwt_identity()
+    print( f'Current User: ', current_user )
     user_id = current_user.get( 'user_id' ) if current_user else None
-    
+    print( f'User ID: ', user_id )
+
     try:
         headers = get_headers()
         params = { 'q': query, 'limit': '100' }
         res = requests.get( search_pages_base, headers = headers, params = params )
         data = res.json()
-
         if user_id:
             user = User.query.get( user_id )
+            print( f'I am inside of if_user_id: { user_id }' )
             ActivityLog.create_activity_log( user.id, 'search', '/api/search', 'Search GET Successful' )
             db.session.commit()
         else:
-            ActivityLog.create_activity_log( None, 'search', '/api/search', 'Search GET Failed' )
+            ActivityLog.create_activity_log( None, 'search', '/api/search', 'Search GET Successful' )
             db.session.commit()
         return jsonify({ 'message': 'You have successfully made a search!', 'data': data }), 200
     except Exception as e: 
