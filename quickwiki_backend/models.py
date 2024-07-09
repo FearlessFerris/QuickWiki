@@ -111,6 +111,9 @@ class Search(Base):
         self.search_query = search_query
         self.created_at = created_at 
 
+    # @classmethod
+    # def create_search( cls, )
+
 
 class SearchResult(Base):
     """ Search Results Model """
