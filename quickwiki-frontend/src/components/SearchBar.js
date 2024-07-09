@@ -84,7 +84,6 @@ function SearchBar({ results, setResults }) {
       }
       try{
         const headers = userId ? { 'user_id': userId } : {};
-        console.log( `Headers: ${ headers }` );
         const response = await apiClient.get( `/search/${ query }`, {
           headers: headers,
         });

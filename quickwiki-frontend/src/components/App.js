@@ -37,7 +37,7 @@ function App() {
           <Route exact path = '/user/create' element = { <CreateUserForm /> } />
           <Route exact path = '/user/profile' element = { <PrivateRoute component = { Profile } /> } />  
           <Route exact path = '/user/login' element = { <Login /> } /> 
-          <Route exact path = '/search/page' element = { <Page /> } /> 
+          <Route exact path = '/search/page/:query' element = { <Page /> } /> 
         </Routes>
       </Router>
       <AlertComponent /> 

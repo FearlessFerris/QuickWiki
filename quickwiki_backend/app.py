@@ -201,8 +201,8 @@ def search( query ):
 def search_page( query ):
     """ Search specific page based on Query """
 
-    query = request.get( 'query' )
-    print( query )
+    params = { 'q': query }
+    print( f'Params: ', query )
 
     return jsonify({ 'message': 'You have successfully made a request to /search/page, YAY' })
 

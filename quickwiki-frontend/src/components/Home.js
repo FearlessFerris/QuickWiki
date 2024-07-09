@@ -1,10 +1,16 @@
+// Home Component Implementation 
+
+
 // Dependencies 
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Box, Card, CardContent, CardMedia, Typography } from '@mui/material';
+
 
 // Components & Necessary Files 
 import SearchBar from './SearchBar';
 import '../static/Home.css';
+
 
 // Home Component 
 function Home() {
@@ -50,13 +56,13 @@ function Home() {
                 <SearchBar results={results} setResults={setResults} />
                 <div className='results-container'>
                     {displayedResults.map((item, index) => (
-                        <a 
-                            href = { `/search/page/${ item.title }` } 
-                            style = {{
-                                textDecoration: 'none'
-                            }}
-                        >
-
+                    <Link 
+                        to = { `/search/page/${ item.title }` } 
+                        key = { item.index }
+                        style = {{
+                            textDecoration: 'none'
+                        }}
+                    >
                         <Card
                             key={index} 
                             sx={{ 
@@ -117,7 +123,7 @@ function Home() {
                                 />
                             )}
                         </Card>
-                    </a>
+                    </Link>
                     ))}
                 </div>
             </div>
