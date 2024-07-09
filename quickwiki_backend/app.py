@@ -35,6 +35,7 @@ with app.app_context():
 
 # URLS
 search_pages_base = 'https://en.wikipedia.org/w/rest.php/v1/search/page'
+get_page_base = 'https://en.wikipedia.org/w/rest.php/v1/page'
 
 
 
@@ -194,6 +195,16 @@ def search( query ):
             ActivityLog.create_activity_log( None, 'search', '/api/search', 'Search GET Failed' )
         db.session.rollback()
         return jsonify({ 'message': str( e )}), 500
+
+
+@app.route( '/api/search/page/<query>', methods = [ 'GET' ])
+def search_page( query ):
+    """ Search specific page based on Query """
+
+    query = request.get( 'query' )
+    print( query )
+
+    return jsonify({ 'message': 'You have successfully made a request to /search/page, YAY' })
 
 
 

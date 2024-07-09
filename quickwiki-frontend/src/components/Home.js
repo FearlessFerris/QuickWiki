@@ -51,7 +51,7 @@ function Home() {
                 <div className='results-container'>
                     {displayedResults.map((item, index) => (
                         <a 
-                            href = { `/search/${ item.title }` } 
+                            href = { `/search/page/${ item.title }` } 
                             style = {{
                                 textDecoration: 'none'
                             }}

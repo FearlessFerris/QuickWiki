@@ -13,6 +13,7 @@ import CreateUserForm from './CreateUser';
 import Home from './Home';
 import Login from './Login';
 import Navbar from './Navbar';
+import Page from './Page';
 import PrivateRoute from './PrivateRoute';
 import Profile from './Profile';
 import '../static/App.css';
@@ -36,6 +37,7 @@ function App() {
           <Route exact path = '/user/create' element = { <CreateUserForm /> } />
           <Route exact path = '/user/profile' element = { <PrivateRoute component = { Profile } /> } />  
           <Route exact path = '/user/login' element = { <Login /> } /> 
+          <Route exact path = '/search/page' element = { <Page /> } /> 
         </Routes>
       </Router>
       <AlertComponent /> 
