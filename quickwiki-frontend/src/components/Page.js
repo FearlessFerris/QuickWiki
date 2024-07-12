@@ -4,7 +4,7 @@
 // Dependencies 
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { Alert, Box, Card, CardContent, CardMedia, Typography, } from '@mui/material';
+import { Alert, Box, Button, Card, CardContent, CardMedia, Typography, } from '@mui/material';
 import { parse } from 'node-html-parser';
 
 // Components & Necessary Files 
@@ -48,38 +48,78 @@ function Page(){
                 anchor.setAttribute('href', href);
             }
         });
+
+        // Remove <base> tag if it exists
+        const baseTag = root.querySelector('base');
+        if (baseTag) {
+            baseTag.setAttribute( 'href', 'localhost:3000/' );
+        }
+
         return root.toString();
     };
-    
-    
 
-    return(
+    return (
         <div
-            className = 'page-container'
-            style = {{
+            className='page-container'
+            style={{
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center'
             }}
         >
-        { pageData ? (
-            <Card 
-            sx = {{
-                backgroundColor: '#212121',
-                margin: '2rem',
-                padding: '2rem'
-            }}
-            >
-                <CardContent>
-                    <Typography
-                        variant = 'h2'
-                        sx = {{
-                            color: '#00bcd4'
+            {loading ? (
+                <Typography variant='h2'>Loading...</Typography>
+            ) : (
+                pageData && (
+                    <Card 
+                        sx={{
+                            backgroundColor: '#212121',
+                            margin: '4rem',
+                            padding: '2rem',
+                            width: '100%', 
+                            position: 'relative'
                         }}
                     >
-                        { pageData.title }
-                    </Typography>
-                    <Box
+                        <CardContent>
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    marginBottom: '2rem',
+                                }}
+                            >
+                                {/* <Box sx={{ flex: 1, textAlign: 'center' }}> */}
+                                    <Typography
+                                        variant='h2'
+                                        sx={{
+                                            textAlign: 'center',
+                                            color: '#00bcd4',
+                                        }}
+                                    >
+                                        {pageData.title}
+                                    </Typography>
+                                {/* </Box> */}
+                                <Button
+                                    variant='outlined'
+                                    sx={{
+                                        backgroundColor: '#212121',
+                                        border: '.2rem solid #212121',
+                                        color: '#00bcd4',
+                                        fontSize: 'large',
+                                        width: '15rem',
+                                        marginLeft: 'auto',
+                                        '&:hover': {
+                                            border: '.2rem solid #00bcd4',
+                                            color: '#00bcd4',
+                                            fontSize: 'large'
+                                        },
+                                    }}
+                                >
+                                    Add to Bookmarks
+                                </Button>
+                            </Box>
+                            <Box
                                 className='page-content'
                                 sx={{
                                     color: '#bdbdbd',
@@ -99,17 +139,13 @@ function Page(){
                                 }}
                                 dangerouslySetInnerHTML={{ __html: transformHtmlLinks(htmlData) }}
                             />
-                </CardContent>
-            </Card>
-        ):(
-            <Typography
-                variant = 'h2'
-            >
-                Loading...
-            </Typography>
-        )}
+                        </CardContent>
+                    </Card>
+                )
+            )}
         </div>
-    )
+    );
 }
+
 
 export default Page;

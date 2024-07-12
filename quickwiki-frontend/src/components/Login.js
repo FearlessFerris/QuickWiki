@@ -52,7 +52,6 @@ function Login() {
         }
         try{
             const response = await apiClient.post( '/login', formData )
-            console.log( response.data );
             if( response.status === 200 ){
                 const { access_token, user_id, message } = response.data;
                 localStorage.setItem( 'access_token', access_token );

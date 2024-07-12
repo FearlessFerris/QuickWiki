@@ -6,6 +6,7 @@ from flask import Flask, request, jsonify, session
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 from models import db, create_tables, User, Search, SearchResult, Page, Bookmark, Authorization, SessionInfo, ActivityLog, SavedInfo 
+from bs4 import BeautifulSoup
 import requests
 
 
@@ -210,7 +211,14 @@ def search_page( title ):
         html_data = html_res.text
         print( f'JSON Data: ', json_data )
         print( f'HTML Data: ', html_data )
-        return jsonify({ 'message': 'You have successfully made a request to /search/page, YAY', 'data': json_data, 'html': html_data }), 200
+
+        soup = BeautifulSoup(html_data, 'html.parser')
+        base_tag = soup.find('base')
+        if base_tag:
+            base_tag.decompose()
+        cleaned_html = str(soup)
+
+        return jsonify({ 'message': 'You have successfully made a request to /search/page, YAY', 'data': json_data, 'html': cleaned_html }), 200
     except Exception as e:
         return jsonify({ 'message': str( e )}), 500 
         
