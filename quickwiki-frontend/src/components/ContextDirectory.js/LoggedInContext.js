@@ -45,6 +45,7 @@ export const LoggedInProvider = ({ children }) => {
         console.log( 'Logging in!' );
         setIsLoggedIn( true );
         setUserId( id );
+        localStorage.setItem( 'user_id', id );
         localStorage.getItem( 'user_id', id );
     }
 

@@ -216,6 +216,14 @@ def search_page( title ):
         base_tag = soup.find('base')
         if base_tag:
             base_tag.decompose()
+        
+        for anchor in soup.find_all('a', href=True):
+            href = anchor['href']
+            if href.startswith('/wiki/'):
+                anchor['href'] = f'/search/page/{href[6:]}'
+            elif href.startswith('//en.wikipedia.org/wiki/'):
+                anchor['href'] = f'/search/page/{href.split("/")[-1]}'
+
         cleaned_html = str(soup)
 
         return jsonify({ 'message': 'You have successfully made a request to /search/page, YAY', 'data': json_data, 'html': cleaned_html }), 200

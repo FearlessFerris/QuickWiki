@@ -3,7 +3,7 @@
 
 // Dependencies 
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link as RouterLink } from 'react-router-dom';
 import { Alert, Box, Button, Card, CardContent, CardMedia, Typography, } from '@mui/material';
 import { parse } from 'node-html-parser';
 
@@ -20,43 +20,37 @@ function Page(){
     const [ loading, setLoading ] = useState( false );
 
     
-    useEffect( () => {
+    useEffect(() => {
         const fetchPageData = async () => {
             try {
-                const response = await apiClient.get( `/search/page/${ title }` );
-                setPageData( response.data.data );
-                setHtmlData( response.data.html );
-            }
-            catch ( error ){
-                console.error( `Error fetching page data: `, error );
+                const response = await apiClient.get(`/search/page/${title}`);
+                console.log('Page data fetched:', response.data);
+                setPageData(response.data.data);
+                setHtmlData(response.data.html);
+            } catch (error) {
+                console.error(`Error fetching page data: `, error);
             }
         };
 
         fetchPageData();
-    }, [ title ]);
+    }, [title]);
 
     const transformHtmlLinks = (html) => {
         const root = parse(html);
         root.querySelectorAll('a').forEach((anchor) => {
             let href = anchor.getAttribute('href');
-            if (href) {
-                if (href.startsWith('/wiki/')) {
-                    href = `/search/page/${href.substring(6)}`;
-                } else if (href.startsWith('//en.wikipedia.org/wiki/')) {
-                    href = href.replace('//en.wikipedia.org/wiki/', '/search/page/');
-                }
+            if (href && href.startsWith('/search/page/')) {
                 anchor.setAttribute('href', href);
+                anchor.setAttribute('target', '_self');
+            } else if (href && href.startsWith('http')) {
+                anchor.setAttribute('target', '_blank');
+                anchor.setAttribute('rel', 'noopener noreferrer');
             }
         });
 
-        // Remove <base> tag if it exists
-        const baseTag = root.querySelector('base');
-        if (baseTag) {
-            baseTag.setAttribute( 'href', 'localhost:3000/' );
-        }
-
         return root.toString();
     };
+
 
     return (
         <div
