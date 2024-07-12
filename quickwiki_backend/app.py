@@ -45,8 +45,7 @@ def homepage():
     
     print( 'hello' )
     return ''' Welcome to QuickWiki '''
-
-
+    
 # User Routes
 @app.route( '/api/create', methods = [ 'POST' ])
 def create():
@@ -197,14 +196,26 @@ def search( query ):
         return jsonify({ 'message': str( e )}), 500
 
 
-@app.route( '/api/search/page/<query>', methods = [ 'GET' ])
-def search_page( query ):
+@app.route( '/api/search/page/<title>', methods = [ 'GET' ])
+def search_page( title ):
     """ Search specific page based on Query """
 
-    params = { 'q': query }
-    print( f'Params: ', query )
+    headers = get_headers()
+    json_url = f'{ get_page_base }/{ title }/bare'
+    html_url = f'{ get_page_base }/{ title }/html'
+    try:
+        json_res = requests.get( json_url, headers = headers )
+        html_res = requests.get( html_url, headers = headers )
+        json_data = json_res.json()
+        html_data = html_res.text
+        print( f'JSON Data: ', json_data )
+        print( f'HTML Data: ', html_data )
+        return jsonify({ 'message': 'You have successfully made a request to /search/page, YAY', 'data': json_data, 'html': html_data }), 200
+    except Exception as e:
+        return jsonify({ 'message': str( e )}), 500 
+        
+    
 
-    return jsonify({ 'message': 'You have successfully made a request to /search/page, YAY' })
 
 
 

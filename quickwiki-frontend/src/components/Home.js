@@ -58,7 +58,7 @@ function Home() {
                     {displayedResults.map((item, index) => (
                     <Link 
                         to = { `/search/page/${ item.title }` } 
-                        key = { item.index }
+                        key = { index }
                         style = {{
                             textDecoration: 'none'
                         }}
@@ -66,7 +66,6 @@ function Home() {
                         <Card
                             key={index} 
                             sx={{ 
-                                border: '.1rem solid #00bcd4',
                                 borderRadius: '1rem',
                                 backgroundColor: '#212121',
                                 display: 'flex',

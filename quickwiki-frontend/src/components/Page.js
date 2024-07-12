@@ -5,7 +5,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Alert, Box, Card, CardContent, CardMedia, Typography, } from '@mui/material';
-
+import { parse } from 'node-html-parser';
 
 // Components & Necessary Files 
 import apiClient from '../api/apiClient';
@@ -14,14 +14,18 @@ import apiClient from '../api/apiClient';
 // Page Component 
 function Page(){
 
-    const { query } = useParams();
+    const { title } = useParams();
     const [ pageData, setPageData ] = useState( null );
+    const [ htmlData, setHtmlData ] = useState( '' ); 
+    const [ loading, setLoading ] = useState( false );
+
     
     useEffect( () => {
         const fetchPageData = async () => {
             try {
-                const response = await apiClient.get( `/search/page/${ query }` );
-                console.log( response.data );
+                const response = await apiClient.get( `/search/page/${ title }` );
+                setPageData( response.data.data );
+                setHtmlData( response.data.html );
             }
             catch ( error ){
                 console.error( `Error fetching page data: `, error );
@@ -29,11 +33,81 @@ function Page(){
         };
 
         fetchPageData();
-    }, [ query ]);
+    }, [ title ]);
+
+    const transformHtmlLinks = (html) => {
+        const root = parse(html);
+        root.querySelectorAll('a').forEach((anchor) => {
+            let href = anchor.getAttribute('href');
+            if (href) {
+                if (href.startsWith('/wiki/')) {
+                    href = `/search/page/${href.substring(6)}`;
+                } else if (href.startsWith('//en.wikipedia.org/wiki/')) {
+                    href = href.replace('//en.wikipedia.org/wiki/', '/search/page/');
+                }
+                anchor.setAttribute('href', href);
+            }
+        });
+        return root.toString();
+    };
     
+    
+
     return(
-        <div>
-            <h1> I am the page component!!! </h1>
+        <div
+            className = 'page-container'
+            style = {{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center'
+            }}
+        >
+        { pageData ? (
+            <Card 
+            sx = {{
+                backgroundColor: '#212121',
+                margin: '2rem',
+                padding: '2rem'
+            }}
+            >
+                <CardContent>
+                    <Typography
+                        variant = 'h2'
+                        sx = {{
+                            color: '#00bcd4'
+                        }}
+                    >
+                        { pageData.title }
+                    </Typography>
+                    <Box
+                                className='page-content'
+                                sx={{
+                                    color: '#bdbdbd',
+                                    lineHeight: '1.6',
+                                    '& p': {
+                                        margin: '1rem 0',
+                                    },
+                                    '& img': {
+                                        maxWidth: '100%',
+                                        borderRadius: '0.5rem',
+                                        margin: '1rem 0',
+                                    },
+                                    '& a': {
+                                        color: '#00bcd4',
+                                        textDecoration: 'none',
+                                    },
+                                }}
+                                dangerouslySetInnerHTML={{ __html: transformHtmlLinks(htmlData) }}
+                            />
+                </CardContent>
+            </Card>
+        ):(
+            <Typography
+                variant = 'h2'
+            >
+                Loading...
+            </Typography>
+        )}
         </div>
     )
 }
