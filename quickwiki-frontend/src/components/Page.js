@@ -5,7 +5,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link as RouterLink } from 'react-router-dom';
 import { Alert, Box, Button, Card, CardContent, CardMedia, Typography, } from '@mui/material';
+import BookmarkIcon from '@mui/icons-material/Bookmark';
 import { parse } from 'node-html-parser';
+
 
 // Components & Necessary Files 
 import apiClient from '../api/apiClient';
@@ -24,7 +26,6 @@ function Page(){
         const fetchPageData = async () => {
             try {
                 const response = await apiClient.get(`/search/page/${title}`);
-                console.log('Page data fetched:', response.data);
                 setPageData(response.data.data);
                 setHtmlData(response.data.html);
             } catch (error) {
@@ -68,7 +69,7 @@ function Page(){
                     <Card 
                         sx={{
                             backgroundColor: '#212121',
-                            margin: '4rem',
+                            margin: '12rem',
                             padding: '2rem',
                             width: '100%', 
                             position: 'relative'
@@ -83,9 +84,8 @@ function Page(){
                                     marginBottom: '2rem',
                                 }}
                             >
-                                {/* <Box sx={{ flex: 1, textAlign: 'center' }}> */}
                                     <Typography
-                                        variant='h2'
+                                        variant='h1'
                                         sx={{
                                             textAlign: 'center',
                                             color: '#00bcd4',
@@ -93,7 +93,6 @@ function Page(){
                                     >
                                         {pageData.title}
                                     </Typography>
-                                {/* </Box> */}
                                 <Button
                                     variant='outlined'
                                     sx={{
@@ -110,7 +109,12 @@ function Page(){
                                         },
                                     }}
                                 >
-                                    Add to Bookmarks
+                                <BookmarkIcon
+                                    fontSize = 'large'
+                                    sx = {{
+                                        marginBottom: '.4rem'
+                                    }}
+                                ></BookmarkIcon> Bookmark
                                 </Button>
                             </Box>
                             <Box

@@ -100,7 +100,7 @@ def login():
            new_session = SessionInfo.create_session_info( authenticated_user.id )
            session[ 'user_id' ] = str( authenticated_user.id )
            ActivityLog.create_activity_log( authenticated_user.id, 'login', '/api/login', 'User Login POST Successful' )
-           access_token = create_access_token( identity = { 'username': username })
+           access_token = create_access_token( identity = { 'username': username, 'user_id': user.id })
            print( f'Access Token: { access_token }' )
            return jsonify({ 
                'message': f'Welcome back { username }, hope you are well today!', 
@@ -163,57 +163,70 @@ def update_profile():
 
 
 # Search Routes 
-@app.route( '/api/search/<query>', methods = [ 'GET' ])
-@jwt_required( optional = True )
-def search( query ):
+@app.route('/api/search/<query>', methods=['GET'])
+@jwt_required(optional=True)
+def search(query):
     """ Search results based on Query """
-    
     current_user = get_jwt_identity()
-    print( f'Current User: ', current_user )
-    user_id = current_user.get( 'user_id' ) if current_user else None
-    print( f'User ID: ', user_id )
+    user_id = None
+
+    if current_user:
+        user_id = current_user.get('user_id')
+
+    print( f'UserID: { user_id }')
+    print( f'Query: { query }' )
+    try:
+        headers = get_headers()
+        params = {'q': query, 'limit': '100'}
+        res = requests.get(search_pages_base, headers=headers, params=params)
+        data = res.json()
+
+        if user_id:
+            Search.create_search( user_id, query )
+            ActivityLog.create_activity_log(user_id, 'search', f'/api/search/{query}', 'Search GET Successful')
+        else:
+            Search.create_search( user_id, query )
+            ActivityLog.create_activity_log(None, 'search', f'/api/search/{query}', 'Search GET Successful')
+
+        db.session.commit()
+        return jsonify({'message': 'You have successfully made a search!', 'data': data}), 200
+
+    except Exception as e:
+        if user_id:
+            Search.create_search( user_id, query )
+            ActivityLog.create_activity_log(user_id, 'search', f'/api/search/{query}', 'Search GET Failed')
+        else:
+            Search.create_search( user_id, query )
+            ActivityLog.create_activity_log(None, 'search', f'/api/search/{query}', 'Search GET Failed')
+
+        db.session.rollback()
+        return jsonify({'message': str(e)}), 500
+
+
+@app.route('/api/search/page/<title>', methods=['GET'])
+@jwt_required(optional=True)
+def search_page(title):
+    """ Search specific page based on Query """
+    current_user = get_jwt_identity()
+    user_id = None
+
+    if current_user:
+        user_id = current_user.get('user_id')
 
     try:
         headers = get_headers()
-        params = { 'q': query, 'limit': '100' }
-        res = requests.get( search_pages_base, headers = headers, params = params )
-        data = res.json()
-        if user_id:
-            user = User.query.get( user_id )
-            print( f'I am inside of if_user_id: { user_id }' )
-            ActivityLog.create_activity_log( user.id, 'search', '/api/search', 'Search GET Successful' )
-            db.session.commit()
-        else:
-            ActivityLog.create_activity_log( None, 'search', '/api/search', 'Search GET Successful' )
-            db.session.commit()
-        return jsonify({ 'message': 'You have successfully made a search!', 'data': data }), 200
-    except Exception as e: 
-        if user_id: 
-            user = User.query.get( user_id )
-            ActivityLog.create_activity_log( user.id, 'search', '/api/search', 'Search GET Failed' )
-        else:
-            ActivityLog.create_activity_log( None, 'search', '/api/search', 'Search GET Failed' )
-        db.session.rollback()
-        return jsonify({ 'message': str( e )}), 500
+        json_url = f'{get_page_base}/{title}/bare'
+        html_url = f'{get_page_base}/{title}/html'
 
+        json_res = requests.get(json_url, headers=headers)
+        html_res = requests.get(html_url, headers=headers)
 
-@app.route( '/api/search/page/<title>', methods = [ 'GET' ])
-def search_page( title ):
-    """ Search specific page based on Query """
-
-    headers = get_headers()
-    json_url = f'{ get_page_base }/{ title }/bare'
-    html_url = f'{ get_page_base }/{ title }/html'
-    try:
-        json_res = requests.get( json_url, headers = headers )
-        html_res = requests.get( html_url, headers = headers )
         json_data = json_res.json()
+        print( f'JSON Page Data: ', json_data )
         html_data = html_res.text
-        print( f'JSON Data: ', json_data )
-        print( f'HTML Data: ', html_data )
 
-        soup = BeautifulSoup(html_data, 'html.parser')
-        base_tag = soup.find('base')
+        soup = BeautifulSoup( html_data, 'html.parser' )
+        base_tag = soup.find( 'base' )
         if base_tag:
             base_tag.decompose()
         
@@ -224,11 +237,45 @@ def search_page( title ):
             elif href.startswith('//en.wikipedia.org/wiki/'):
                 anchor['href'] = f'/search/page/{href.split("/")[-1]}'
 
+        for tag in soup.find_all(['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p']):
+            if tag.name == 'h1':
+                tag['style'] = 'font-size: 34px;'
+            elif tag.name == 'h2':
+                tag['style'] = 'font-size: 32px;'
+            elif tag.name == 'h3':
+                tag['style'] = 'font-size: 30px;'
+            elif tag.name == 'h4':
+                tag['style'] = 'font-size: 28px;'
+            elif tag.name == 'h5':
+                tag['style'] = 'font-size: 26px;'
+            elif tag.name == 'h6':
+                tag['style'] = 'font-size: 25px;'
+            elif tag.name == 'p':
+                tag['style'] = 'font-size: 20px;'
+
         cleaned_html = str(soup)
 
-        return jsonify({ 'message': 'You have successfully made a request to /search/page, YAY', 'data': json_data, 'html': cleaned_html }), 200
+        if user_id:
+            ActivityLog.create_activity_log(user_id, 'search', f'/api/search/page/{title}', 'Search Page Successful')
+        else:
+            ActivityLog.create_activity_log(None, 'search', f'/api/search/page/{title}', 'Search Page Successful')
+
+        db.session.commit()
+        return jsonify({'message': 'You have successfully made a request to /search/page, YAY', 'data': json_data, 'html': cleaned_html}), 200
+
     except Exception as e:
-        return jsonify({ 'message': str( e )}), 500 
+        if user_id:
+            ActivityLog.create_activity_log(user_id, 'search', f'/api/search/page/{title}', 'Search Page Failed')
+        else:
+            ActivityLog.create_activity_log(None, 'search', f'/api/search/page/{title}', 'Search Page Failed')
+
+        db.session.rollback()
+        return jsonify({'message': str(e)}), 500
+    
+
+
+    
+
         
     
 

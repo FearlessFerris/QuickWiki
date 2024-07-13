@@ -87,7 +87,7 @@ class User(Base):
     def authenticate( cls, username, password ):
         """ Authenticate User """
 
-        user = User.query.filter_by( username = username ).first();
+        user = User.query.filter_by( username = username ).first()
         if user and bcrypt.checkpw( password.encode( 'utf-8' ), user.password_hash.encode( 'utf-8' )):
             return user
         return None
@@ -106,13 +106,21 @@ class Search(Base):
     user = relationship('User', back_populates='searches')
     results = relationship('SearchResult', back_populates='search')
 
-    def __init__(self, user_id, search_query, created_at):
+    def __init__(self, user_id, search_query ):
         self.user_id = user_id
         self.search_query = search_query
-        self.created_at = created_at 
 
-    # @classmethod
-    # def create_search( cls, )
+    @classmethod
+    def create_search( cls, user_id, search_query ):
+        """ Create Search Instance """
+
+        if user_id is None: 
+            user_id = create_system_user()
+        new_search = cls( user_id = user_id, search_query = search_query )
+        db.session.add( new_search )
+        db.session.commit()
+        return new_search
+
 
 
 class SearchResult(Base):
@@ -173,6 +181,7 @@ class Page(Base):
         self.html_url = html_url
         self.created_at = created_at
 
+   
 
 
 class SavedInfo(Base):
@@ -262,7 +271,6 @@ class ActivityLog(Base):
 
         if user_id is None: 
             user_id = create_system_user()
-            print( f'User ID: { user_id }' )
         new_activity_log = cls( user_id = user_id, action = action, endpoint = endpoint, description = description )
         print( new_activity_log )
         db.session.add( new_activity_log )
