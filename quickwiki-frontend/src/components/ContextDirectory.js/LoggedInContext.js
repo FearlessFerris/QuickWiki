@@ -39,7 +39,7 @@ export const LoggedInProvider = ({ children }) => {
             setIsLoggedIn( true );
             setUserId( storedUserId );
         }
-    }, []);
+    }, [] );
 
     const login = ( id ) => {
         console.log( 'Logging in!' );

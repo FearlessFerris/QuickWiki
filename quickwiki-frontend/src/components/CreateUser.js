@@ -32,6 +32,14 @@ function CreateUserForm() {
     const [passwordValid, setPasswordValid] = useState(false);
     const [confirmPasswordValid, setConfirmPasswordValid] = useState(false);
     const [emailValid, setEmailValid] = useState(false)
+    const [ touchedFields, setTouchedFields ] = useState({
+        username: false,
+        password: false,
+        confirmPassword: false,
+        email: false,
+        image_url: false,
+        upload_image: false
+    });
     const { displayAlert } = useAlert();
     const navigate = useNavigate();
 
@@ -39,6 +47,18 @@ function CreateUserForm() {
         setFormData((previousData) => ({
             ...previousData,
             uploadImage: e.target.files[0],
+        }));
+    };
+
+    const handleBlur = (e) => {
+        const { name } = e.target;
+        setTouchedFields(prev => ({
+            ...prev,
+            [name]: true,
+        }));
+        setErrors(prevErrors => ({
+            ...prevErrors,
+            [name]: formData[name] ? '' : `${name.charAt(0).toUpperCase() + name.slice(1)} is a required field`
         }));
     };
 
@@ -174,7 +194,7 @@ function CreateUserForm() {
                     label='Username'
                     name='username'
                     placeholder='Ex: Jack Sparrow'
-                    onBlur={() => setErrors({ ...errors, username: formData.username ? '' : 'Username is a required field' })}
+                    onBlur={ handleBlur }
                     onChange={handleChange}
                     value={formData.username}
                     InputProps={{
@@ -211,7 +231,7 @@ function CreateUserForm() {
                         width: '20rem',
                         '& .MuiOutlinedInput-root': {
                             '& fieldset': {
-                                borderColor: usernameValid ? '#00bcd4' : '#6a1b9a',
+                                borderColor: !errors.username ? '#00bcd4' : '#6a1b9a',
                                 borderWidth: '.2rem'
                             },
                             '&:hover fieldset': {
@@ -260,7 +280,7 @@ function CreateUserForm() {
                             type='password'
                             onChange={handleChange}
                             placeholder='Ex: NotEzPassword123'
-                            onBlur={() => setErrors({ ...errors, password: formData.password ? '' : 'Password is a required field' })}
+                            onBlur={ handleBlur }
                             value={formData.password}
                             InputProps={{
                                 endAdornment: (
@@ -296,7 +316,7 @@ function CreateUserForm() {
                                 width: '20rem',
                                 '& .MuiOutlinedInput-root': {
                                     '& fieldset': {
-                                        borderColor: passwordValid ? '#00bcd4' : '#6a1b9a',
+                                        borderColor: !errors.password ? '#00bcd4' : '#6a1b9a',
                                         borderWidth: '.2rem'
                                     },
                                     '&:hover fieldset': {
@@ -342,7 +362,7 @@ function CreateUserForm() {
                             name='confirmPassword'
                             type='password'
                             placeholder='Ex: superSecret198*'
-                            onBlur = { () => setErrors({ ...errors, confirmPassword: formData.confirmPassword ? '' : 'Confirm Password Field is Required' })}
+                            onBlur = { handleBlur }
                             onChange={handleChange}
                             value={formData.confirmPassword}
                             InputProps={{
@@ -379,7 +399,7 @@ function CreateUserForm() {
                                 width: '20rem',
                                 '& .MuiOutlinedInput-root': {
                                     '& fieldset': {
-                                        borderColor: confirmPasswordValid ? '#00bcd4' : '#6a1b9a',
+                                        borderColor: !errors.confirmPassword ? '#00bcd4' : '#6a1b9a',
                                         borderWidth: '.2rem'
                                     },
                                     '&:hover fieldset': {
@@ -425,7 +445,7 @@ function CreateUserForm() {
                         name='email'
                         type='email'
                         placeholder='Ex: GeorgeontheDelaware@gmail.com'
-                        onBlur={() => setErrors({ ...errors, email: formData.email ? '' : 'Email Field is Required' })}
+                        onBlur={ handleBlur }
                         onChange={handleChange}
                         value={formData.email}
                         InputProps={{
@@ -462,7 +482,7 @@ function CreateUserForm() {
                             width: '20rem',
                             '& .MuiOutlinedInput-root': {
                                 '& fieldset': {
-                                    borderColor: emailValid ? '#00bcd4' : '#6a1b9a',
+                                    borderColor: !errors.email ? '#00bcd4' : '#6a1b9a',
                                     borderWidth: '.2rem'
                                 },
                                 '&:hover fieldset': {

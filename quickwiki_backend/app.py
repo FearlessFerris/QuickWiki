@@ -109,10 +109,10 @@ def login():
             }), 200
        else: 
            ActivityLog.create_activity_log( user.id, 'login', '/api/login', 'User Login POST Failed' ) 
-           return jsonify({ 'message': 'Incorrect Login, Please try again' }), 401 
+           return jsonify({ 'message': f'Sorry { username }, the password you entered is incorrect, please try again!' }), 401 
     else: 
-        ActivityLog.create_activity_log( None, 'login', '/users/login', 'User Login POST Failed' )
-        return jsonify({ 'message': f'Profile with username: { username } was not found, please try again' })
+        ActivityLog.create_activity_log( None, 'login', '/api/login', 'User Login POST Failed' )
+        return jsonify({ 'message': f'Sorry, profile with username: { username } was not found, please try again' }), 401
 
 
 @app.route( '/api/profile', methods = [ 'GET' ])
