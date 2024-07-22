@@ -217,10 +217,15 @@ class Bookmark(Base):
     user = relationship('User', back_populates='bookmarks')
     page = relationship('Page', back_populates='bookmarks')
 
-    def __init__(self, user_id, page_id, created_at):
+    def __init__(self, user_id, page_id ):
         self.user_id = user_id 
         self.page_id = page_id 
-        self.created_at = created_at 
+
+    @classmethod
+    def create_bookmark( cls, user_id, page_id ):
+        """ Create Bookmark Instance """
+
+        
 
 
 class Authorization(Base):

@@ -189,7 +189,7 @@ function CreateUserForm() {
                         }}
                     >
                         <TextField
-                    error={!!errors.username && usernameValid }
+                    error={ touchedFields.username && !!errors.username }
                     helperText={errors.username}
                     label='Username'
                     name='username'
@@ -273,7 +273,7 @@ function CreateUserForm() {
                     >
 
                         <TextField
-                            error = { !!errors.password && passwordValid }
+                            error = { touchedFields.password && !!errors.password }
                             helperText = { errors.password }
                             label='Password'
                             name='password'
@@ -356,7 +356,7 @@ function CreateUserForm() {
                         }}
                     >
                         <TextField
-                            error = { !!errors.confirmPassword && confirmPasswordValid }
+                            error = { touchedFields.confirmPassword && !!errors.confirmPassword }
                             helperText = { errors.confirmPassword }
                             label='Confirm Password'
                             name='confirmPassword'
@@ -439,7 +439,7 @@ function CreateUserForm() {
                         }}
                     >
                         <TextField
-                        error={!!errors.email}
+                        error={ touchedFields.email && !!errors.email }
                         helperText={errors.email}
                         label='Email'
                         name='email'

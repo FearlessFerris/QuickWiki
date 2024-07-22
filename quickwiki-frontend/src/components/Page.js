@@ -4,7 +4,7 @@
 // Dependencies 
 import React, { useState, useEffect } from 'react';
 import { useParams, Link as RouterLink } from 'react-router-dom';
-import { Alert, Box, Button, Card, CardContent, CardMedia, Typography, } from '@mui/material';
+import { Alert, Box, Button, Card, CardContent, CardMedia, CircularProgress, LinearProgress, Typography, } from '@mui/material';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
 import { parse } from 'node-html-parser';
 
@@ -19,7 +19,7 @@ function Page(){
     const { title } = useParams();
     const [ pageData, setPageData ] = useState( null );
     const [ htmlData, setHtmlData ] = useState( '' ); 
-    const [ loading, setLoading ] = useState( false );
+    const [ loading, setLoading ] = useState( true );
 
     
     useEffect(() => {
@@ -28,6 +28,7 @@ function Page(){
                 const response = await apiClient.get(`/search/page/${title}`);
                 setPageData(response.data.data);
                 setHtmlData(response.data.html);
+                setLoading( false );
             } catch (error) {
                 console.error(`Error fetching page data: `, error);
             }
@@ -63,7 +64,15 @@ function Page(){
             }}
         >
             {loading ? (
-                <Typography variant='h2'>Loading...</Typography>
+                <CircularProgress 
+                    variant = 'indeterminate'
+                    color="secondary"
+                    size = { 180 }
+                    thickness = { 2 }
+                    sx = {{
+                        marginTop: '20rem'
+                    }}
+                    />
             ) : (
                 pageData && (
                     <Card 

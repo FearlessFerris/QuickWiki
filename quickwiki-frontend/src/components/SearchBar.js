@@ -2,7 +2,7 @@
 
 
 // Dependencies 
-import React, { useCallback, useEffect, useState, usetEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Box, Button, FormControl, TextField, Typography, ThemeProvider, createTheme } from '@mui/material';
 import { debounce } from 'lodash';
 
@@ -100,7 +100,7 @@ function SearchBar({ results, setResults }) {
           if (query.trim() !== '') {
               fetchResults( query, userId );
           }
-      }, 100),
+      }, 200),
       [ userId ]
   );
 
