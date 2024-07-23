@@ -122,7 +122,6 @@ class Search(Base):
         return new_search
 
 
-
 class SearchResult(Base):
     """ Search Results Model """
 
@@ -182,8 +181,6 @@ class Page(Base):
         self.created_at = created_at
 
    
-
-
 class SavedInfo(Base):
     """ Saved Information Model """
 
@@ -225,8 +222,9 @@ class Bookmark(Base):
     def create_bookmark( cls, user_id, page_id ):
         """ Create Bookmark Instance """
 
-        
-
+        new_bookmark = cls( user_id = user_id, page_id = page_id )
+        print( f'Here is your new bookmark!!!' )
+        return new_bookmark
 
 class Authorization(Base):
     """ Authorization Info Model """

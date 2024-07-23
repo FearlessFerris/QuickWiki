@@ -53,6 +53,9 @@ function Page(){
         return root.toString();
     };
 
+    const addBookmark = () => {
+        
+    }
 
     return (
         <div

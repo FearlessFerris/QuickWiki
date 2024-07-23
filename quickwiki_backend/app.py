@@ -207,6 +207,7 @@ def search(query):
 @jwt_required(optional=True)
 def search_page(title):
     """ Search specific page based on Query """
+
     current_user = get_jwt_identity()
     user_id = None
 
@@ -256,22 +257,33 @@ def search_page(title):
         cleaned_html = str(soup)
 
         if user_id:
-            ActivityLog.create_activity_log(user_id, 'search', f'/api/search/page/{title}', 'Search Page Successful')
+            ActivityLog.create_activity_log(user_id, 'search', f'/api/search/page/{title}', 'Search Page GET Successful')
         else:
-            ActivityLog.create_activity_log(None, 'search', f'/api/search/page/{title}', 'Search Page Successful')
+            ActivityLog.create_activity_log(None, 'search', f'/api/search/page/{title}', 'Search Page GET Successful')
 
         db.session.commit()
         return jsonify({'message': 'You have successfully made a request to /search/page, YAY', 'data': json_data, 'html': cleaned_html}), 200
 
     except Exception as e:
         if user_id:
-            ActivityLog.create_activity_log(user_id, 'search', f'/api/search/page/{title}', 'Search Page Failed')
+            ActivityLog.create_activity_log(user_id, 'search', f'/api/search/page/{title}', 'Search Page GET Failed')
         else:
-            ActivityLog.create_activity_log(None, 'search', f'/api/search/page/{title}', 'Search Page Failed')
+            ActivityLog.create_activity_log(None, 'search', f'/api/search/page/{title}', 'Search Page GET Failed')
 
         db.session.rollback()
         return jsonify({'message': str(e)}), 500
     
+
+# Bookmark Routes 
+@app.route( '/api/bookmark/add', methods = [ 'POST' ])
+@jwt_required()
+def add_bookmark():
+    """ Add Bookmark to a Users Account """
+
+    print( 'Yay you are made a request to /bookmark/add!!!' )
+
+    
+
 
 
     
