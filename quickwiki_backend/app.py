@@ -167,6 +167,7 @@ def update_profile():
 @jwt_required(optional=True)
 def search(query):
     """ Search results based on Query """
+
     current_user = get_jwt_identity()
     user_id = None
 
@@ -275,14 +276,17 @@ def search_page(title):
     
 
 # Bookmark Routes 
-@app.route( '/api/bookmark/add', methods = [ 'POST' ])
+@app.route( '/api/bookmark/add/<title>', methods = [ 'POST' ])
 @jwt_required()
-def add_bookmark():
+def add_bookmark( title ):
     """ Add Bookmark to a Users Account """
 
-    print( 'Yay you are made a request to /bookmark/add!!!' )
+    current_user = get_jwt_identity()
+    print( f'Current User: { current_user }' )
+    print( f'Here is your title!', title )
 
-    
+    return jsonify({ 'message': 'You have successfully made a request to /bookmark/add' })
+
 
 
 

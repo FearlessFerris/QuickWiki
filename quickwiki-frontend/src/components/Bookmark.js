@@ -14,7 +14,9 @@ import apiClient from '../api/apiClient';
 function Bookmark() {
 
     const [ bookmarks, setBookmarks ] = useState([]);
-    
+
+
+
     return(
         <div 
             className = 'bookmark-container'

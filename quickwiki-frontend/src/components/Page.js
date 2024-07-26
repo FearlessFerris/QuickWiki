@@ -49,12 +49,17 @@ function Page(){
                 anchor.setAttribute('rel', 'noopener noreferrer');
             }
         });
-
         return root.toString();
     };
 
-    const addBookmark = () => {
-        
+    const addBookmark = async () => {
+        try{
+            const response = await apiClient.post( `/bookmark/add/${ title }` );
+            console.log( response.data );
+        }
+        catch( error ){
+            console.error( `Error adding bookmark!`, error );
+        }
     }
 
     return (
@@ -120,6 +125,7 @@ function Page(){
                                             fontSize: 'large'
                                         },
                                     }}
+                                    onClick = { addBookmark }
                                 >
                                 <BookmarkIcon
                                     fontSize = 'large'
