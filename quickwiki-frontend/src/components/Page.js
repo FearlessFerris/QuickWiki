@@ -11,6 +11,7 @@ import { parse } from 'node-html-parser';
 
 // Components & Necessary Files 
 import apiClient from '../api/apiClient';
+import { useAlert } from './ContextDirectory.js/AlertContext';
 
 
 // Page Component 
@@ -20,7 +21,7 @@ function Page(){
     const [ pageData, setPageData ] = useState( null );
     const [ htmlData, setHtmlData ] = useState( '' ); 
     const [ loading, setLoading ] = useState( true );
-
+    const { displayAlert } = useAlert();
     
     useEffect(() => {
         const fetchPageData = async () => {
@@ -55,10 +56,12 @@ function Page(){
     const addBookmark = async () => {
         try{
             const response = await apiClient.post( `/bookmark/add/${ title }` );
+            displayAlert( `${ title }, was added to your bookmark list!`, 'success' );
             console.log( response.data );
         }
         catch( error ){
             console.error( `Error adding bookmark!`, error );
+            displayAlert( 'Must be logged in to Bookmark Pages', 'error' );
         }
     }
 

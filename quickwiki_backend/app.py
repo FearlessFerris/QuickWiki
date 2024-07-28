@@ -5,7 +5,7 @@
 from flask import Flask, request, jsonify, session
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
-from models import db, create_tables, User, Search, SearchResult, Page, Bookmark, Authorization, SessionInfo, ActivityLog, SavedInfo 
+from models import db, create_tables, User, Search, Bookmark, Authorization, SessionInfo, ActivityLog, SavedInfo 
 from bs4 import BeautifulSoup
 import requests
 
@@ -282,10 +282,18 @@ def add_bookmark( title ):
     """ Add Bookmark to a Users Account """
 
     current_user = get_jwt_identity()
-    print( f'Current User: { current_user }' )
-    print( f'Here is your title!', title )
+    if current_user:
+        user_id = current_user.get( 'user_id' )
+        page_url = f'{ get_page_base }/{ title }/html'
+        data = { 'user_id': user_id, 'page_id': title, 'page_url': page_url }
+        print( data )
+        bookmark = Bookmark.create_bookmark( user_id, title, page_url )
+        return jsonify({ 'message': 'You have successfully made a request to /bookmark/add', 'data': data }), 200 
+    
 
-    return jsonify({ 'message': 'You have successfully made a request to /bookmark/add' })
+    return jsonify({ 'message': 'Error, must be logged in to add a bookmark!' }), 401 
+
+   
 
 
 

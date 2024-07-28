@@ -31,7 +31,6 @@ class User(Base):
     updated_at = Column(DateTime, onupdate=func.now())
 
     # Relationships
-    pages = relationship('Page', back_populates='user')
     searches = relationship('Search', back_populates='user')
     saved_info = relationship('SavedInfo', back_populates='user')
     authorizations = relationship('Authorization', back_populates='user')
@@ -46,11 +45,11 @@ class User(Base):
         self.image_url = image_url
         self.upload_image = upload_image
 
-    def get_user_profile( self ):
+    def get_user_profile(self):
         """ Retrieve entire User Profile """
 
         user_info = {
-            'id': str( self.id ),
+            'id': str(self.id),
             'username': self.username,
             'email': self.email,
             'image_url': self.image_url,
@@ -58,13 +57,13 @@ class User(Base):
         }
         return user_info
 
-    def update_user_profile( self, username = None, password = None, email = None, image_url = None, upload_image = None ):
+    def update_user_profile(self, username=None, password=None, email=None, image_url=None, upload_image=None):
         """ Update Users Profile """
 
         if self.username:
             self.username = username
         if password: 
-            self.password_hash = bcrypt.hashpw( password.encode( 'utf-8'), bcrypt.gensalt( 12 )).decode( 'utf-8')
+            self.password_hash = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt(12)).decode('utf-8')
         if self.email:
             self.email = email
         if self.image_url:
@@ -77,18 +76,18 @@ class User(Base):
     def create_user(cls, username, email, password, image_url=None, upload_image=None):
         """ Create New User """
 
-        hashed_pw = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt(12)).decode( 'utf-8' )
+        hashed_pw = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt(12)).decode('utf-8')
         new_user = cls(username=username, email=email, password_hash=hashed_pw, image_url=image_url, upload_image=upload_image)
         db.session.add(new_user)
         db.session.commit()
         return new_user 
 
     @classmethod
-    def authenticate( cls, username, password ):
+    def authenticate(cls, username, password):
         """ Authenticate User """
 
-        user = User.query.filter_by( username = username ).first()
-        if user and bcrypt.checkpw( password.encode( 'utf-8' ), user.password_hash.encode( 'utf-8' )):
+        user = User.query.filter_by(username=username).first()
+        if user and bcrypt.checkpw(password.encode('utf-8'), user.password_hash.encode('utf-8')):
             return user
         return None
 
@@ -104,83 +103,23 @@ class Search(Base):
 
     # Relationships     
     user = relationship('User', back_populates='searches')
-    results = relationship('SearchResult', back_populates='search')
 
-    def __init__(self, user_id, search_query ):
+    def __init__(self, user_id, search_query):
         self.user_id = user_id
         self.search_query = search_query
 
     @classmethod
-    def create_search( cls, user_id, search_query ):
+    def create_search(cls, user_id, search_query):
         """ Create Search Instance """
 
         if user_id is None: 
             user_id = create_system_user()
-        new_search = cls( user_id = user_id, search_query = search_query )
-        db.session.add( new_search )
+        new_search = cls(user_id=user_id, search_query=search_query)
+        db.session.add(new_search)
         db.session.commit()
         return new_search
 
 
-class SearchResult(Base):
-    """ Search Results Model """
-
-    __tablename__ = 'search_results'
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    search_id = Column(UUID(as_uuid=True), ForeignKey('searches.id'), nullable=False)
-    key = Column(String, nullable=False)
-    title = Column(String, nullable=False)
-    excerpt = Column(String, nullable=False)
-    description = Column(String, nullable=False)
-    thumbnail = Column(JSONB, nullable=True)
-    created_at = Column(DateTime, server_default=func.now())
-
-    # Relationships 
-    search = relationship('Search', back_populates='results')
-
-    def __init__(self, search_id, key, title, excerpt, description, thumbnail, created_at):
-        self.search_id = search_id 
-        self.key = key 
-        self.title = title 
-        self.excerpt = excerpt 
-        self.description = description 
-        self.thumbnail = thumbnail 
-        self.created_at = created_at 
-
-
-class Page(Base):
-    """ Page Model """
-
-    __tablename__ = 'pages'
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(UUID(as_uuid=True), ForeignKey('users.id'), nullable=False) 
-    key = Column(String, nullable=False, unique=True)
-    title = Column(String, nullable=False)
-    latest_id = Column(Integer, nullable=False)
-    latest_timestamp = Column(DateTime, nullable=False)
-    content_model = Column(String, nullable=False)
-    license_url = Column(String, nullable=False)
-    license_title = Column(String, nullable=False)
-    html_url = Column(String, nullable=False)
-    created_at = Column(DateTime, server_default=func.now())
-
-    # Relationships
-    user = relationship('User', back_populates='pages')  
-    bookmarks = relationship('Bookmark', back_populates='page')  
-
-    def __init__(self, user_id, key, title, latest_id, latest_timestamp, content_model, license_url, license_title, html_url, created_at):
-        self.user_id = user_id
-        self.key = key
-        self.title = title
-        self.latest_id = latest_id
-        self.latest_timestamp = latest_timestamp
-        self.content_model = content_model
-        self.license_url = license_url
-        self.license_title = license_title
-        self.html_url = html_url
-        self.created_at = created_at
-
-   
 class SavedInfo(Base):
     """ Saved Information Model """
 
@@ -207,24 +146,30 @@ class Bookmark(Base):
     __tablename__ = 'bookmarks'
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     user_id = Column(UUID(as_uuid=True), ForeignKey('users.id'), nullable=False)
-    page_id = Column(Integer, ForeignKey('pages.id'), nullable=False)
+    page_id = Column( String, nullable = False )
+    page_url = Column( String, nullable = True )
     created_at = Column(DateTime, server_default=func.now())
 
     # Relationships 
     user = relationship('User', back_populates='bookmarks')
-    page = relationship('Page', back_populates='bookmarks')
 
-    def __init__(self, user_id, page_id ):
-        self.user_id = user_id 
+    def __init__( self, user_id, page_id, page_url = None ):
+        self.user_id = user_id
         self.page_id = page_id 
+        self.page_url = page_url
 
     @classmethod
-    def create_bookmark( cls, user_id, page_id ):
+    def create_bookmark(cls, user_id, page_id, page_url = None ):
         """ Create Bookmark Instance """
 
-        new_bookmark = cls( user_id = user_id, page_id = page_id )
-        print( f'Here is your new bookmark!!!' )
+        new_bookmark = cls( user_id = user_id, page_id = page_id, page_url = page_url )
+        print( f'User_id: { user_id }' )
+        print( f'Page_id: { page_id }' )
+        print( f'Page_url: { page_url }' )
+        db.session.add( new_bookmark )
+        db.session.commit()
         return new_bookmark
+
 
 class Authorization(Base):
     """ Authorization Info Model """
@@ -256,27 +201,27 @@ class ActivityLog(Base):
     user_id = Column(UUID(as_uuid=True), ForeignKey('users.id'), nullable=False)
     action = Column(String, nullable=False)
     description = Column(String, nullable=True)
-    endpoint = Column( String, nullable = False )
+    endpoint = Column(String, nullable=False)
     created_at = Column(DateTime, server_default=func.now())
 
     # Relationships 
     user = relationship('User', back_populates='activity_logs')
 
-    def __init__(self, user_id, action, endpoint, description = None ):
+    def __init__(self, user_id, action, endpoint, description=None):
         self.user_id = user_id 
         self.action = action 
         self.endpoint = endpoint 
         self.description = description
 
     @classmethod
-    def create_activity_log( cls, user_id, action, endpoint, description ):
+    def create_activity_log(cls, user_id, action, endpoint, description):
         """ Create a user ActivityLog Instance """
 
         if user_id is None: 
             user_id = create_system_user()
-        new_activity_log = cls( user_id = user_id, action = action, endpoint = endpoint, description = description )
-        print( new_activity_log )
-        db.session.add( new_activity_log )
+        new_activity_log = cls(user_id=user_id, action=action, endpoint=endpoint, description=description)
+        print(new_activity_log)
+        db.session.add(new_activity_log)
         db.session.commit()
         return new_activity_log
 
@@ -288,31 +233,31 @@ class SessionInfo(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     user_id = Column(UUID(as_uuid=True), ForeignKey('users.id'), nullable=False)
     session_token = Column(String, nullable=False, unique=True)
-    created_at = Column(DateTime, server_default=func.now(), nullable = False )
+    created_at = Column(DateTime, server_default=func.now(), nullable=False)
     expires_at = Column(DateTime, nullable=False)
 
     # Relationships 
     user = relationship('User', back_populates='sessions')
 
-    def __init__(self, user_id, session_token, created_at = None, expires_at = None ):
+    def __init__(self, user_id, session_token, created_at=None, expires_at=None):
         self.user_id = user_id 
         self.session_token = session_token
         self.created_at = created_at or datetime.utcnow()
-        self.expires_at = expires_at or self.created_at + timedelta( days = 1 )
+        self.expires_at = expires_at or self.created_at + timedelta(days=1)
 
     @classmethod 
-    def create_session_token( cls ):
+    def create_session_token(cls):
         """ Create a random Session Token """
         
-        return secrets.token_urlsafe( 32 )
+        return secrets.token_urlsafe(32)
 
     @classmethod 
-    def create_session_info( cls, user_id = None ):
+    def create_session_info(cls, user_id=None):
         """ Create a new SessionInfo Instance """
 
-        session_token = cls.create_session_token();
-        new_session = cls( user_id = user_id, session_token = session_token )
-        db.session.add( new_session )
+        session_token = cls.create_session_token()
+        new_session = cls(user_id=user_id, session_token=session_token)
+        db.session.add(new_session)
         db.session.commit()
         return new_session
         
