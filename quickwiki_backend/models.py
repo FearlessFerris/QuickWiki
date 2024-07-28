@@ -158,6 +158,14 @@ class Bookmark(Base):
         self.page_id = page_id 
         self.page_url = page_url
 
+    def convert_to_dictionary( self ):
+        """ Convert Bookmark Instance to Dictionary """
+
+        return {
+            'page_id': self.page_id,
+            'created_at': self.created_at.strftime('%m/%d/%y')
+        }
+        
     @classmethod
     def create_bookmark(cls, user_id, page_id, page_url = None ):
         """ Create Bookmark Instance """
@@ -170,6 +178,11 @@ class Bookmark(Base):
         db.session.commit()
         return new_bookmark
 
+    @classmethod 
+    def get_bookmarks( cls, user_id ):
+        """ Retrieve all Bookmarks for a specific user """
+
+        return cls.query.filter_by( user_id = user_id ).all()
 
 class Authorization(Base):
     """ Authorization Info Model """

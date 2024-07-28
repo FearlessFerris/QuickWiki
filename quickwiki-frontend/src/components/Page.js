@@ -55,7 +55,7 @@ function Page(){
 
     const addBookmark = async () => {
         try{
-            const response = await apiClient.post( `/bookmark/add/${ title }` );
+            const response = await apiClient.post( `/user/bookmark/add/${ title }` );
             displayAlert( `${ title }, was added to your bookmark list!`, 'success' );
             console.log( response.data );
         }

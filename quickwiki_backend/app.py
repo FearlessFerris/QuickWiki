@@ -162,6 +162,39 @@ def update_profile():
     return jsonify({ 'message': f'User: { username }, Not Found!' }), 404 
 
 
+@app.route( '/api/user/bookmark/add/<title>', methods = [ 'POST' ])
+@jwt_required()
+def add_bookmark( title ):
+    """ Add Bookmark to a Users Account """
+
+    current_user = get_jwt_identity()
+    if current_user:
+        user_id = current_user.get( 'user_id' )
+        page_url = f'{ get_page_base }/{ title }/html'
+        data = { 'user_id': user_id, 'page_id': title, 'page_url': page_url }
+        bookmark = Bookmark.create_bookmark( user_id, title, page_url )
+        return jsonify({ 'message': 'You have successfully made a request to /bookmark/add', 'data': data }), 200 
+    
+
+    return jsonify({ 'message': 'Error, must be logged in to add a bookmark!' }), 401 
+
+
+@app.route( '/api/user/bookmark/all', methods = ['GET'])
+@jwt_required()
+def get_bookmarks():
+    """ List all Bookmarks on a User Account """
+
+    current_user = get_jwt_identity()
+    username = current_user.get( 'username' )
+    if current_user:
+        user_id = current_user.get( 'user_id' )
+        user_bookmarks = Bookmark.get_bookmarks( user_id )
+        bookmark_list = [ bookmark.convert_to_dictionary() for bookmark in user_bookmarks ]
+        return jsonify({ 'message': f'Here is a list of all of your bookmarks { username }', 'data': bookmark_list })
+
+    return jsonify({ 'message': 'Error retrieving user bookmarks' })
+
+
 # Search Routes 
 @app.route('/api/search/<query>', methods=['GET'])
 @jwt_required(optional=True)
@@ -275,23 +308,6 @@ def search_page(title):
         return jsonify({'message': str(e)}), 500
     
 
-# Bookmark Routes 
-@app.route( '/api/bookmark/add/<title>', methods = [ 'POST' ])
-@jwt_required()
-def add_bookmark( title ):
-    """ Add Bookmark to a Users Account """
-
-    current_user = get_jwt_identity()
-    if current_user:
-        user_id = current_user.get( 'user_id' )
-        page_url = f'{ get_page_base }/{ title }/html'
-        data = { 'user_id': user_id, 'page_id': title, 'page_url': page_url }
-        print( data )
-        bookmark = Bookmark.create_bookmark( user_id, title, page_url )
-        return jsonify({ 'message': 'You have successfully made a request to /bookmark/add', 'data': data }), 200 
-    
-
-    return jsonify({ 'message': 'Error, must be logged in to add a bookmark!' }), 401 
 
    
 

@@ -120,6 +120,23 @@ function Navbar() {
                                     Profile
                                 </Button>
                                 <Button
+                                    component={Link}
+                                    to='/user/bookmark'
+                                    variant="outlined"
+                                    size="large"
+                                    sx={{
+                                        color: '#00bcd4',
+                                        border: '.2rem solid #212121',
+                                        fontSize: 'large',
+                                        margin: '0 8px',
+                                        '&:hover': {
+                                            border: '.2rem solid #00bcd4',
+                                        },
+                                    }}
+                                >
+                                    Bookmarks
+                                </Button>
+                                <Button
                                     onClick={handleLogout}
                                     variant="outlined"
                                     size="large"
