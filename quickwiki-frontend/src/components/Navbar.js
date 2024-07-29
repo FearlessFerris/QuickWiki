@@ -121,7 +121,7 @@ function Navbar() {
                                 </Button>
                                 <Button
                                     component={Link}
-                                    to='/user/bookmark'
+                                    to='/user/bookmark/all'
                                     variant="outlined"
                                     size="large"
                                     sx={{

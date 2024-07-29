@@ -162,7 +162,10 @@ class Bookmark(Base):
         """ Convert Bookmark Instance to Dictionary """
 
         return {
+            'id': str( self.id ),
+            'user_id': str( self.user_id ),
             'page_id': self.page_id,
+            'page_url': self.page_url,
             'created_at': self.created_at.strftime('%m/%d/%y')
         }
         

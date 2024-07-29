@@ -168,15 +168,23 @@ def add_bookmark( title ):
     """ Add Bookmark to a Users Account """
 
     current_user = get_jwt_identity()
-    if current_user:
-        user_id = current_user.get( 'user_id' )
-        page_url = f'{ get_page_base }/{ title }/html'
-        data = { 'user_id': user_id, 'page_id': title, 'page_url': page_url }
+    if not current_user:
+        return jsonify({ 'message': 'Error, must be logged in to add a bookmark!' }), 401 
+    user_id = current_user.get( 'user_id' )
+    page_url = f'{ get_page_base }/{ title }/html'
+    data = { 'user_id': user_id, 'page_id': title, 'page_url': page_url }
+    try: 
         bookmark = Bookmark.create_bookmark( user_id, title, page_url )
+        ActivityLog.create_activity_log( user_id, 'bookmark', '/api/user/bookmark/add', 'Add Bookmark POST Successful' )
+        db.session.commit()
         return jsonify({ 'message': 'You have successfully made a request to /bookmark/add', 'data': data }), 200 
+    except Exception as e: 
+        db.session.rollback()
+        ActivityLog.create_activity_log( user_id, 'bookmark', '/api/user/bookmark/add', 'Add Bookmark POST Failed' )
+        db.session.commit()
+        return jsonify({ 'message': f'Internal server error, could not add { title } to bookmarks', 'error': str( e ) }), 500    
     
-
-    return jsonify({ 'message': 'Error, must be logged in to add a bookmark!' }), 401 
+    return jsonify({ 'message': f'Error adding { title } to bookmarks' }), 400  
 
 
 @app.route( '/api/user/bookmark/all', methods = ['GET'])
@@ -186,13 +194,20 @@ def get_bookmarks():
 
     current_user = get_jwt_identity()
     username = current_user.get( 'username' )
-    if current_user:
-        user_id = current_user.get( 'user_id' )
+    user_id = current_user.get( 'user_id' )
+    if not current_user: 
+        return jsonify({ 'message': 'Error, must be logged in to add a bookmark!' }), 401
+    try:
         user_bookmarks = Bookmark.get_bookmarks( user_id )
         bookmark_list = [ bookmark.convert_to_dictionary() for bookmark in user_bookmarks ]
-        return jsonify({ 'message': f'Here is a list of all of your bookmarks { username }', 'data': bookmark_list })
-
-    return jsonify({ 'message': 'Error retrieving user bookmarks' })
+        ActivityLog.create_activity_log( user_id, 'bookmark', '/api/bookmark/all', 'All Bookmark GET Successful' )
+        return jsonify({ 'message': f'Here is a list of all of your bookmarks { username }', 'data': bookmark_list }), 200 
+    except Exception as e: 
+        db.session.rollback()
+        ActivityLog.create_activity_log( user_id, 'bookmark', '/api/bookmark/all', 'All Bookmark GET Failed' )
+        return jsonify({ 'message': 'Internal server error, could not retrieve bookmarks', 'error': str( e ) }), 500  
+      
+    return jsonify({ 'message': 'Error retrieving user bookmarks' }), 400
 
 
 # Search Routes 
