@@ -4,7 +4,8 @@
 // Dependencies 
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Alert, Box, Button, Card, CardContent, CardMedia, CircularProgress, Typography, } from '@mui/material';
+import { Alert, Box, Button, Card, CardContent, CardMedia, CircularProgress, Typography } from '@mui/material';
+import { HighlightOffOutlined } from '@mui/icons-material';
 
 
 // Components & Necessary Files 
@@ -15,6 +16,7 @@ import apiClient from '../api/apiClient';
 function Bookmark() {
 
     const [ bookmarks, setBookmarks ] = useState([]);
+    const [ isEditing, setIsEditing ] = useState( false );
     const [ visibleBookmarks, setVisibleBookmarks ] = useState(new Set());
     const [ hoveredIndex, setHoveredIndex ] = useState( null );
 
@@ -22,7 +24,7 @@ function Bookmark() {
     useEffect(() => {
         const fetchBookmarks = async () => {
             try {
-                const response = await apiClient.get('/user/bookmark/all');
+                const response = await apiClient.get('/user/bookmark');
                 setBookmarks(response.data.data);
                 response.data.data.forEach((item, index) => {
                     setTimeout(() => {
@@ -67,6 +69,10 @@ function Bookmark() {
         color: '#00bcd4', 
     });
 
+    const handleEditing = () => {
+        setIsEditing( value => !value );
+    }
+
     return(
         <div 
             className = 'bookmark-container'
@@ -82,31 +88,115 @@ function Bookmark() {
             >
             Bookmarks 
             </Typography>
-            { bookmarks.map(( item, index ) => (
-                <Link 
+            <div 
+                style = {{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    flexDirection: 'row',
+                    marginTop: '2rem',
+                    marginBottom: '4rem'
+                }}  
+            >
+
+            <Button
+                variant='outlined'
+                sx={{
+                    color: '#00bcd4',
+                    backgroundColor: '#212121',
+                    border: '.2rem solid #212121',
+                    fontSize: 'large',
+                    width: '14rem',
+                    '&:hover': {
+                        border: '.2rem solid #00bcd4',
+                        color: '#00bcd4',
+                        fontSize: 'large'
+                    },
+                }}
+                onClick = { handleEditing }
+                >
+            { isEditing ? 'Done' : 'Edit' }
+            </Button>
+            </div>
+
+            { isEditing ? (
+                <div>
+                { bookmarks.map(( item, index ) => (
+                    <Link 
                     to = { `/search/page/${ item.page_id }` }
                     key = { index }
                     style = {{
                         textDecoration: 'none'
                     }}
-                >
-                <Card
+                    >
+                    <Card
+                        key={index} 
+                        sx = { getCardStyle( index )}
+                        onMouseEnter = { () => handleMouseEnter( index ) }
+                        onMouseLeave = { handleMouseLeave }
+                        >
+                    <Typography
+                        variant = 'h4'
+                        color = '#00bcd4'
+                        noWrap
+                        >
+                        { item.page_id }
+                    </Typography>
+                    <Button
+                        variant = 'outlined'
+                        sx = {{
+                            color: '#00bcd4',
+                            backgroundColor: '#212121',
+                            border: '.2rem solid #212121',
+                            fontSize: 'large',
+                            width: '2rem',
+                            '&:hover': {
+                                border: '.2rem solid #00bcd4',
+                                color: '#00bcd4',
+                                fontSize: 'large'
+                            }
+                        }}
+                    >
+                    <HighlightOffOutlined
+                        fontSize = 'large'
+                        sx = {{
+                            color: '#ec407a'
+                        }}
+                    >
+                    </HighlightOffOutlined>
+                    </Button>
+                    </Card>
+                </Link>
+                ))}
+            </div>
+            ): (
+                <div>
+                { bookmarks.map(( item, index ) => (
+                    <Link 
+                    to = { `/search/page/${ item.page_id }` }
+                    key = { index }
+                    style = {{
+                        textDecoration: 'none'
+                    }}
+                    >
+                    <Card
                     key={index} 
                     sx = { getCardStyle( index )}
                     onMouseEnter = { () => handleMouseEnter( index ) }
                     onMouseLeave = { handleMouseLeave }
-                >
-                <Typography
+                    >
+                    <Typography
                     variant = 'h4'
                     color = '#00bcd4'
                     noWrap
-                >
+                    >
                     { item.page_id }
-
-                </Typography>
-                </Card>
-            </Link>
-            ))}
+                    
+                    </Typography>
+                    </Card>
+                    </Link>
+                ))}
+            </div>
+            )}
         </div>
     )
 }
