@@ -27,7 +27,7 @@ function Bookmark() {
     useEffect(() => {
         const fetchBookmarks = async () => {
             try {
-                const response = await apiClient.get('/user/bookmark/all');
+                const response = await apiClient.get('/user/bookmark');
                 setBookmarks(response.data.data);
                 response.data.data.forEach((item, index) => {
                     setTimeout(() => {

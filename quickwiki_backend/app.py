@@ -187,7 +187,7 @@ def add_bookmark( title ):
     return jsonify({ 'message': f'Error adding { title } to bookmarks' }), 400  
 
 
-@app.route( '/api/user/bookmark/all', methods = ['GET'])
+@app.route( '/api/user/bookmark', methods = ['GET'])
 @jwt_required()
 def get_bookmarks():
     """ List all Bookmarks on a User Account """
@@ -200,11 +200,11 @@ def get_bookmarks():
     try:
         user_bookmarks = Bookmark.get_bookmarks( user_id )
         bookmark_list = [ bookmark.convert_to_dictionary() for bookmark in user_bookmarks ]
-        ActivityLog.create_activity_log( user_id, 'bookmark', '/api/bookmark/all', 'All Bookmark GET Successful' )
+        ActivityLog.create_activity_log( user_id, 'bookmark', '/api/bookmark', 'All Bookmark GET Successful' )
         return jsonify({ 'message': f'Here is a list of all of your bookmarks { username }', 'data': bookmark_list }), 200 
     except Exception as e: 
         db.session.rollback()
-        ActivityLog.create_activity_log( user_id, 'bookmark', '/api/bookmark/all', 'All Bookmark GET Failed' )
+        ActivityLog.create_activity_log( user_id, 'bookmark', '/api/bookmark', 'All Bookmark GET Failed' )
         return jsonify({ 'message': 'Internal server error, could not retrieve bookmarks', 'error': str( e ) }), 500  
       
     return jsonify({ 'message': 'Error retrieving user bookmarks' }), 400
