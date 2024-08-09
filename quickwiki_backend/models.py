@@ -186,6 +186,14 @@ class Bookmark(Base):
         """ Retrieve all Bookmarks for a specific user """
 
         return cls.query.filter_by( user_id = user_id ).all()
+    
+    @classmethod
+    def remove_bookmark( cls, user_id, page_id ):
+        """ Remove specific user selected Bookmark """
+
+        bookmark = cls.query.filter_by( user_id = user_id, page_id = page_id ).first()
+        print( bookmark )
+        return bookmark
 
 class Authorization(Base):
     """ Authorization Info Model """

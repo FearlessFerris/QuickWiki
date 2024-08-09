@@ -210,6 +210,28 @@ def get_bookmarks():
     return jsonify({ 'message': 'Error retrieving user bookmarks' }), 400
 
 
+@app.route( '/api/user/bookmark/remove/<page>', methods = [ 'DELETE' ])
+@jwt_required()
+def remove_bookmarks( page ):
+    """ Route to delete User selected Bookmarks """
+
+    current_user = get_jwt_identity()
+    if not current_user: 
+        return jsonify({ 'message': 'Error, must be logged in to remove a bookmark!' }), 401
+    
+    username = current_user.get( 'username' )
+    user_id = current_user.get( 'user_id' )
+    try: 
+        bookmark = Bookmark.remove_bookmark( user_id, page )
+        if not bookmark: 
+            return jsonify({ 'message': f'Bookmark { page } not found!' }), 404 
+        db.session.delete( bookmark )
+        db.session.commit()
+        return jsonify({ 'message': f'You have successfully removed { page } from your bookmarks!', 'data': page }), 200 
+    except Exception as e:
+        return jsonify({ 'message': 'There was an error removing your bookmark!' }), 500 
+
+
 # Search Routes 
 @app.route('/api/search/<query>', methods=['GET'])
 @jwt_required(optional=True)

@@ -5,19 +5,23 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Alert, Box, Button, Card, CardContent, CardMedia, CircularProgress, Typography, } from '@mui/material';
+import { AddCircleOutline, RemoveCircleOutline } from '@mui/icons-material';
 
 
 // Components & Necessary Files 
 import apiClient from '../api/apiClient';
+import { useAlert } from './ContextDirectory.js/AlertContext';
 
 
 // Bookmark Component 
 function Bookmark() {
 
-    const [ bookmarks, setBookmarks ] = useState([]);
-    const [ visibleBookmarks, setVisibleBookmarks ] = useState(new Set());
-    const [ hoveredIndex, setHoveredIndex ] = useState( null );
-    const [ isEditing, setIsEditing ] = useState( false );
+    const [bookmarks, setBookmarks] = useState([]);
+    const [visibleBookmarks, setVisibleBookmarks] = useState(new Set());
+    const [hoveredIndex, setHoveredIndex] = useState(null);
+    const [isEditing, setIsEditing] = useState(false);
+    const [isSorting, setIsSorting] = useState(false);
+    const { displayAlert } = useAlert();
 
 
     useEffect(() => {
@@ -28,7 +32,7 @@ function Bookmark() {
                 response.data.data.forEach((item, index) => {
                     setTimeout(() => {
                         setVisibleBookmarks(prev => new Set(prev).add(index));
-                    }, index * 200); 
+                    }, index * 200);
                 });
             } catch (error) {
                 console.error('Error loading user bookmarks!', error);
@@ -38,16 +42,32 @@ function Bookmark() {
         fetchBookmarks();
     }, []);
 
-    const handleIsEditing = () => {
-        setIsEditing( !isEditing );
+    const handleRemoveBookmark = async (pageId) => {
+        try {
+            const response = await apiClient.delete(`/user/bookmark/remove/${pageId}`);
+            setBookmarks(previousBookmarks => previousBookmarks.filter(bookmark => bookmark.page_id !== pageId));
+            const page = response.data.data;
+            displayAlert(`${page}, was successfully removed from your bookmarks!`, 'success');
+        }
+        catch (error) {
+            console.log(`Error removing bookmarked item`, error);
+        }
     }
 
-    const handleMouseEnter = ( index ) => {
-        setHoveredIndex( index );
+    const handleIsEditing = () => {
+        setIsEditing(!isEditing);
+    }
+
+    const handleIsSorting = () => {
+        setIsSorting(!isSorting);
+    }
+
+    const handleMouseEnter = (index) => {
+        setHoveredIndex(index);
     }
 
     const handleMouseLeave = () => {
-        setHoveredIndex( null );
+        setHoveredIndex(null);
     }
 
     const getCardStyle = (index) => ({
@@ -60,87 +80,218 @@ function Bookmark() {
         margin: '1rem',
         padding: '1rem',
         boxShadow: '0 3px 5px rgba(0, 0, 0, 0.1)',
-        width: '40rem',
+        width: '36rem',
         height: '2rem',
         flexGrow: 1,
         opacity: visibleBookmarks.has(index) ? 1 : 0,
         transition: 'opacity 1s ease-out, transform 0.3s ease-out, box-shadow 0.3s ease-out',
         transform: visibleBookmarks.has(index)
-        ? hoveredIndex === index 
-            ? 'scale(1.07)' 
-            : 'scale(1)'
-            : 'scale(0.8)', 
+            ? hoveredIndex === index
+                ? 'scale(1.07)'
+                : 'scale(1)'
+            : 'scale(0.8)',
         boxShadow: hoveredIndex === index
             ? '0 6px 12px rgba(0, 0, 0, 0.2)'
             : '0 3px 5px rgba(0, 0, 0, 0.1)',
         color: '#00bcd4',
     });
 
-    return(
-        <div 
-            className = 'bookmark-container'
-        >   
-            <Typography
-                variant = 'h2'
-                color = '#00bcd4'
-                sx = {{
-                    marginTop: '4rem',
-                    marginBottom: '2rem',
-                    textAlign: 'center'
-                }}
-            >
-            Bookmarks 
-            </Typography>
-            <div
-                style = {{
-                    alignItems: 'center',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    marginBottom: '4rem'
-                }}
-            >   
-            <Button
+    return (
+        <div
+            className='bookmark-container'
+        >
+            <Box
                 sx={{
                     backgroundColor: '#212121',
-                    border: '.2rem solid #212121',
-                    color: '#00bcd4',
-                    fontSize: 'large',
-                    width: '12rem',
-                    '&:hover': {
-                        border: '.2rem solid #00bcd4',
-                        color: '#00bcd4',
-                        fontSize: 'large'
-                    },
+                    border: '.2rem solid #00bcd4',
+                    borderRadius: '.6rem',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    marginTop: '8rem',
+                    marginBottom: '2rem'
                 }}
-                onClick = { handleIsEditing }
             >
-            { isEditing ?  'Apply' : 'Edit' }
-            </Button>
-            </div>
-            { bookmarks.map(( item, index ) => (
-                <Link 
-                    to = { `/search/page/${ item.page_id }` }
-                    key = { index }
-                    style = {{
+                <Typography
+                    variant='h2'
+                    color='#00bcd4'
+                    sx={{
+                        textAlign: 'center',
+                        marginTop: '2rem',
+                        marginBottom: '2rem'
+                    }}
+                >
+                    Bookmarks
+                </Typography>
+                {isEditing ? (
+                    <div
+                        style={{
+                            alignItems: 'center',
+                            display: 'flex',
+                            flexDirection: 'column',
+                        }}
+                    >
+                        <Button
+                            sx={{
+                                backgroundColor: '#212121',
+                                border: '.2rem solid #212121',
+                                color: '#00bcd4',
+                                fontSize: 'large',
+                                marginBottom: '2rem',
+                                width: '12rem',
+                                '&:hover': {
+                                    border: '.2rem solid #00bcd4',
+                                    color: '#00bcd4',
+                                    fontSize: 'large'
+                                },
+                            }}
+                            onClick={handleIsEditing}
+                        >
+                            Done
+                        </Button>
+                    </div>
+                ) : isSorting ? (
+                    <div
+                        style={{
+                            alignItems: 'center',
+                            display: 'flex',
+                            flexDirection: 'column',
+                        }}
+                    >
+                        <Button
+                            sx={{
+                                backgroundColor: '#212121',
+                                border: '.2rem solid #212121',
+                                color: '#00bcd4',
+                                fontSize: 'large',
+                                marginBottom: '2rem',
+                                width: '12rem',
+                                '&:hover': {
+                                    border: '.2rem solid #00bcd4',
+                                    color: '#00bcd4',
+                                    fontSize: 'large'
+                                },
+                            }}
+                            onClick={handleIsSorting}
+                        >
+                            Done
+                        </Button>
+                    </div>
+                ) : (
+                    <>
+                        <div
+                            style={{
+                                alignItems: 'center',
+                                display: 'flex',
+                                justifyContent: 'center',
+                                flexDirection: 'row',
+                            }}
+                        >
+                            <Button
+                                sx={{
+                                    backgroundColor: '#212121',
+                                    border: '.2rem solid #212121',
+                                    color: '#00bcd4',
+                                    fontSize: 'large',
+                                    marginBottom: '2rem',
+                                    marginRight: '1rem',
+                                    width: '12rem',
+                                    '&:hover': {
+                                        border: '.2rem solid #00bcd4',
+                                        color: '#00bcd4',
+                                        fontSize: 'large'
+                                    },
+                                }}
+                                onClick={handleIsEditing}
+                            >
+                                Edit
+                            </Button>
+                            <Button
+                                sx={{
+                                    backgroundColor: '#212121',
+                                    border: '.2rem solid #212121',
+                                    color: '#00bcd4',
+                                    fontSize: 'large',
+                                    marginBottom: '2rem',
+                                    width: '12rem',
+                                    '&:hover': {
+                                        border: '.2rem solid #00bcd4',
+                                        color: '#00bcd4',
+                                        fontSize: 'large'
+                                    },
+                                }}
+                                onClick={handleIsSorting}
+                            >
+                                Sort
+                            </Button>
+                        </div>
+                    </>
+                )}
+            </Box>
+            {bookmarks.map((item, index) => (
+                <Link
+                    to={`/search/page/${item.page_id}`}
+                    key={index}
+                    style={{
                         textDecoration: 'none'
                     }}
                 >
-                <Card
-                    key={index} 
-                    sx = { getCardStyle( index )}
-                    onMouseEnter = { () => handleMouseEnter( index ) }
-                    onMouseLeave = { handleMouseLeave }
-                >
-                <Typography
-                    variant = 'h4'
-                    color = '#00bcd4'
-                    noWrap
-                >
-                    { item.page_id }
+                    <Card
+                        key={index}
+                        sx={getCardStyle(index)}
+                        onMouseEnter={() => handleMouseEnter(index)}
+                        onMouseLeave={handleMouseLeave}
+                    >
+                        <Typography
+                            variant='h4'
+                            color='#00bcd4'
+                            noWrap
+                        >
+                            {item.page_id}
 
-                </Typography>
-                </Card>
-            </Link>
+                        </Typography>
+                        {isEditing ? (
+                            <RemoveCircleOutline
+                                sx={{
+                                    position: 'absolute',
+                                    fontSize: '3rem',
+                                    right: '1rem',
+                                    top: '50%',
+                                    transform: 'translateY( -50% )',
+                                    cursor: 'pointor',
+                                    color: '#00bcd4',
+                                    '&:hover': {
+                                        color: '#6a1b9a',
+                                    },
+                                }}
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    console.log(`You clicked to remove the ${item.page_id} bookmark!`);
+                                    handleRemoveBookmark(item.page_id);
+                                }}
+                            />
+                        ) : isSorting ? (
+                            <AddCircleOutline
+                                sx={{
+                                    position: 'absolute',
+                                    fontSize: '3rem',
+                                    right: '1rem',
+                                    top: '50%',
+                                    transform: 'translateY( -50% )',
+                                    cursor: 'pointor',
+                                    color: '#00bcd4',
+                                    '&:hover': {
+                                        color: '#6a1b9a',
+                                    },
+                                }}
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    console.log(`You clicked to add the item ${item.page_id} to a new container`);
+                                }}
+                            />
+                        ) : null}
+                    </Card>
+                </Link>
             ))}
         </div>
     )
