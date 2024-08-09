@@ -17,6 +17,7 @@ function Bookmark() {
     const [ bookmarks, setBookmarks ] = useState([]);
     const [ visibleBookmarks, setVisibleBookmarks ] = useState(new Set());
     const [ hoveredIndex, setHoveredIndex ] = useState( null );
+    const [ isEditing, setIsEditing ] = useState( false );
 
 
     useEffect(() => {
@@ -37,6 +38,10 @@ function Bookmark() {
         fetchBookmarks();
     }, []);
 
+    const handleIsEditing = () => {
+        setIsEditing( !isEditing );
+    }
+
     const handleMouseEnter = ( index ) => {
         setHoveredIndex( index );
     }
@@ -55,16 +60,20 @@ function Bookmark() {
         margin: '1rem',
         padding: '1rem',
         boxShadow: '0 3px 5px rgba(0, 0, 0, 0.1)',
-        width: '50rem',
-        height: '3rem',
+        width: '40rem',
+        height: '2rem',
         flexGrow: 1,
         opacity: visibleBookmarks.has(index) ? 1 : 0,
         transition: 'opacity 1s ease-out, transform 0.3s ease-out, box-shadow 0.3s ease-out',
-        transform: hoveredIndex === index ? 'scale(1.08)' : 'scale(1)',
+        transform: visibleBookmarks.has(index)
+        ? hoveredIndex === index 
+            ? 'scale(1.07)' 
+            : 'scale(1)'
+            : 'scale(0.8)', 
         boxShadow: hoveredIndex === index
             ? '0 6px 12px rgba(0, 0, 0, 0.2)'
             : '0 3px 5px rgba(0, 0, 0, 0.1)',
-        color: '#00bcd4', 
+        color: '#00bcd4',
     });
 
     return(
@@ -75,13 +84,39 @@ function Bookmark() {
                 variant = 'h2'
                 color = '#00bcd4'
                 sx = {{
-                    marginTop: '8rem',
+                    marginTop: '4rem',
                     marginBottom: '2rem',
                     textAlign: 'center'
                 }}
             >
             Bookmarks 
             </Typography>
+            <div
+                style = {{
+                    alignItems: 'center',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    marginBottom: '4rem'
+                }}
+            >   
+            <Button
+                sx={{
+                    backgroundColor: '#212121',
+                    border: '.2rem solid #212121',
+                    color: '#00bcd4',
+                    fontSize: 'large',
+                    width: '12rem',
+                    '&:hover': {
+                        border: '.2rem solid #00bcd4',
+                        color: '#00bcd4',
+                        fontSize: 'large'
+                    },
+                }}
+                onClick = { handleIsEditing }
+            >
+            { isEditing ?  'Apply' : 'Edit' }
+            </Button>
+            </div>
             { bookmarks.map(( item, index ) => (
                 <Link 
                     to = { `/search/page/${ item.page_id }` }
