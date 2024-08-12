@@ -4,7 +4,7 @@
 // Dependencies 
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Alert, Box, Button, Card, CardContent, CardMedia, CircularProgress, Typography, } from '@mui/material';
+import { Alert, Backdrop, Box, Button, Card, CardContent, CardMedia, CircularProgress, Select, TextField, Typography, } from '@mui/material';
 import { AddCircleOutline, RemoveCircleOutline } from '@mui/icons-material';
 
 
@@ -22,7 +22,19 @@ function Bookmark() {
     const [isEditing, setIsEditing] = useState(false);
     const [isSorting, setIsSorting] = useState(false);
     const { displayAlert } = useAlert();
+    
+    const [ backdrop, setBackdrop ] = useState( false );
+    const [ containers, setContainers ] = useState([]);
+    const [ containerName, setContainerName ] = useState( '' ); 
+    const [ selectedContainer, setSelectedContainer ] = useState( '' );
 
+    const handleCloseBackdrop = () =>{
+        // setBackdrop( false );
+        console.log( 'You clicked close!!!' );
+    }
+    const handleOpenBackdrop = () => {
+        setBackdrop( true );
+    }
 
     useEffect(() => {
         const fetchBookmarks = async () => {
@@ -53,6 +65,7 @@ function Bookmark() {
             console.log(`Error removing bookmarked item`, error);
         }
     }
+
 
     const handleIsEditing = () => {
         setIsEditing(!isEditing);
@@ -286,6 +299,7 @@ function Bookmark() {
                                 }}
                                 onClick={(e) => {
                                     e.preventDefault();
+                                    handleOpenBackdrop();
                                     console.log(`You clicked to add the item ${item.page_id} to a new container`);
                                 }}
                             />
@@ -293,6 +307,63 @@ function Bookmark() {
                     </Card>
                 </Link>
             ))}
+            { backdrop && (
+            <Backdrop 
+                open = { backdrop }
+                onClick = { handleCloseBackdrop }
+                sx = {{
+                    color: '#212121'
+                }}
+            >
+                <Box 
+                    component = 'form'
+                    sx = {{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'center',
+                        backgroundColor: '#212121',
+                        border: '.2rem solid #00bcd4',
+                        borderRadius: '.6rem',
+                        padding: '2rem'
+                    }}
+                >
+                    <Typography 
+                        variant = 'h2'
+                        color = '#00bcd4'
+                        sx = {{
+                            textAlign: 'center',
+                            marginTop: '2rem',
+                            marginBottom: '4rem'
+                        }}
+                    >
+                        Create New Container 
+                    </Typography>
+                    <Select
+                        value = { selectedContainer }
+                        onChange = { ( e ) => setSelectedContainer( e.target.value ) }
+                        sx = {{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            border: '.2rem solid #00bcd4'
+                        }}
+                    >
+
+                    </Select>
+                    <TextField 
+                        label = 'Container Name'
+                        name = 'container'
+                        sx = {{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            border: '.2rem solid #00bcd4',
+                            marginTop: '1rem'
+                        }}
+                    >
+
+                    </TextField>
+                </Box>
+            </Backdrop>
+            )}
         </div>
     )
 }
