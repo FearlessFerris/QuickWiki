@@ -4,7 +4,7 @@
 // Dependencies 
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Alert, Backdrop, Box, Button, Card, CardContent, CardMedia, CircularProgress, Select, TextField, Typography, } from '@mui/material';
+import { Alert, Backdrop, Box, Button, Card, CardContent, CardMedia, CircularProgress, FormControl, InputLabel, MenuItem, Select, TextField, Typography, } from '@mui/material';
 import { AddCircleOutline, RemoveCircleOutline } from '@mui/icons-material';
 
 
@@ -24,12 +24,12 @@ function Bookmark() {
     const { displayAlert } = useAlert();
     
     const [ backdrop, setBackdrop ] = useState( false );
-    const [ containers, setContainers ] = useState([]);
-    const [ containerName, setContainerName ] = useState( '' ); 
-    const [ selectedContainer, setSelectedContainer ] = useState( '' );
+    const [ group, setGroup ] = useState([]);
+    const [ groupName, setGroupName ] = useState( '' ); 
+    const [ selectedGroup, setSelectedGroup ] = useState( '' );
 
     const handleCloseBackdrop = () =>{
-        // setBackdrop( false );
+        setBackdrop( false );
         console.log( 'You clicked close!!!' );
     }
     const handleOpenBackdrop = () => {
@@ -307,63 +307,311 @@ function Bookmark() {
                     </Card>
                 </Link>
             ))}
-            { backdrop && (
+            {backdrop && (
             <Backdrop 
-                open = { backdrop }
-                onClick = { handleCloseBackdrop }
-                sx = {{
+                open={backdrop}
+                onClick={handleCloseBackdrop}
+                sx={{
                     color: '#212121'
                 }}
             >
                 <Box 
-                    component = 'form'
-                    sx = {{
+                    component='form'
+                    onClick = { ( e ) => e.stopPropagation() }
+                    sx={{
                         display: 'flex',
                         flexDirection: 'column',
                         justifyContent: 'center',
                         backgroundColor: '#212121',
                         border: '.2rem solid #00bcd4',
                         borderRadius: '.6rem',
-                        padding: '2rem'
+                        padding: '3rem'
                     }}
                 >
                     <Typography 
-                        variant = 'h2'
-                        color = '#00bcd4'
-                        sx = {{
+                        variant='h2'
+                        color='#00bcd4'
+                        sx={{
                             textAlign: 'center',
                             marginTop: '2rem',
                             marginBottom: '4rem'
                         }}
                     >
-                        Create New Container 
+                        Create / Add Group  
                     </Typography>
-                    <Select
-                        value = { selectedContainer }
-                        onChange = { ( e ) => setSelectedContainer( e.target.value ) }
-                        sx = {{
-                            display: 'flex',
-                            justifyContent: 'center',
-                            border: '.2rem solid #00bcd4'
+
+                    <FormControl 
+                        sx={{
+                            marginTop: '1rem',
+                            '& .MuiOutlinedInput-root': {
+                                '& fieldset': {
+                                    borderWidth: '.2rem',
+                                    borderColor: '#00bcd4',
+                                },
+                                '&:hover fieldset': {
+                                    borderWidth: '.2rem',
+                                    borderColor: '#00bcd4',
+                                },
+                                '&.Mui-focused fieldset': {
+                                    borderWidth: '.2rem',
+                                    borderColor: '#00bcd4',
+                                }
+                            },
+                            '& .MuiInputLabel-root': {
+                                color: '#00bcd4',
+                            },
+                            '& .MuiInputLabel-root.Mui-focused': {
+                                color: '#00bcd4'
+                            },
+                            '& .MuiSelect-root': {
+                                color: '#00bcd4',
+                            },
+                            '& .MuiSvgIcon-root': {
+                                color: '#00bcd4',
+                            },
+                            '& .MuiPaper-root': {
+                                backgroundColor: '#424242', 
+                                color: '#00bcd4', 
+                            },
                         }}
                     >
+                        <InputLabel>Select Existing Group</InputLabel>
+                        <Select
+                            value={selectedGroup}
+                            onChange={(e) => setSelectedGroup(e.target.value)}
+                            label="Select Existing Group"
+                            sx={{
+                                display: 'flex',
+                                justifyContent: 'center',
+                                borderRadius: '.3rem',
+                                color: '#00bcd4'
+                            }}
+                            MenuProps={{
+                                PaperProps: {
+                                    sx: {
+                                        bgcolor: '#424242', 
+                                    },
+                                },
+                            }}
+                        >
+                            <MenuItem 
+                                value='' 
+                                disabled
+                                sx={{
+                                    color: '#00bcd4',
+                                    '&:hover': {
+                                        backgroundColor: '#00bcd4', 
+                                        color: '#212121',
+                                    }
+                                }}
+                            > 
+                                Select Existing Group 
+                            </MenuItem>
+                            <MenuItem
+                                value='group1'
+                                sx={{
+                                    color: '#00bcd4',
+                                    '&:hover': {
+                                        backgroundColor: '#00bcd4', 
+                                        color: '#212121', 
+                                    }
+                                }}
+                            >
+                                Group 1
+                            </MenuItem>
+                            <MenuItem
+                                value='group2'
+                                sx={{
+                                    color: '#00bcd4',
+                                    '&:hover': {
+                                        backgroundColor: '#00bcd4',
+                                        color: '#212121',
+                                    }
+                                }}
+                            >
+                                Group 2
+                            </MenuItem>
+                        </Select>
+                    </FormControl>
 
-                    </Select>
                     <TextField 
-                        label = 'Container Name'
-                        name = 'container'
-                        sx = {{
+                        label='Group Name'
+                        name='group'
+                        placeholder = 'Ex: Super cool articles'
+                        sx={{
+                            marginTop: '1rem',
+                            '& .MuiOutlinedInput-root': {
+                                '& fieldset': {
+                                    borderWidth: '.2rem',
+                                    borderColor: '#00bcd4',
+                                },
+                                '&:hover fieldset': {
+                                    borderWidth: '.2rem',
+                                    borderColor: '#00bcd4',
+                                },
+                                '&.Mui-focused fieldset': {
+                                    borderWidth: '.2rem',
+                                    borderColor: '#00bcd4',
+                                }
+                            },
+                            '& .MuiInputLabel-root': {
+                                color: '#00bcd4',
+                            },
+                            '& .MuiInputLabel-root.Mui-focused': {
+                                color: '#00bcd4'
+                            },
+                            '& .MuiInputBase-input': {
+                                color: '#00bcd4'
+                            }
+                        }}
+                        InputLabelProps={{
+                            style: {
+                                color: '#00bcd4'
+                            }
+                        }}
+                        inputProps={{
+                            sx: {
+                                '::placeholder': {
+                                    color: '#00bcd4',
+                                    opacity: 1,
+                                }
+                            }
+                        }}
+                    />
+                    <TextField
+                        label = 'Group Image URL'
+                        name = 'group-image-url'
+                        placeholder = 'Ex: www.coolimages.com'
+                        sx={{
+                            marginTop: '1rem',
+                            '& .MuiOutlinedInput-root': {
+                                '& fieldset': {
+                                    borderWidth: '.2rem',
+                                    borderColor: '#00bcd4',
+                                },
+                                '&:hover fieldset': {
+                                    borderWidth: '.2rem',
+                                    borderColor: '#00bcd4',
+                                },
+                                '&.Mui-focused fieldset': {
+                                    borderWidth: '.2rem',
+                                    borderColor: '#00bcd4',
+                                }
+                            },
+                            '& .MuiInputLabel-root': {
+                                color: '#00bcd4',
+                            },
+                            '& .MuiInputLabel-root.Mui-focused': {
+                                color: '#00bcd4'
+                            },
+                            '& .MuiInputBase-input': {
+                                color: '#00bcd4'
+                            }
+                        }}
+                        InputLabelProps={{
+                            style: {
+                                color: '#00bcd4'
+                            }
+                        }}
+                        inputProps={{
+                            sx: {
+                                '::placeholder': {
+                                    color: '#00bcd4', 
+                                    opacity: 1,
+                                }
+                            }
+                        }}
+                    />
+                    <TextField
+                        label = 'Group Notes'
+                        name = 'group-notes'
+                        placeholder = 'Ex: These articles are very interesting'
+                        sx={{
+                            marginTop: '1rem',
+                            '& .MuiOutlinedInput-root': {
+                                '& fieldset': {
+                                    borderWidth: '.2rem',
+                                    borderColor: '#00bcd4',
+                                },
+                                '&:hover fieldset': {
+                                    borderWidth: '.2rem',
+                                    borderColor: '#00bcd4',
+                                },
+                                '&.Mui-focused fieldset': {
+                                    borderWidth: '.2rem',
+                                    borderColor: '#00bcd4',
+                                }
+                            },
+                            '& .MuiInputLabel-root': {
+                                color: '#00bcd4',
+                            },
+                            '& .MuiInputLabel-root.Mui-focused': {
+                                color: '#00bcd4'
+                            },
+                            '& .MuiInputBase-input': {
+                                color: '#00bcd4'
+                            }
+                        }}
+                        InputLabelProps={{
+                            style: {
+                                color: '#00bcd4'
+                            }
+                        }}
+                        inputProps={{
+                            sx: {
+                                '::placeholder': {
+                                    color: '#00bcd4', 
+                                    opacity: 1, 
+                                }
+                            }
+                        }}
+                    />
+                    <div
+                        style={{
                             display: 'flex',
+                            flexDirection: 'row',
                             justifyContent: 'center',
-                            border: '.2rem solid #00bcd4',
-                            marginTop: '1rem'
+                            marginTop: '2rem'
                         }}
                     >
-
-                    </TextField>
+                        <Button
+                            variant='outlined'
+                            sx={{
+                                backgroundColor: '#212121',
+                                border: '.2rem solid #212121',
+                                color: '#00bcd4',
+                                fontSize: 'large',
+                                '&:hover': {
+                                    border: '.2rem solid #00bcd4',
+                                    color: '#00bcd4',
+                                    fontSize: 'large'
+                                },
+                            }}
+                        >
+                        Create
+                        </Button>
+                        <Button
+                            variant='outlined'
+                            sx={{
+                                backgroundColor: '#212121',
+                                border: '.2rem solid #212121',
+                                color: '#00bcd4',
+                                fontSize: 'large',
+                                marginLeft: '1rem',
+                                '&:hover': {
+                                    border: '.2rem solid #00bcd4',
+                                    color: '#00bcd4',
+                                    fontSize: 'large'
+                                },
+                            }}
+                            onClick = { handleCloseBackdrop }
+                        >
+                        Cancel
+                        </Button>
+                    </div>
                 </Box>
             </Backdrop>
-            )}
+        )}
         </div>
     )
 }
