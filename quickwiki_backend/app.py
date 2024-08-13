@@ -232,6 +232,16 @@ def remove_bookmarks( page ):
         return jsonify({ 'message': 'There was an error removing your bookmark!' }), 500 
 
 
+@app.route( '/api/user/bookmark/group/create/<name>', methods = [ 'POST' ])
+@jwt_required()
+def create_group( name ):
+    """ Route to create a new Bookmark Group Instance """
+
+    current_user = get_jwt_identity() 
+    print( current_user )
+    return jsonify({ 'message': 'You have made a request to bookmark/group/create!' })
+
+
 # Search Routes 
 @app.route('/api/search/<query>', methods=['GET'])
 @jwt_required(optional=True)

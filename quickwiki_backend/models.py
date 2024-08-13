@@ -37,6 +37,7 @@ class User(Base):
     activity_logs = relationship('ActivityLog', back_populates='user')
     sessions = relationship('SessionInfo', back_populates='user')
     bookmarks = relationship('Bookmark', back_populates='user')
+    bookmark_groups = relationship( 'BookmarkGroup', back_populates = 'user' );
 
     def __init__(self, username, email, password_hash, image_url=None, upload_image=None):
         self.username = username
@@ -148,10 +149,12 @@ class Bookmark(Base):
     user_id = Column(UUID(as_uuid=True), ForeignKey('users.id'), nullable=False)
     page_id = Column( String, nullable = False )
     page_url = Column( String, nullable = True )
+    group_id = Column(UUID(as_uuid=True), ForeignKey('bookmark_groups.id'), nullable=True)
     created_at = Column(DateTime, server_default=func.now())
 
     # Relationships 
-    user = relationship('User', back_populates='bookmarks')
+    user = relationship('User', back_populates='bookmarks' )
+    group = relationship( 'BookmarkGroup', back_populates = 'bookmark' ) 
 
     def __init__( self, user_id, page_id, page_url = None ):
         self.user_id = user_id
@@ -193,6 +196,41 @@ class Bookmark(Base):
 
         bookmark = cls.query.filter_by( user_id = user_id, page_id = page_id ).first()
         return bookmark
+
+
+class BookmarkGroup( Base ): 
+    """ Bookmark Group Model """
+
+    __tablename__ = 'bookmark_groups'
+    id = Column( UUID( as_uuid = True ), primary_key = True, default = uuid.uuid4 )
+    user_id = Column( UUID( as_uuid = True ), ForeignKey( 'users.id' ), nullable = False )
+    name = Column( String, nullable = False )
+    notes = Column( String, nullable = True )
+    image_url = Column( String, nullable = True )
+    uploaded_image = Column( String, nullable = True )
+    created_at = Column( DateTime, server_default = func.now() )
+
+    # Relationships 
+    user = relationship( 'User', back_populates = 'bookmark_groups' )
+    bookmark = relationship( 'Bookmark', back_populates = 'group' )
+
+    def __init__( self, user_id, name, notes = None, image_url = None, uploaded_image = None ):
+        self.user_id = user_id 
+        self.name = name 
+        self.notes = notes 
+        self.image_url = image_url 
+        self.uploaded_image = uploaded_image 
+
+    @classmethod
+    def create_group( cls, user_id, name, notes = None, image_url = None, uploaded_image = None ):
+        """ Create a Bookmark Group Instance """
+
+        new_group = cls( user_id = user_id, name = name, notes = notes, image_url = image_url, uploaded_image = uploaded_image )
+        print( f'You have just created a new group!!!! { new_group }' )
+        db.session.add( new_group )
+        db.session.commit()
+        return new_group    
+
 
 class Authorization(Base):
     """ Authorization Info Model """

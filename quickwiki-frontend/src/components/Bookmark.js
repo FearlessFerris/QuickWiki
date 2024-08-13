@@ -16,17 +16,19 @@ import { useAlert } from './ContextDirectory.js/AlertContext';
 // Bookmark Component 
 function Bookmark() {
 
-    const [bookmarks, setBookmarks] = useState([]);
-    const [visibleBookmarks, setVisibleBookmarks] = useState(new Set());
-    const [hoveredIndex, setHoveredIndex] = useState(null);
-    const [isEditing, setIsEditing] = useState(false);
-    const [isSorting, setIsSorting] = useState(false);
-    const { displayAlert } = useAlert();
-    
+    const [ bookmarks, setBookmarks ] = useState([]);
+    const [ visibleBookmarks, setVisibleBookmarks ] = useState(new Set());
+    const [ hoveredIndex, setHoveredIndex ] = useState(null);
+    const [ isEditing, setIsEditing ] = useState(false);
+    const [ isSorting, setIsSorting ] = useState(false);
     const [ backdrop, setBackdrop ] = useState( false );
-    const [ group, setGroup ] = useState([]);
-    const [ groupName, setGroupName ] = useState( '' ); 
     const [ selectedGroup, setSelectedGroup ] = useState( '' );
+    const [ groupInformation, setGroupInformation ] = useState({
+        groupName: '',
+        groupImage: '',
+        groupNotes: ''
+    });
+    const { displayAlert } = useAlert();
 
     const handleCloseBackdrop = () =>{
         setBackdrop( false );
@@ -63,6 +65,16 @@ function Bookmark() {
         }
         catch (error) {
             console.log(`Error removing bookmarked item`, error);
+        }
+    }
+
+    const handleAddToGroup = async ( name ) => {
+        try{
+            const response = await apiClient.post( `/user/bookmark/group/create/${ name }` );
+            console.log( response.data );
+        }
+        catch( error ){
+            console.error( 'Error adding bookmark to group!' );
         }
     }
 
@@ -407,30 +419,7 @@ function Bookmark() {
                             > 
                                 Select Existing Group 
                             </MenuItem>
-                            <MenuItem
-                                value='group1'
-                                sx={{
-                                    color: '#00bcd4',
-                                    '&:hover': {
-                                        backgroundColor: '#00bcd4', 
-                                        color: '#212121', 
-                                    }
-                                }}
-                            >
-                                Group 1
-                            </MenuItem>
-                            <MenuItem
-                                value='group2'
-                                sx={{
-                                    color: '#00bcd4',
-                                    '&:hover': {
-                                        backgroundColor: '#00bcd4',
-                                        color: '#212121',
-                                    }
-                                }}
-                            >
-                                Group 2
-                            </MenuItem>
+                            
                         </Select>
                     </FormControl>
 
@@ -587,6 +576,7 @@ function Bookmark() {
                                     fontSize: 'large'
                                 },
                             }}
+                            onClick = { handleAddToGroup }
                         >
                         Create
                         </Button>
