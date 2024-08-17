@@ -5,7 +5,7 @@
 from flask import Flask, request, jsonify, session
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
-from models import db, create_tables, User, Search, Bookmark, Authorization, SessionInfo, ActivityLog, SavedInfo 
+from models import db, create_tables, User, Search, Bookmark, BookmarkGroup, Authorization, SessionInfo, ActivityLog, SavedInfo 
 from bs4 import BeautifulSoup
 import requests
 
@@ -232,14 +232,19 @@ def remove_bookmarks( page ):
         return jsonify({ 'message': 'There was an error removing your bookmark!' }), 500 
 
 
-@app.route( '/api/user/bookmark/group/create/<name>', methods = [ 'POST' ])
+@app.route( '/api/user/bookmark/group/create', methods = [ 'POST' ])
 @jwt_required()
-def create_group( name ):
+def create_group():
     """ Route to create a new Bookmark Group Instance """
 
     current_user = get_jwt_identity() 
-    print( current_user )
-    return jsonify({ 'message': 'You have made a request to bookmark/group/create!' })
+    user_id = current_user.get( 'user_id' )
+    data = request.get_json()
+    print( data )
+    group_id = data[ 'groupName' ]
+    print( group_id )
+    BookmarkGroup.create_group( user_id = user_id, name = group_id, notes = )
+    return jsonify({ 'message': 'You have made a request to bookmark/group/create!', 'data': data }), 200 
 
 
 # Search Routes 

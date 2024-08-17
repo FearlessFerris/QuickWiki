@@ -188,7 +188,15 @@ class Bookmark(Base):
     def get_bookmarks( cls, user_id ):
         """ Retrieve all Bookmarks for a specific user """
 
-        return cls.query.filter_by( user_id = user_id ).all()
+        print( 'Retrieving Bookmarks!!!!!!' )
+        return cls.query.filter_by( user_id = user_id ).filter( cls.group_id.is_( None )).all()
+    
+    @classmethod 
+    def get_bookmarks_in_groups( cls, user_id ):
+        """ Retrieve all Bookmarks in user specified groups """
+
+        print( 'Retrieving Bookmarks in Groups!!!' )
+        return cls.query.filter_by( user_id = user_id ).filter( cls.group_id.isnot(None )).all()
     
     @classmethod
     def remove_bookmark( cls, user_id, page_id ):
