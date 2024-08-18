@@ -1,7 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy import Column, String, DateTime, ForeignKey, Integer
+from sqlalchemy import Column, String, DateTime, ForeignKey, Integer, Table
 from sqlalchemy.dialects.postgresql import UUID, JSONB
 from sqlalchemy import func
 from datetime import datetime, timedelta
@@ -16,6 +16,15 @@ from utils import create_system_user
 # Other Settings 
 db = SQLAlchemy()
 Base = db.Model
+
+
+# Association Tables 
+bookmark_group_association = Table(
+    'bookmark_group_association',
+    Base.metadata,
+    Column( 'bookmark_id', UUID( as_uuid = True ), ForeignKey( 'bookmarks.id' ), primary_key = True ),
+    Column( 'group_id', UUID( as_uuid = True ), ForeignKey( 'bookmark_groups.id' ), primary_key = True )
+) 
 
 class User(Base):
     """ User Model """
@@ -154,7 +163,7 @@ class Bookmark(Base):
 
     # Relationships 
     user = relationship('User', back_populates='bookmarks' )
-    group = relationship( 'BookmarkGroup', back_populates = 'bookmark' ) 
+    group = relationship( 'BookmarkGroup', secondary = bookmark_group_association, back_populates = 'bookmark' ) 
 
     def __init__( self, user_id, page_id, page_url = None ):
         self.user_id = user_id
@@ -191,19 +200,35 @@ class Bookmark(Base):
         print( 'Retrieving Bookmarks!!!!!!' )
         return cls.query.filter_by( user_id = user_id ).filter( cls.group_id.is_( None )).all()
     
-    @classmethod 
-    def get_bookmarks_in_groups( cls, user_id ):
-        """ Retrieve all Bookmarks in user specified groups """
-
-        print( 'Retrieving Bookmarks in Groups!!!' )
-        return cls.query.filter_by( user_id = user_id ).filter( cls.group_id.isnot(None )).all()
-    
     @classmethod
     def remove_bookmark( cls, user_id, page_id ):
         """ Remove specific user selected Bookmark """
 
         bookmark = cls.query.filter_by( user_id = user_id, page_id = page_id ).first()
         return bookmark
+    
+    @classmethod
+    def add_to_group( cls, user_id, page_id, group_id ):
+        """ Add Bookmark to a Group """
+
+        bookmark = cls.query.filter_by( user_id = user_id, page_id = page_id ).first()
+        group = BookmarkGroup.query.filter_by( user_id = user_id, id = group_id ).first()
+        if bookmark and group: 
+            bookmark.groups.append( group )
+            db.session.commit()
+        return bookmark
+    
+    @classmethod
+    def remove_from_group(cls, user_id, page_id, group_id):
+        """ Remove Bookmark from a Group """
+        bookmark = cls.query.filter_by(user_id=user_id, page_id=page_id).first()
+        group = BookmarkGroup.query.filter_by(id=group_id).first()
+        if bookmark and group:
+            if group in bookmark.groups:
+                bookmark.groups.remove(group)
+                db.session.commit()
+        return bookmark
+
 
 
 class BookmarkGroup( Base ): 
@@ -220,7 +245,7 @@ class BookmarkGroup( Base ):
 
     # Relationships 
     user = relationship( 'User', back_populates = 'bookmark_groups' )
-    bookmark = relationship( 'Bookmark', back_populates = 'group' )
+    bookmark = relationship( 'Bookmark', secondary = bookmark_group_association, back_populates = 'group' )
 
     def __init__( self, user_id, name, notes = None, image_url = None, uploaded_image = None ):
         self.user_id = user_id 

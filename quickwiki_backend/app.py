@@ -162,29 +162,117 @@ def update_profile():
     return jsonify({ 'message': f'User: { username }, Not Found!' }), 404 
 
 
-@app.route( '/api/user/bookmark/add/<title>', methods = [ 'POST' ])
+# @app.route( '/api/user/bookmark/add/<title>', methods = [ 'POST' ])
+# @jwt_required()
+# def add_bookmark( title ):
+#     """ Add Bookmark to a Users Account """
+
+#     current_user = get_jwt_identity()
+#     if not current_user:
+#         return jsonify({ 'message': 'Error, must be logged in to add a bookmark!' }), 401 
+#     user_id = current_user.get( 'user_id' )
+#     page_url = f'{ get_page_base }/{ title }/html'
+#     data = { 'user_id': user_id, 'page_id': title, 'page_url': page_url }
+#     groupInformation = request.json
+#     print( groupInformation )
+#     try: 
+#         bookmark = Bookmark.create_bookmark( user_id, title, page_url )
+#         # if group_id: 
+#         #     bookmark_group = BookmarkGroup.create_group( user_id = user_id, name = )
+#         ActivityLog.create_activity_log( user_id, 'bookmark', '/api/user/bookmark/add', 'Add Bookmark POST Successful' )
+#         db.session.commit()
+#         return jsonify({ 'message': 'You have successfully made a request to /bookmark/add', 'data': data }), 200 
+#     except Exception as e: 
+#         db.session.rollback()
+#         ActivityLog.create_activity_log( user_id, 'bookmark', '/api/user/bookmark/add', 'Add Bookmark POST Failed' )
+#         db.session.commit()
+#         return jsonify({ 'message': f'Internal server error, could not add { title } to bookmarks', 'error': str( e ) }), 500    
+    
+#     return jsonify({ 'message': f'Error adding { title } to bookmarks' }), 400  
+
+# @app.route('/api/user/bookmark/add/<title>', methods=['POST'])
+# @jwt_required()
+# def add_bookmark_and_group(title):
+#     """Add Bookmark to a User's Account and optionally create a Group"""
+
+#     current_user = get_jwt_identity()
+#     if not current_user:
+#         return jsonify({'message': 'Error, must be logged in to add a bookmark!'}), 401
+
+#     user_id = current_user.get('user_id')
+#     page_url = f'{get_page_base}/{title}/html'
+#     data = request.get_json()
+#     print( data )
+
+#     try:
+#         bookmark = Bookmark.create_bookmark(user_id, title, page_url)
+#         if 'groupName' in data:
+#             group_name = data['groupName']
+#             group_image = data.get('groupImage', '')
+#             group_notes = data.get('groupNotes', '')
+#             bookmark_group = BookmarkGroup.create_group(
+#                 user_id=user_id,
+#                 name=group_name,
+#                 notes=group_notes,
+#                 image_url=group_image,
+#                 uploaded_image=None
+#             )
+#             bookmark.group_id = bookmark_group.id  
+
+#         ActivityLog.create_activity_log(user_id, 'bookmark', '/api/user/bookmark/add', 'Add Bookmark and Group POST Successful')
+#         db.session.commit()
+
+#         return jsonify({'message': 'You have successfully added a bookmark and optionally created a group.', 'data': data}), 200
+
+#     except Exception as e:
+#         db.session.rollback()
+#         ActivityLog.create_activity_log(user_id, 'bookmark', '/api/user/bookmark/add', 'Add Bookmark and Group POST Failed')
+#         db.session.commit()
+#         return jsonify({'message': f'Internal server error, could not add {title} to bookmarks or create a group', 'error': str(e)}), 500
+
+@app.route('/api/user/bookmark/add', methods=['POST'])
 @jwt_required()
-def add_bookmark( title ):
-    """ Add Bookmark to a Users Account """
+def add_bookmark_and_group():
+    """Add Bookmark to a User's Account and optionally create a Group"""
 
     current_user = get_jwt_identity()
     if not current_user:
-        return jsonify({ 'message': 'Error, must be logged in to add a bookmark!' }), 401 
-    user_id = current_user.get( 'user_id' )
-    page_url = f'{ get_page_base }/{ title }/html'
-    data = { 'user_id': user_id, 'page_id': title, 'page_url': page_url }
-    try: 
-        bookmark = Bookmark.create_bookmark( user_id, title, page_url )
-        ActivityLog.create_activity_log( user_id, 'bookmark', '/api/user/bookmark/add', 'Add Bookmark POST Successful' )
-        db.session.commit()
-        return jsonify({ 'message': 'You have successfully made a request to /bookmark/add', 'data': data }), 200 
-    except Exception as e: 
-        db.session.rollback()
-        ActivityLog.create_activity_log( user_id, 'bookmark', '/api/user/bookmark/add', 'Add Bookmark POST Failed' )
-        db.session.commit()
-        return jsonify({ 'message': f'Internal server error, could not add { title } to bookmarks', 'error': str( e ) }), 500    
+        return jsonify({'message': 'Error, must be logged in to add a bookmark!'}), 401
+
+    user_id = current_user.get('user_id')
+    data = request.get_json()
     
-    return jsonify({ 'message': f'Error adding { title } to bookmarks' }), 400  
+    title = data.get('title')
+    if not title:
+        return jsonify({'message': 'Title is required!'}), 400
+    
+    page_url = f'{get_page_base}/{title}/html'
+
+    try:
+        bookmark = Bookmark.create_bookmark(user_id, title, page_url)
+        if 'groupName' in data:
+            group_name = data['groupName']
+            group_image = data.get('groupImage', '')
+            group_notes = data.get('groupNotes', '')
+            bookmark_group = BookmarkGroup.create_group(
+                user_id=user_id,
+                name=group_name,
+                notes=group_notes,
+                image_url=group_image,
+                uploaded_image=None
+            )
+            bookmark.group_id = bookmark_group.id  
+
+        ActivityLog.create_activity_log(user_id, 'bookmark', '/api/user/bookmark/add', 'Add Bookmark and Group POST Successful')
+        db.session.commit()
+
+        return jsonify({'message': 'You have successfully added a bookmark and optionally created a group.', 'data': data}), 200
+
+    except Exception as e:
+        db.session.rollback()
+        ActivityLog.create_activity_log(user_id, 'bookmark', '/api/user/bookmark/add', 'Add Bookmark and Group POST Failed')
+        db.session.commit()
+        return jsonify({'message': f'Internal server error, could not add bookmark or create a group', 'error': str(e)}), 500
 
 
 @app.route( '/api/user/bookmark', methods = ['GET'])
@@ -232,19 +320,22 @@ def remove_bookmarks( page ):
         return jsonify({ 'message': 'There was an error removing your bookmark!' }), 500 
 
 
-@app.route( '/api/user/bookmark/group/create', methods = [ 'POST' ])
-@jwt_required()
-def create_group():
-    """ Route to create a new Bookmark Group Instance """
+# @app.route( '/api/user/bookmark/group/create', methods = [ 'POST' ])
+# @jwt_required()
+# def create_group():
+#     """ Route to create a new Bookmark Group Instance """
 
-    current_user = get_jwt_identity() 
-    user_id = current_user.get( 'user_id' )
-    data = request.get_json()
-    print( data )
-    group_id = data[ 'groupName' ]
-    print( group_id )
-    BookmarkGroup.create_group( user_id = user_id, name = group_id, notes = )
-    return jsonify({ 'message': 'You have made a request to bookmark/group/create!', 'data': data }), 200 
+#     current_user = get_jwt_identity() 
+#     user_id = current_user.get( 'user_id' )
+#     data = request.get_json()
+#     name = data[ 'groupName' ]
+#     image_url = data[ 'groupImage' ]
+#     notes = data[ 'groupNotes' ]
+#     print( f'Name: { name }' )
+#     print( f'Image URL: { image_url }' )
+#     print( f'Notes: { notes }' )
+#     BookmarkGroup.create_group( user_id = user_id, name = name, notes = notes, image_url = image_url, uploaded_image = None )
+#     return jsonify({ 'message': 'You have made a request to bookmark/group/create!', 'data': data }), 200 
 
 
 # Search Routes 
