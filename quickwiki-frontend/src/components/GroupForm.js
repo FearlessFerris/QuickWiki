@@ -12,7 +12,7 @@ import { useAlert } from './ContextDirectory.js/AlertContext';
 
 
 // Group Creation Form Component 
-function GroupForm({ handleCloseBackdrop, existingGroups }) {
+function GroupForm({ handleCloseBackdrop, existingGroups, title }) {
 
     const [ groups, setGroups ] = useState([]);
     const [ selectedGroup, setSelectedGroup ] = useState('');
@@ -41,21 +41,24 @@ function GroupForm({ handleCloseBackdrop, existingGroups }) {
         fetchGroups();
     }, []);
 
-    const handleSubmit = async ( e ) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        try{
+        try {
             const { groupName, groupImage, groupNotes } = groupInformation;
-            const response = await apiClient.post( '/user/bookmark/add', {
+            const payload = {
+                title,
                 groupName,
                 groupImage,
-                groupNotes
-            });
-            console.log( response.data );
+                groupNotes,
+            };
+            console.log( payload );
+            const response = await apiClient.post('/user/bookmark/add', payload);
+            console.log(response.data);
+            handleCloseBackdrop();
+        } catch (error) {
+            console.error('Error adding Bookmark to group!', error);
         }
-        catch( error ){
-            console.error( 'Error adding Bookmark to group!' );
-        }
-    }
+    };
 
     const handleInputChange = ( field, value ) => {
         setGroupInformation(( previousState ) => ({

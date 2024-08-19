@@ -35,7 +35,6 @@ function Bookmark() {
         try {
             const response = await apiClient.get('/user/bookmark');
             setBookmarks(response.data.data);
-            console.log(response.data);
         }
         catch (error) {
             console.error(`Error Fetching User Bookmarks`);

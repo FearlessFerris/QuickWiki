@@ -25,6 +25,7 @@ function Page() {
     const [htmlData, setHtmlData] = useState('');
     const [loading, setLoading] = useState(true);
     const [backdrop, setBackdrop] = useState(false);
+    const [ groupData, setGroupData ] = useState([]);
     const [selectedGroup, setSelectedGroup] = useState('');
     const [initialGroupInformation, setInitialGroupInformation] = useState({
         groupName: '',
@@ -34,20 +35,30 @@ function Page() {
     const [groupInformation, setGroupInformation] = useState(initialGroupInformation);
     const { displayAlert } = useAlert();
 
-    useEffect(() => {
-        const fetchPageData = async () => {
-            try {
-                const response = await apiClient.get(`/search/page/${title}`);
-                setPageData(response.data.data);
-                setHtmlData(response.data.html);
-                setLoading(false);
-            } catch (error) {
-                console.error(`Error fetching page data: `, error);
-            }
-        };
+    const fetchPageData = async () => {
+        try {
+            const response = await apiClient.get(`/search/page/${title}`);
+            setPageData(response.data.data);
+            setHtmlData(response.data.html);
+            setLoading(false);
+        } catch (error) {
+            console.error(`Error fetching page data: `, error);
+        }
+    };
 
+    const fetchGroups = async () => {
+        try {
+            const response = await apiClient.get('/user/bookmark/groups');
+            setGroupData(response.data.data); 
+        } catch (error) {
+            console.error('Error fetching Bookmark Groups!');
+        }
+    };
+
+    useEffect(() => {
         fetchPageData();
-    }, [title]);
+        fetchGroups(); 
+    }, []);
 
     const transformHtmlLinks = (html) => {
         const root = parse(html);
@@ -74,6 +85,7 @@ function Page() {
                 payload.groupImage = groupInformation.groupImage;
                 payload.groupNotes = groupInformation.groupNotes;
             }
+            console.log( payload );
             const response = await apiClient.post('/user/bookmark/add', payload);
             displayAlert(`${title} was successfully added to your Bookmarks${payload.groupName ? ' and group' : ''}!`, 'success');
             handleCloseBackdrop(); 
@@ -93,7 +105,6 @@ function Page() {
     const handleSubmit = (e) => {
         e.preventDefault();
         addBookmarkAndGroup();
-        console.log('You just clicked Create!!!!');
     };
 
     const handleOpenBackdrop = () => {
@@ -254,12 +265,9 @@ function Page() {
                     }}
                 >
                     <GroupForm 
-                        handleSubmit = { handleSubmit }
                         handleCloseBackdrop = { handleCloseBackdrop }
-                        handleInputChange = { handleInputChange }
-                        groupInformation = { groupInformation }
-                        selectedGroup = { selectedGroup }
-                        setSelectedGroup = { setSelectedGroup }
+                        existingGroups = { groupData }
+                        title = { title }
                     /> 
                 </Backdrop>
             )}
