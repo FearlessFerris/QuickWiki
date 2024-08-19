@@ -253,6 +253,17 @@ class BookmarkGroup( Base ):
         self.notes = notes 
         self.image_url = image_url 
         self.uploaded_image = uploaded_image 
+    
+    def convert_to_dictionary(self):
+        """ Convert BookmarkGroup Instance to Dictionary """
+        return {
+            'id': str(self.id),
+            'name': self.name,
+            'notes': self.notes,
+            'image_url': self.image_url,
+            'uploaded_image': self.uploaded_image,
+            'created_at': self.created_at.strftime('%m/%d/%y')
+        }
 
     @classmethod
     def create_group( cls, user_id, name, notes = None, image_url = None, uploaded_image = None ):
