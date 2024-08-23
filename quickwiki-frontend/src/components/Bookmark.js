@@ -43,7 +43,7 @@ function Bookmark() {
 
     const fetchGroups = async () => {
         try {
-            const response = await apiClient.get('/user/bookmark/groups');
+            const response = await apiClient.get( '/user/bookmark/groups' );
             setGroupData(response.data.data); 
         } catch (error) {
             console.error('Error fetching Bookmark Groups!');
@@ -62,25 +62,6 @@ function Bookmark() {
             }, index * 400 );
         });
     }, [ bookmarks ]);
-
-    // const addBookmarkAndGroup = async ( pageId ) => {
-    //     try {
-    //         const payload = {
-    //             title: pageId
-    //         };
-    //         if ( groupInformation.groupName.trim() !== '' ) {
-    //             payload.groupName = groupInformation.groupName;
-    //             payload.groupImage = groupInformation.groupImage;
-    //             payload.groupNotes = groupInformation.groupNotes;
-    //         }
-    //         const response = await apiClient.post('/user/bookmark/add', payload);
-    //         displayAlert(`${ pageId } was successfully added to your Bookmarks${payload.groupName ? ' and group' : ''}!`, 'success');
-    //         handleCloseBackdrop(); 
-    //     } catch (error) {
-    //         console.error('Error adding page to Bookmarks and Group!!!');
-    //         displayAlert(`Error adding ${ pageId } to your Bookmarks${groupInformation.groupName ? ' and Group' : ''}!`, 'error');
-    //     }
-    // }
 
     const handleRemoveBookmark = async ( pageId ) => {
         try{

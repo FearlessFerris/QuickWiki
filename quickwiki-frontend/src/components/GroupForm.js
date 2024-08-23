@@ -9,6 +9,7 @@ import { Box, Button, Card, CardContent, FormControl, InputLabel, MenuItem, Sele
 // Components & Necessary Files 
 import apiClient from '../api/apiClient';
 import { useAlert } from './ContextDirectory.js/AlertContext';
+import e from 'express';
 
 
 // Group Creation Form Component 
@@ -41,24 +42,19 @@ function GroupForm({ handleCloseBackdrop, existingGroups, title }) {
         fetchGroups();
     }, []);
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async () => {
         e.preventDefault();
-        try {
-            const { groupName, groupImage, groupNotes } = groupInformation;
-            const payload = {
-                title,
-                groupName,
-                groupImage,
-                groupNotes,
-            };
-            console.log( payload );
-            const response = await apiClient.post('/user/bookmark/add', payload );
-            console.log(response.data);
-            handleCloseBackdrop();
-        } catch (error) {
-            console.error('Error adding Bookmark to group!', error);
+        try{
+            const response = await apiClient.post( '/user/bookmark/groups/add', {
+                title
+            } );
+            console.log( response );
         }
-    };
+        catch( error ){
+            console.error( error );
+            console.error( 'Error adding / creating new group!' );
+        }
+    } 
 
     const handleInputChange = ( field, value ) => {
         setGroupInformation(( previousState ) => ({
@@ -319,6 +315,7 @@ function GroupForm({ handleCloseBackdrop, existingGroups, title }) {
                     }}
                 >
                     <Button
+                        type = 'submit'
                         variant='outlined'
                         sx={{
                             backgroundColor: '#212121',
@@ -331,7 +328,7 @@ function GroupForm({ handleCloseBackdrop, existingGroups, title }) {
                                 fontSize: 'large'
                             },
                         }}
-                        onClick={handleSubmit}
+                        // onClick={handleSubmit}
                     >
                         Create
                     </Button>

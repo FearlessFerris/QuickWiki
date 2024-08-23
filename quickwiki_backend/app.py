@@ -7,7 +7,7 @@ from flask_cors import CORS
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 from models import db, create_tables, User, Search, Bookmark, BookmarkGroup, Authorization, SessionInfo, ActivityLog, SavedInfo 
 from bs4 import BeautifulSoup
-import requests, logging 
+import requests
 
 
 # Necessary Files 
@@ -62,7 +62,7 @@ def create():
     upload_image = data.get( 'upload_image' )
 
 
-    if not ( username and password and confirm_password and email ):
+    if not username and password and confirm_password and email:
         return jsonify({ 'errors': { 'message': 'Please complete all required fields' }}), 400 
     
     if password != confirm_password:
@@ -187,7 +187,6 @@ def add_bookmark():
     except Exception as e:
         db.session.rollback()
         ActivityLog.create_activity_log(user_id, 'bookmark', '/api/user/bookmark/add', 'Add Bookmark and Group POST Failed')
-        logging.error(f"Error adding bookmark: {str(e)}")
         return jsonify({'message': 'Internal server error, could not add bookmark or create a group', 'error': str(e)}), 500
 
 
@@ -223,7 +222,6 @@ def remove_bookmarks( page ):
     if not current_user: 
         return jsonify({ 'message': 'Error, must be logged in to remove a bookmark!' }), 401
     
-    username = current_user.get( 'username' )
     user_id = current_user.get( 'user_id' )
     try: 
         bookmark = Bookmark.remove_bookmark( user_id, page )
@@ -256,6 +254,17 @@ def get_bookmark_groups():
         ActivityLog.create_activity_log(user_id, 'bookmark', '/api/user/bookmark/groups', 'All Bookmark Groups GET Failed')
         return jsonify({'message': 'Internal server error, could not retrieve bookmark groups', 'error': str(e)}), 500
 
+
+@app.route( '/api/user/bookmark/groups/add', methods = [ 'POST' ])
+@jwt_required()
+def create_and_add_bookmark_groups():
+    """ Create and add new Bookmark Groups """
+
+    current_user = get_jwt_identity()
+    data = data.json()
+    print( f'Data: { data }' )
+
+    return jsonify({ 'message': 'You have successfully requested to create or add or both to a new Bookmark Group' }), 200 
 
 # Search Routes 
 @app.route('/api/search/<query>', methods=['GET'])

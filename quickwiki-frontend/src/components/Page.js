@@ -75,27 +75,6 @@ function Page() {
         return root.toString();
     };
 
-    // const addBookmarkAndGroup = async () => {
-    //     try {
-    //         const payload = {
-    //             title
-    //         };
-    //         if ( groupInformation.groupName.trim() !== '' ) {
-    //             payload.groupName = groupInformation.groupName;
-    //             payload.groupImage = groupInformation.groupImage;
-    //             payload.groupNotes = groupInformation.groupNotes;
-    //         }
-    //         console.log( payload );
-    //         const response = await apiClient.post('/user/bookmark/add', payload);
-    //         displayAlert(`${title} was successfully added to your Bookmarks${payload.groupName ? ' and group' : ''}!`, 'success');
-    //         handleCloseBackdrop(); 
-    //     } catch (error) {
-    //         console.error('Error adding page to Bookmarks and Group!!!');
-    //         displayAlert(`Error adding ${title} to your Bookmarks${groupInformation.groupName ? ' and Group' : ''}!`, 'error');
-    //     }
-    // }
-
-    console.log( title );
     const addBookmark = async () => {
         try{
             const response = await apiClient.post( '/user/bookmark/add', {
@@ -105,7 +84,7 @@ function Page() {
             displayAlert( `${ title } was successfully added to Bookmarks`, 'success' );
         }
         catch( error ){
-            console.error( error.response.data.message );
+            // console.error( error.response.data.message );
             console.error( `Error adding ${ title } to Bookmarks` );
             displayAlert( `${ title }, is already in Bookmarks`, 'error' );
         }
