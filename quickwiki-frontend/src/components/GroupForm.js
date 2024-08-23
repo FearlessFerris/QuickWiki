@@ -52,7 +52,7 @@ function GroupForm({ handleCloseBackdrop, existingGroups, title }) {
                 groupNotes,
             };
             console.log( payload );
-            const response = await apiClient.post('/user/bookmark/add', payload);
+            const response = await apiClient.post('/user/bookmark/add', payload );
             console.log(response.data);
             handleCloseBackdrop();
         } catch (error) {
@@ -65,6 +65,7 @@ function GroupForm({ handleCloseBackdrop, existingGroups, title }) {
             ...previousState,
             [ field ]: value
         }));
+        console.log( `Field: ${ field } || Value: ${ value }` );
     };
 
     return (

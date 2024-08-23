@@ -182,16 +182,17 @@ class Bookmark(Base):
         }
         
     @classmethod
-    def create_bookmark(cls, user_id, page_id, page_url = None ):
-        """ Create Bookmark Instance """
+    def create_bookmark( cls, user_id, page_id, page_url = None ):
+        """Create Bookmark Instance"""
 
-        new_bookmark = cls( user_id = user_id, page_id = page_id, page_url = page_url )
-        print( f'User_id: { user_id }' )
-        print( f'Page_id: { page_id }' )
-        print( f'Page_url: { page_url }' )
-        db.session.add( new_bookmark )
+        is_existing = Bookmark.query.filter_by(user_id=user_id, page_id=page_id).first()
+        if is_existing:
+            if is_existing.page_id == page_id:
+                return {'message': f'Bookmark {page_id} already exists', 'data': is_existing.convert_to_dictionary()}
+        new_bookmark = cls(user_id=user_id, page_id=page_id, page_url=page_url)
+        db.session.add(new_bookmark)
         db.session.commit()
-        return new_bookmark
+        return {'message': 'Bookmark created successfully', 'data': new_bookmark.convert_to_dictionary()}
 
     @classmethod 
     def get_bookmarks( cls, user_id ):

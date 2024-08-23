@@ -63,24 +63,24 @@ function Bookmark() {
         });
     }, [ bookmarks ]);
 
-    const addBookmarkAndGroup = async ( pageId ) => {
-        try {
-            const payload = {
-                title: pageId
-            };
-            if ( groupInformation.groupName.trim() !== '' ) {
-                payload.groupName = groupInformation.groupName;
-                payload.groupImage = groupInformation.groupImage;
-                payload.groupNotes = groupInformation.groupNotes;
-            }
-            const response = await apiClient.post('/user/bookmark/add', payload);
-            displayAlert(`${ pageId } was successfully added to your Bookmarks${payload.groupName ? ' and group' : ''}!`, 'success');
-            handleCloseBackdrop(); 
-        } catch (error) {
-            console.error('Error adding page to Bookmarks and Group!!!');
-            displayAlert(`Error adding ${ pageId } to your Bookmarks${groupInformation.groupName ? ' and Group' : ''}!`, 'error');
-        }
-    }
+    // const addBookmarkAndGroup = async ( pageId ) => {
+    //     try {
+    //         const payload = {
+    //             title: pageId
+    //         };
+    //         if ( groupInformation.groupName.trim() !== '' ) {
+    //             payload.groupName = groupInformation.groupName;
+    //             payload.groupImage = groupInformation.groupImage;
+    //             payload.groupNotes = groupInformation.groupNotes;
+    //         }
+    //         const response = await apiClient.post('/user/bookmark/add', payload);
+    //         displayAlert(`${ pageId } was successfully added to your Bookmarks${payload.groupName ? ' and group' : ''}!`, 'success');
+    //         handleCloseBackdrop(); 
+    //     } catch (error) {
+    //         console.error('Error adding page to Bookmarks and Group!!!');
+    //         displayAlert(`Error adding ${ pageId } to your Bookmarks${groupInformation.groupName ? ' and Group' : ''}!`, 'error');
+    //     }
+    // }
 
     const handleRemoveBookmark = async ( pageId ) => {
         try{
@@ -301,7 +301,7 @@ function Bookmark() {
                         }
                     }}
                 >
-                    <GroupForm handleCloseBackdrop = { handleCloseBackdrop }  existingGroups = { groupData }  /> 
+                    <GroupForm handleCloseBackdrop = { handleCloseBackdrop }  existingGroups = { groupData } title = { selectedGroup } /> 
                 </Backdrop>
             )}
         </div>
