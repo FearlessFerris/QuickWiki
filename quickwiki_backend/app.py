@@ -261,10 +261,27 @@ def create_and_add_bookmark_groups():
     """ Create and add new Bookmark Groups """
 
     current_user = get_jwt_identity()
-    data = data.json()
-    print( f'Data: { data }' )
+    user_id = current_user.get( 'user_id' )
 
-    return jsonify({ 'message': 'You have successfully requested to create or add or both to a new Bookmark Group' }), 200 
+    if not current_user: 
+        return jsonify({ 'message': 'Error, must be logged in to create bookmark group' }), 401
+    
+    data = request.get_json()
+    title, groupName, groupImage, groupNotes = ( 
+        data.get( 'title' ),
+        data.get( 'groupName' ),
+        data.get( 'groupImage' ),
+        data.get( 'groupNotes' )
+    )
+    
+    try:
+        new_bookmark_group = BookmarkGroup.create_group( user_id, groupName, groupNotes, groupImage, None )
+        ActivityLog.create_activity_log( user_id, 'bookmarkgroup', '/api/user/bookmark/groups/add', 'Add BookmarkGroup POST Successful' )
+        return jsonify({ 'message': f'You have successfully created a bookmarkgroup called { groupName }', 'data': new_bookmark_group }), 200 
+    except Exception as e:
+        db.session.rollback()
+        ActivityLog.create_activity_log( user_id, 'bookmarkgroups', '/api/user/bookmark/groups/add', 'Add BookmarkGroup POST Failed' )
+        return jsonify({ 'message': 'Internal server error, could not create bookmark group', 'error': str(e)}), 500 
 
 # Search Routes 
 @app.route('/api/search/<query>', methods=['GET'])
