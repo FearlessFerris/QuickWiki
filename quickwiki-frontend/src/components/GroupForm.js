@@ -9,7 +9,7 @@ import { Box, Button, Card, CardContent, FormControl, InputLabel, MenuItem, Sele
 // Components & Necessary Files 
 import apiClient from '../api/apiClient';
 import { useAlert } from './ContextDirectory.js/AlertContext';
-import e from 'express';
+// import e from 'express';
 
 
 // Group Creation Form Component 
@@ -42,7 +42,7 @@ function GroupForm({ handleCloseBackdrop, existingGroups, title }) {
         fetchGroups();
     }, []);
 
-    const handleSubmit = async () => {
+    const handleSubmit = async ( e ) => {
         e.preventDefault();
         try{
             const response = await apiClient.post( '/user/bookmark/groups/add', {
