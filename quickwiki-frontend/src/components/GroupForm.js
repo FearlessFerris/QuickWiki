@@ -53,10 +53,11 @@ function GroupForm({ handleCloseBackdrop, existingGroups, title }) {
                 groupNotes
             });
             console.log( selectedGroup );
-            console.log( response );
+            console.log( response.data );
         }
         catch( error ){
             console.error( error );
+            console.error( error.response.data );
             console.error( 'Error adding / creating new group!' );
         }
     } 

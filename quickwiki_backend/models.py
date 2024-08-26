@@ -256,13 +256,12 @@ class BookmarkGroup( Base ):
         self.uploaded_image = uploaded_image 
     
     def convert_to_dictionary(self):
-        """ Convert BookmarkGroup Instance to Dictionary """
         return {
             'id': str(self.id),
             'name': self.name,
             'notes': self.notes,
             'image_url': self.image_url,
-            'uploaded_image': self.uploaded_image,
+            'uploaded_image': self.uploaded_image if self.uploaded_image else '',
             'created_at': self.created_at.strftime('%m/%d/%y')
         }
 

@@ -209,8 +209,6 @@ def get_bookmarks():
         db.session.rollback()
         ActivityLog.create_activity_log( user_id, 'bookmark', '/api/bookmark', 'All Bookmark GET Failed' )
         return jsonify({ 'message': 'Internal server error, could not retrieve bookmarks', 'error': str( e ) }), 500  
-      
-    return jsonify({ 'message': 'Error retrieving user bookmarks' }), 400
 
 
 @app.route( '/api/user/bookmark/remove/<page>', methods = [ 'DELETE' ])
@@ -276,12 +274,17 @@ def create_and_add_bookmark_groups():
     
     try:
         new_bookmark_group = BookmarkGroup.create_group( user_id, groupName, groupNotes, groupImage, None )
+        print( f'New Bookmark Group: { new_bookmark_group }' )
         ActivityLog.create_activity_log( user_id, 'bookmarkgroup', '/api/user/bookmark/groups/add', 'Add BookmarkGroup POST Successful' )
-        return jsonify({ 'message': f'You have successfully created a bookmarkgroup called { groupName }', 'data': new_bookmark_group }), 200 
+        return jsonify({ 'message': f'You have successfully created a bookmarkgroup called { groupName }', 'data': new_bookmark_group.convert_to_dictionary() }), 200 
     except Exception as e:
         db.session.rollback()
         ActivityLog.create_activity_log( user_id, 'bookmarkgroups', '/api/user/bookmark/groups/add', 'Add BookmarkGroup POST Failed' )
+        import traceback
+        error_message = traceback.format_exc()
+        print(f'Error: {error_message}')
         return jsonify({ 'message': 'Internal server error, could not create bookmark group', 'error': str(e)}), 500 
+
 
 # Search Routes 
 @app.route('/api/search/<query>', methods=['GET'])

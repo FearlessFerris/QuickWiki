@@ -17,6 +17,7 @@ import GroupForm from './GroupForm';
 function Bookmark() {
 
     const [ bookmarks, setBookmarks ] = useState([]);
+    const [ isShowing, setIsShowing ] = useState( false );
     const [ isEditing, setIsEditing ] = useState(false);
     const [ isAdding, setIsAdding ] = useState( false );
     const [ backdrop, setBackdrop ] = useState( false );
@@ -44,7 +45,10 @@ function Bookmark() {
     const fetchGroups = async () => {
         try {
             const response = await apiClient.get( '/user/bookmark/groups' );
-            setGroupData(response.data.data); 
+            const groups = [{ id: '', name: 'None' }, ...response.data.data ];
+            setGroupData( groups ); 
+            console.log( groupData );
+            console.log( response.data );
         } catch (error) {
             console.error('Error fetching Bookmark Groups!');
         }
@@ -83,6 +87,10 @@ function Bookmark() {
         setIsAdding( !isAdding );
     }
 
+    const handleIsShowing = () => {
+        setIsShowing( !isShowing );
+    }
+
     const handleOpenBackdrop = () => {
         setBackdrop( true );
     }
@@ -104,7 +112,8 @@ function Bookmark() {
                     justifyContent: 'center',
                     marginTop: '8rem',
                     marginBottom: '2rem',
-                    boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.4), 0px 2px 4px rgba(0, 0, 0, 0.2)'
+                    boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.4), 0px 2px 4px rgba(0, 0, 0, 0.2)',
+                    padding: '1rem'
                 }}
             >
                 <Typography
@@ -118,6 +127,35 @@ function Bookmark() {
                 >
                     Bookmarks
                 </Typography>
+                
+                <div
+                        className='button-container'
+                        style={{
+                            display: 'flex',
+                            flexDirection: 'row',
+                            justifyContent: 'center',
+                            marginBottom: '2rem'
+                        }}
+                    >
+                        <Button
+                            variant='outlined'
+                            sx={{
+                                backgroundColor: '#212121',
+                                border: '.2rem solid #212121',
+                                color: '#00bcd4',
+                                fontSize: 'large',
+                                width: '12rem',
+                                '&:hover': {
+                                    border: '.2rem solid #00bcd4',
+                                    color: '#00bcd4',
+                                    fontSize: 'large'
+                                },
+                            }}
+                            onClick={handleIsShowing}
+                        >
+                          Show 
+                        </Button>
+                    </div>
 
                 {isEditing ? (
                     <div
@@ -177,8 +215,8 @@ function Bookmark() {
                             Edit
                         </Button>
                     </div>
-                )}
-            </Box>
+                )} 
+            </Box> 
 
             {bookmarks.map((item, index) => (
                 <Link
@@ -267,6 +305,62 @@ function Bookmark() {
                     </Card>
                 </Link>
             ))}
+
+            {/* { groupData.map((item, index) => (
+                <Link
+                    to={`/search/page/${item.id}`}
+                    key={index}
+                    style={{
+                        textDecoration: 'none'
+                    }}
+                >
+                    <Card
+                        className={`bookmark-group-card ${visibleIndexes.includes(index) ? 'visible' : ''}`}
+                        sx={{
+                            position: 'relative',
+                            borderRadius: '1rem',
+                            backgroundColor: '#212121',
+                            display: 'flex',
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            margin: '1rem',
+                            padding: '1rem',
+                            width: '36rem',
+                            height: '2rem',
+                            flexGrow: 1,
+                            // opacity: visibleIndexes.includes(index) ? 1 : 0,
+                            // transform: visibleIndexes.includes(index) ? 'translateY(0)' : 'translateY(20px)',
+                            transition: 'opacity 0.6s ease, transform 0.6s ease',
+                            boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.5)'
+                        }}
+                    >
+                        <CardMedia
+                            component='img'
+                            image={item.image_url }
+                            alt={item.name}
+                            sx={{
+                                borderRadius: '.4rem',
+                                width: '15%',
+                                height: 'auto',
+                                maxHeight: '100%'
+                            }}
+                        />
+                        <CardContent>
+                            <Typography
+                                variant='h4'
+                                color='#00bcd4'
+                                sx={{
+                                    textAlign: 'center'
+                                }}
+                            >
+                                {item.name}
+                            </Typography>
+                        </CardContent>
+                    </Card>
+                </Link>
+            ))}  */}
+
             { backdrop && (
                 <Backdrop 
                     open = { backdrop }
