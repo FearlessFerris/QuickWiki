@@ -16,20 +16,22 @@ import GroupForm from './GroupForm';
 
 function Bookmark() {
 
-    const [ bookmarks, setBookmarks ] = useState([]);
-    const [ isShowing, setIsShowing ] = useState( false );
-    const [ isEditing, setIsEditing ] = useState(false);
-    const [ isAdding, setIsAdding ] = useState( false );
-    const [ backdrop, setBackdrop ] = useState( false );
-    const [ selectedGroup, setSelectedGroup ] = useState( '' );
-    const [ groupData, setGroupData ] = useState([]);
-    const [ visibleIndexes, setVisibleIndexes ] = useState([]);
-    const [ initialGroupInformation, setInitialGroupInformation ] = useState({
+    const [bookmarks, setBookmarks] = useState([]);
+    const [isShowingBookmark, setIsShowingBookmark] = useState(true);
+    const [isShowingGroup, setIsShowingGroup] = useState(true);
+    const [isEditingBookmark, setIsEditingBookmark] = useState(false);
+    const [isEditingGroup, setIsEditingGroup] = useState( false );
+    const [isAdding, setIsAdding] = useState(false);
+    const [backdrop, setBackdrop] = useState(false);
+    const [selectedGroup, setSelectedGroup] = useState('');
+    const [groupData, setGroupData] = useState([]);
+    const [visibleIndexes, setVisibleIndexes] = useState([]);
+    const [initialGroupInformation, setInitialGroupInformation] = useState({
         groupName: '',
         groupImage: '',
         groupNotes: ''
-    }); 
-    const [ groupInformation, setGroupInformation ] = useState( initialGroupInformation );
+    });
+    const [groupInformation, setGroupInformation] = useState(initialGroupInformation);
     const { displayAlert } = useAlert();
 
     const fetchBookmarks = async () => {
@@ -44,11 +46,9 @@ function Bookmark() {
 
     const fetchGroups = async () => {
         try {
-            const response = await apiClient.get( '/user/bookmark/groups' );
-            const groups = [{ id: '', name: 'None' }, ...response.data.data ];
-            setGroupData( groups ); 
-            console.log( groupData );
-            console.log( response.data );
+            const response = await apiClient.get('/user/bookmark/groups');
+            const groups = [{ id: '', name: 'None' }, ...response.data.data];
+            setGroupData(groups);
         } catch (error) {
             console.error('Error fetching Bookmark Groups!');
         }
@@ -56,52 +56,69 @@ function Bookmark() {
 
     useEffect(() => {
         fetchBookmarks();
-        fetchGroups(); 
+        fetchGroups();
     }, []);
 
-    useEffect( () => {
-        bookmarks.forEach(( _, index ) => {
-            setTimeout( () => {
-                setVisibleIndexes( previous => [ ...previous, index ]);
-            }, index * 400 );
+    useEffect(() => {
+        bookmarks.forEach((_, index) => {
+            setTimeout(() => {
+                setVisibleIndexes(previous => [...previous, index]);
+            }, index * 400);
         });
-    }, [ bookmarks ]);
+    }, [bookmarks]);
 
-    const handleRemoveBookmark = async ( pageId ) => {
-        try{
-            const response = await apiClient.delete( `/user/bookmark/remove/${ pageId }` );
-            setBookmarks(( previousBookmarks ) => previousBookmarks.filter(( bookmark ) => bookmark.page_id !== pageId ));
-            displayAlert( `${ pageId } was successfully removed from Bookmarks!`, 'success' );
+    const handleRemoveBookmark = async (pageId) => {
+        try {
+            const response = await apiClient.delete(`/user/bookmark/remove/${pageId}`);
+            setBookmarks((previousBookmarks) => previousBookmarks.filter((bookmark) => bookmark.page_id !== pageId));
+            displayAlert(`${pageId} was successfully removed from Bookmarks!`, 'success');
         }
-        catch( error ){
-            console.error( 'Error removing bookmark!!!' );
-            displayAlert( `Error removing ${ pageId } from your Bookmarks!`, 'error' );
+        catch (error) {
+            console.error('Error removing bookmark!!!');
+            displayAlert(`Error removing ${pageId} from your Bookmarks!`, 'error');
         }
-    } 
+    }
 
-    const handleIsEditing = () => {
-        setIsEditing(!isEditing);
+    const handleIsEditingBookmark = () => {
+        setIsEditingBookmark(!isEditingBookmark);
+    }
+
+    const handleIsEditingGroup = () => {
+        setIsEditingGroup( !isEditingGroup );
     }
 
     const handleIsAdding = () => {
-        setIsAdding( !isAdding );
+        setIsAdding(!isAdding);
     }
 
-    const handleIsShowing = () => {
-        setIsShowing( !isShowing );
+    const handleIsShowingBookmark = () => {
+        setIsShowingBookmark(!isShowingBookmark);
+    }
+
+    const handleIsShowingGroup = () => {
+        setIsShowingGroup(!isShowingGroup);
+        console.log( isShowingGroup );
     }
 
     const handleOpenBackdrop = () => {
-        setBackdrop( true );
+        setBackdrop(true);
     }
 
     const handleCloseBackdrop = () => {
-        setBackdrop( false );
-        setGroupInformation( initialGroupInformation );
+        setBackdrop(false);
+        setGroupInformation(initialGroupInformation);
     }
 
     return (
-        <div className='bookmark-container'>
+        <div
+            className='bookmark-container'
+            style={{
+                display: 'flex',
+                justifyContent: 'center',
+                flexDirection: 'column',
+                padding: '0'
+            }}
+        >
             <Box
                 sx={{
                     backgroundColor: '#212121',
@@ -112,6 +129,8 @@ function Bookmark() {
                     justifyContent: 'center',
                     marginTop: '8rem',
                     marginBottom: '2rem',
+                    width: '36rem',
+                    minWidth: '36rem',
                     boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.4), 0px 2px 4px rgba(0, 0, 0, 0.2)',
                     padding: '1rem'
                 }}
@@ -127,37 +146,38 @@ function Bookmark() {
                 >
                     Bookmarks
                 </Typography>
-                
+
+
                 <div
-                        className='button-container'
-                        style={{
-                            display: 'flex',
-                            flexDirection: 'row',
-                            justifyContent: 'center',
-                            marginBottom: '2rem'
-                        }}
-                    >
-                        <Button
-                            variant='outlined'
-                            sx={{
-                                backgroundColor: '#212121',
-                                border: '.2rem solid #212121',
+                    className='buton-container'
+                    style={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        justifyContent: 'center',
+                        marginBottom: '2rem'
+                    }}
+                >
+                    <Button
+                        variant='outlined'
+                        sx={{
+                            backgroundColor: '#212121',
+                            border: '.2rem solid #212121',
+                            color: '#00bcd4',
+                            fontSize: 'large',
+                            width: '12rem',
+                            '&:hover': {
+                                border: '.2rem solid #00bcd4',
                                 color: '#00bcd4',
-                                fontSize: 'large',
-                                width: '12rem',
-                                '&:hover': {
-                                    border: '.2rem solid #00bcd4',
-                                    color: '#00bcd4',
-                                    fontSize: 'large'
-                                },
-                            }}
-                            onClick={handleIsShowing}
-                        >
-                          Show 
-                        </Button>
-                    </div>
+                                fontSize: 'large'
+                            },
+                        }}
+                        onClick={handleIsShowingBookmark}
+                    >
+                        {isShowingBookmark ? 'Hide' : 'Show'}
+                    </Button>
+                </div>
 
-                {isEditing ? (
+                {isShowingBookmark && (
                     <div
                         className='button-container'
                         style={{
@@ -181,202 +201,309 @@ function Bookmark() {
                                     fontSize: 'large'
                                 },
                             }}
-                            onClick={handleIsEditing}
+                            onClick={handleIsEditingBookmark}
                         >
-                            Done
+                            {isEditingBookmark ? 'Done' : 'Edit'}
                         </Button>
                     </div>
-                ) : (
-                    <div
-                        className='button-container'
-                        style={{
-                            display: 'flex',
-                            flexDirection: 'row',
-                            justifyContent: 'center',
-                            marginBottom: '2rem'
-                        }}
-                    >
-                        <Button
-                            variant='outlined'
-                            sx={{
-                                backgroundColor: '#212121',
-                                border: '.2rem solid #212121',
+                )}
+            </Box>
+
+            {isShowingBookmark && (
+                <div>
+                    {bookmarks.map((item, index) => (
+                        <Link
+                            to={`/search/page/${item.page_id}`}
+                            key={index}
+                            style={{
+                                textDecoration: 'none'
+                            }}
+                        >
+                            <Card
+                                className={`bookmark-card ${visibleIndexes.includes(index) ? 'visible' : ''}`}
+                                sx={{
+                                    position: 'relative',
+                                    borderRadius: '1rem',
+                                    backgroundColor: '#212121',
+                                    display: 'flex',
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    margin: '1rem',
+                                    padding: '1rem',
+                                    width: '34rem',
+                                    height: '2rem',
+                                    // flexGrow: 1,
+                                    opacity: visibleIndexes.includes(index) ? 1 : 0,
+                                    transform: visibleIndexes.includes(index) ? 'translateY(0)' : 'translateY(20px)',
+                                    transition: 'opacity 0.6s ease, transform 0.6s ease',
+                                    boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.5)'
+                                }}
+                            >
+                                {isEditingBookmark && (
+                                    <>
+                                        <RemoveCircleOutline
+                                            sx={{
+                                                position: 'absolute',
+                                                left: '1rem',
+                                                top: '50%',
+                                                transform: 'translateY(-50%)',
+                                                fontSize: '3rem',
+                                                cursor: 'pointer',
+                                                color: '#00bcd4',
+                                                '&:hover': {
+                                                    color: '#6a1b9a',
+                                                },
+                                            }}
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                handleRemoveBookmark(item.page_id);
+                                            }}
+                                        />
+                                        <AddCircleOutline
+                                            sx={{
+                                                position: 'absolute',
+                                                right: '1rem',
+                                                top: '50%',
+                                                transform: 'translateY(-50%)',
+                                                fontSize: '3rem',
+                                                cursor: 'pointer',
+                                                color: '#00bcd4',
+                                                '&:hover': {
+                                                    color: '#6a1b9a',
+                                                },
+                                            }}
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                setSelectedGroup(item.page_id);
+                                                handleOpenBackdrop();
+                                                console.log(`You clicked to add something related to the ${item.page_id} bookmark!`);
+                                            }}
+                                        />
+                                    </>
+                                )}
+                                <CardContent>
+                                    <Typography
+                                        variant='h4'
+                                        color='#00bcd4'
+                                        sx={{
+                                            textAlign: 'center',
+                                            marginTop: '2rem',
+                                            marginBottom: '2rem'
+                                        }}
+                                    >
+                                        {item.page_id}
+                                    </Typography>
+                                </CardContent>
+                            </Card>
+                        </Link>
+                    ))}
+                </div>
+            )}
+
+            <Box
+                sx={{
+                    border: '.2rem solid #00bcd4',
+                    boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.4), 0px 2px 4px rgba(0, 0, 0, 0.2)',
+                    borderRadius: '.6rem',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    flexDirection: 'column',
+                    width: '36rem',
+                    backgroundColor: '#212121',
+                    marginTop: '2rem',
+                    marginBottom: '2rem',
+                    padding: '1rem'
+                }}
+            >
+                <Typography
+                    variant='h2'
+                    color='#00bcd4'
+                    sx={{
+                        textAlign: 'center',
+                        marginTop: '2rem',
+                        marginBottom: '2rem'
+                    }}
+                >
+                    Groups
+                </Typography>
+
+                <div
+                    className='buton-container'
+                    style={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        justifyContent: 'center',
+                        marginBottom: '2rem'
+                    }}
+                >
+                    <Button
+                        variant='outlined'
+                        sx={{
+                            backgroundColor: '#212121',
+                            border: '.2rem solid #212121',
+                            color: '#00bcd4',
+                            fontSize: 'large',
+                            width: '12rem',
+                            '&:hover': {
+                                border: '.2rem solid #00bcd4',
                                 color: '#00bcd4',
-                                fontSize: 'large',
-                                width: '12rem',
-                                '&:hover': {
-                                    border: '.2rem solid #00bcd4',
-                                    color: '#00bcd4',
-                                    fontSize: 'large'
-                                },
+                                fontSize: 'large'
+                            },
+                        }}
+                        onClick={handleIsShowingGroup}
+                    >
+                        {isShowingGroup ? 'Hide' : 'Show'}
+                    </Button>
+                </div>
+                { isShowingGroup && (
+                    <div
+                    className='button-container'
+                    style={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        justifyContent: 'center',
+                        marginBottom: '2rem'
+                    }}
+                >
+                    <Button
+                        variant='outlined'
+                        sx={{
+                            backgroundColor: '#212121',
+                            border: '.2rem solid #212121',
+                            color: '#00bcd4',
+                            fontSize: 'large',
+                            width: '12rem',
+                            '&:hover': {
+                                border: '.2rem solid #00bcd4',
+                                color: '#00bcd4',
+                                fontSize: 'large'
+                            },
+                        }}
+                        onClick={handleIsEditingGroup}
+                    >
+                        {isEditingGroup ? 'Done' : 'Edit'}
+                    </Button>
+                </div>
+                )}
+
+            </Box>
+            {isShowingGroup && (
+                <div>
+                    {groupData.map((item, index) => (
+                        <Link
+                            to={`/search/page/${item.id}`}
+                            key={index}
+                            style={{
+                                textDecoration: 'none'
                             }}
-                            onClick={handleIsEditing}
                         >
-                            Edit
-                        </Button>
-                    </div>
-                )} 
-            </Box> 
-
-            {bookmarks.map((item, index) => (
-                <Link
-                    to={`/search/page/${item.page_id}`}
-                    key={index}
-                    style={{
-                        textDecoration: 'none'
-                    }}
-                >
-                    <Card
-                        className={`bookmark-card ${visibleIndexes.includes(index) ? 'visible' : ''}`}
-                        sx={{
-                            position: 'relative',
-                            borderRadius: '1rem',
-                            backgroundColor: '#212121',
-                            display: 'flex',
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            margin: '1rem',
-                            padding: '1rem',
-                            width: '36rem',
-                            height: '2rem',
-                            flexGrow: 1,
-                            opacity: visibleIndexes.includes(index) ? 1 : 0,
-                            transform: visibleIndexes.includes(index) ? 'translateY(0)' : 'translateY(20px)',
-                            transition: 'opacity 0.6s ease, transform 0.6s ease',
-                            boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.5)'
-                        }}
-                    >
-                        {isEditing && (
-                            <>
-                                <RemoveCircleOutline
-                                    sx={{
-                                        position: 'absolute',
-                                        left: '1rem', 
-                                        top: '50%',
-                                        transform: 'translateY(-50%)', 
-                                        fontSize: '3rem',
-                                        cursor: 'pointer',
-                                        color: '#00bcd4',
-                                        '&:hover': {
-                                            color: '#6a1b9a',
-                                        },
-                                    }}
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        handleRemoveBookmark( item.page_id );
-                                    }}
-                                />
-                                <AddCircleOutline
-                                    sx={{
-                                        position: 'absolute',
-                                        right: '1rem', 
-                                        top: '50%',
-                                        transform: 'translateY(-50%)', 
-                                        fontSize: '3rem',
-                                        cursor: 'pointer',
-                                        color: '#00bcd4',
-                                        '&:hover': {
-                                            color: '#6a1b9a',
-                                        },
-                                    }}
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        setSelectedGroup( item.page_id );
-                                        handleOpenBackdrop();
-                                        console.log(`You clicked to add something related to the ${item.page_id} bookmark!`);
-                                    }}
-                                />
-                            </>
-                        )}
-                        <CardContent>
-                            <Typography
-                                variant='h4'
-                                color='#00bcd4'
+                            <Card
+                                className={`bookmark-group-card ${visibleIndexes.includes(index) ? 'visible' : ''}`}
                                 sx={{
-                                    textAlign: 'center',
-                                    marginTop: '2rem',
-                                    marginBottom: '2rem'
+                                    position: 'relative',
+                                    borderRadius: '1rem',
+                                    backgroundColor: '#212121',
+                                    display: 'flex',
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    margin: '1rem',
+                                    padding: '1rem',
+                                    width: '34rem',
+                                    height: '4rem',
+                                    flexGrow: 1,
+                                    transition: 'opacity 0.6s ease, transform 0.6s ease',
+                                    boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.5)'
                                 }}
                             >
-                                {item.page_id}
-                            </Typography>
-                        </CardContent>
-                    </Card>
-                </Link>
-            ))}
 
-            {/* { groupData.map((item, index) => (
-                <Link
-                    to={`/search/page/${item.id}`}
-                    key={index}
-                    style={{
-                        textDecoration: 'none'
-                    }}
-                >
-                    <Card
-                        className={`bookmark-group-card ${visibleIndexes.includes(index) ? 'visible' : ''}`}
-                        sx={{
-                            position: 'relative',
-                            borderRadius: '1rem',
-                            backgroundColor: '#212121',
-                            display: 'flex',
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            margin: '1rem',
-                            padding: '1rem',
-                            width: '36rem',
-                            height: '2rem',
-                            flexGrow: 1,
-                            // opacity: visibleIndexes.includes(index) ? 1 : 0,
-                            // transform: visibleIndexes.includes(index) ? 'translateY(0)' : 'translateY(20px)',
-                            transition: 'opacity 0.6s ease, transform 0.6s ease',
-                            boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.5)'
-                        }}
-                    >
-                        <CardMedia
-                            component='img'
-                            image={item.image_url }
-                            alt={item.name}
-                            sx={{
-                                borderRadius: '.4rem',
-                                width: '15%',
-                                height: 'auto',
-                                maxHeight: '100%'
-                            }}
-                        />
-                        <CardContent>
-                            <Typography
-                                variant='h4'
-                                color='#00bcd4'
-                                sx={{
-                                    textAlign: 'center'
-                                }}
-                            >
-                                {item.name}
-                            </Typography>
-                        </CardContent>
-                    </Card>
-                </Link>
-            ))}  */}
+                                { isEditingGroup && (
+                                    <>
+                                    <RemoveCircleOutline
+                                        sx={{
+                                            position: 'absolute',
+                                            left: '1rem',
+                                            top: '50%',
+                                            transform: 'translateY(-50%)',
+                                            fontSize: '3rem',
+                                            cursor: 'pointer',
+                                            color: '#00bcd4',
+                                            '&:hover': {
+                                                color: '#6a1b9a',
+                                            },
+                                        }}
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            // handleRemoveBookmark(item.page_id);
+                                        }}
+                                    />
+                                    <AddCircleOutline
+                                        sx={{
+                                            position: 'absolute',
+                                            right: '1rem',
+                                            top: '50%',
+                                            transform: 'translateY(-50%)',
+                                            fontSize: '3rem',
+                                            cursor: 'pointer',
+                                            color: '#00bcd4',
+                                            '&:hover': {
+                                                color: '#6a1b9a',
+                                            },
+                                        }}
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            // setSelectedGroup(item.page_id);
+                                            // handleOpenBackdrop();
+                                            console.log(`You clicked to add something related to the ${item.name } group!`);
+                                        }}
+                                    />
+                                </>
+                                )}
+                                <CardMedia
+                                    component='img'
+                                    image={item.image_url}
+                                    alt={item.name}
+                                    sx={{
+                                        borderRadius: '.4rem',
+                                        width: '15%',
+                                        height: 'auto',
+                                        maxHeight: '100%'
+                                    }}
+                                />
+                                <CardContent>
+                                    <Typography
+                                        variant='h4'
+                                        color='#00bcd4'
+                                        sx={{
+                                            textAlign: 'center'
+                                        }}
+                                    >
+                                        {item.name}
+                                    </Typography>
+                                </CardContent>
+                            </Card>
+                        </Link>
+                    ))}
+                </div>
+            )}
 
-            { backdrop && (
-                <Backdrop 
-                    open = { backdrop }
-                    sx = {{
+            {backdrop && (
+                <Backdrop
+                    open={backdrop}
+                    sx={{
                         color: '#212121',
                         display: 'flex',
                         justifyContent: 'center',
                         alignItems: 'center'
                     }}
-                    onClick = { ( e ) => {
-                        if( e.target === e.currentTarget ){
+                    onClick={(e) => {
+                        if (e.target === e.currentTarget) {
                             handleCloseBackdrop();
                         }
                     }}
                 >
-                    <GroupForm handleCloseBackdrop = { handleCloseBackdrop }  existingGroups = { groupData } title = { selectedGroup } /> 
+                    <GroupForm handleCloseBackdrop={handleCloseBackdrop} existingGroups={groupData} title={selectedGroup} />
                 </Backdrop>
             )}
         </div>

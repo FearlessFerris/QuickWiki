@@ -285,6 +285,10 @@ def create_and_add_bookmark_groups():
         print(f'Error: {error_message}')
         return jsonify({ 'message': 'Internal server error, could not create bookmark group', 'error': str(e)}), 500 
 
+@app.route( '/api/user/bookmark/group/remove/<name>', methods = [ 'DELETE' ])
+@jwt_required()
+def remove_bookmark_from_group():
+    """ Removes BookmarkGroup"""
 
 # Search Routes 
 @app.route('/api/search/<query>', methods=['GET'])

@@ -275,6 +275,7 @@ class BookmarkGroup( Base ):
         db.session.commit()
         return new_group    
 
+    
 
 class Authorization(Base):
     """ Authorization Info Model """
