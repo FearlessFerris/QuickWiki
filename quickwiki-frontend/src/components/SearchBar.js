@@ -147,16 +147,7 @@ function SearchBar({ results, setResults }) {
                         }}
                         InputProps={{
                           sx: {
-                            color: '#00bcd4',
-                            '& fieldset': {
-                              border: '.2rem solid #00bcd4',
-                            },
-                            '&:hover fieldset': {
-                              border: '.2rem solid #00bcd4',
-                            },
-                            '&.Mui-focused fieldset': {
-                              border: '.2rem solid #00bcd4',
-                            },
+                            color: '#00bcd4'
                           },
                         }}
                         value = { search }

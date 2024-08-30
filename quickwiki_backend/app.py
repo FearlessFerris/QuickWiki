@@ -285,10 +285,34 @@ def create_and_add_bookmark_groups():
         print(f'Error: {error_message}')
         return jsonify({ 'message': 'Internal server error, could not create bookmark group', 'error': str(e)}), 500 
 
+
 @app.route( '/api/user/bookmark/group/remove/<name>', methods = [ 'DELETE' ])
 @jwt_required()
-def remove_bookmark_from_group():
+def remove_bookmark_from_group( name ):
     """ Removes BookmarkGroup"""
+
+    current_user = get_jwt_identity()
+    user_id = current_user.get( 'user_id' )
+    print( f'Current User: { current_user }' )
+    print( f'User_Id: { user_id }' )
+    if not current_user:
+        return jsonify({ 'message': 'Error, must be logged in to remove a bookmark group' }), 401 
+    
+    try:
+        removed_groups = BookmarkGroup.remove_group(user_id, name)
+        if not removed_groups:
+            return jsonify({'message': f'No bookmark group found with the name "{name}"'}), 404
+        
+        ActivityLog.create_activity_log( user_id, 'bookmarkgroup', '/api/user/bookmark/groups/remove', 'Remove BookmarkGroup DELET Successful' )
+        return jsonify({ 'message': f'You have successfully removed { name } bookmark group' }), 200
+    except Exception as e:
+        db.session.rollback()
+        ActivityLog.create_activity_log( user_id, 'bookmarkgroups', '/api/user/bookmark/groups/remove', 'Remove BookmarkGroup DELETE Failed' )
+        import traceback
+        error_message = traceback.format_exc()
+        print(f'Error: {error_message}')
+        return jsonify({ 'message': f'Internal server error, could not remove bookmark group { name }', 'error': str(e)}), 500 
+
 
 # Search Routes 
 @app.route('/api/search/<query>', methods=['GET'])

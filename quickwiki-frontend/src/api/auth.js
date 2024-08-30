@@ -13,7 +13,9 @@ export const login = async ( username, password ) => {
     try{
         const response = await apiClient.post( '/login', { username, password } );
         console.log( response.data );
-        return response.data;
+        const profileResponse = await apiClient.get( '/profile' );
+        console.log( profileResponse.data );
+        return { ...response.data, userProfile: profileResponse.data.user }
     }
     catch( error ){
         throw error.response.data;

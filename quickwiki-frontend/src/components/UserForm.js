@@ -178,7 +178,7 @@ function UserForm({ initialData = {}, setFormVisible, updateProfileData }) {
                         marginTop: '2rem'
                     }}
                 >
-                    Edit Form
+                    Edit Profile
                 </Typography>
 
                 <Box

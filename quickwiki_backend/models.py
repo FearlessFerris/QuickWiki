@@ -275,7 +275,29 @@ class BookmarkGroup( Base ):
         db.session.commit()
         return new_group    
 
+    # @classmethod
+    # def remove_group( cls, user_id, name ):
+    #     """ Removes Group Instance """
+
+    #     group = cls.query.filter_by( user_id = user_id, name = name ).all()
+    #     return group
+
+    @classmethod
+    def remove_group(cls, user_id, name):
+        """ Removes all Group Instances with the given name for the specified user_id """
     
+        groups = cls.query.filter_by(user_id=user_id, name=name).all()
+        print( groups )
+        if not groups:
+            return None  # or handle the case where no groups were found
+    
+        for group in groups:
+            db.session.delete(group)
+    
+        db.session.commit()
+        return groups
+
+
 
 class Authorization(Base):
     """ Authorization Info Model """

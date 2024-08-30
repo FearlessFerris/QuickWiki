@@ -12,14 +12,15 @@ import { AddCircleOutline, RemoveCircleOutline } from '@mui/icons-material';
 import apiClient from '../api/apiClient';
 import { useAlert } from './ContextDirectory.js/AlertContext';
 import GroupForm from './GroupForm';
+import BookmarkGroup from './BookmarkGroup';
 
 
 function Bookmark() {
 
     const [bookmarks, setBookmarks] = useState([]);
     const [isShowingBookmark, setIsShowingBookmark] = useState(true);
-    const [isShowingGroup, setIsShowingGroup] = useState(true);
     const [isEditingBookmark, setIsEditingBookmark] = useState(false);
+    const [isShowingGroup, setIsShowingGroup] = useState(false);
     const [isEditingGroup, setIsEditingGroup] = useState( false );
     const [isAdding, setIsAdding] = useState(false);
     const [backdrop, setBackdrop] = useState(false);
@@ -79,6 +80,16 @@ function Bookmark() {
         }
     }
 
+    const handleRemoveBookmarkGroup = async ( name ) => {
+        try{
+            const response = await apiClient.delete( `/user/bookmark/group/remove/${ name }` )
+            console.log( response );
+        }
+        catch( error ){
+            console.error( 'Error removing bookmark group' );
+        }
+    }
+
     const handleIsEditingBookmark = () => {
         setIsEditingBookmark(!isEditingBookmark);
     }
@@ -118,7 +129,7 @@ function Bookmark() {
                 flexDirection: 'column',
                 padding: '0'
             }}
-        >
+        >   
             <Box
                 sx={{
                     backgroundColor: '#212121',
@@ -144,7 +155,7 @@ function Bookmark() {
                         marginBottom: '2rem'
                     }}
                 >
-                    Bookmarks
+                { isShowingGroup ? 'Bookmarks' : 'Groups' }
                 </Typography>
 
 
@@ -174,6 +185,25 @@ function Bookmark() {
                         onClick={handleIsShowingBookmark}
                     >
                         {isShowingBookmark ? 'Hide' : 'Show'}
+                    </Button>
+
+                    <Button 
+                        variant = 'outlined'
+                        sx = {{
+                            backgroundColor: '#212121',
+                            border: '.2rem solid #212121',
+                            color: '#00bcd4',
+                            fontSize: 'large',
+                            width: '12rem',
+                            '&:hover': {
+                                border: '.2rem solid #00bcd4',
+                                color: '#00bcd4',
+                                fontSize: 'large'
+                            },
+                        }}
+                        onClick = { handleIsShowingGroup }
+                    >
+                     { isShowingGroup ? 'Groups' : 'Bookmarks' }    
                     </Button>
                 </div>
 
@@ -300,97 +330,10 @@ function Bookmark() {
                     ))}
                 </div>
             )}
-
-            <Box
-                sx={{
-                    border: '.2rem solid #00bcd4',
-                    boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.4), 0px 2px 4px rgba(0, 0, 0, 0.2)',
-                    borderRadius: '.6rem',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    flexDirection: 'column',
-                    width: '36rem',
-                    backgroundColor: '#212121',
-                    marginTop: '2rem',
-                    marginBottom: '2rem',
-                    padding: '1rem'
-                }}
-            >
-                <Typography
-                    variant='h2'
-                    color='#00bcd4'
-                    sx={{
-                        textAlign: 'center',
-                        marginTop: '2rem',
-                        marginBottom: '2rem'
-                    }}
-                >
-                    Groups
-                </Typography>
-
-                <div
-                    className='buton-container'
-                    style={{
-                        display: 'flex',
-                        flexDirection: 'row',
-                        justifyContent: 'center',
-                        marginBottom: '2rem'
-                    }}
-                >
-                    <Button
-                        variant='outlined'
-                        sx={{
-                            backgroundColor: '#212121',
-                            border: '.2rem solid #212121',
-                            color: '#00bcd4',
-                            fontSize: 'large',
-                            width: '12rem',
-                            '&:hover': {
-                                border: '.2rem solid #00bcd4',
-                                color: '#00bcd4',
-                                fontSize: 'large'
-                            },
-                        }}
-                        onClick={handleIsShowingGroup}
-                    >
-                        {isShowingGroup ? 'Hide' : 'Show'}
-                    </Button>
-                </div>
-                { isShowingGroup && (
-                    <div
-                    className='button-container'
-                    style={{
-                        display: 'flex',
-                        flexDirection: 'row',
-                        justifyContent: 'center',
-                        marginBottom: '2rem'
-                    }}
-                >
-                    <Button
-                        variant='outlined'
-                        sx={{
-                            backgroundColor: '#212121',
-                            border: '.2rem solid #212121',
-                            color: '#00bcd4',
-                            fontSize: 'large',
-                            width: '12rem',
-                            '&:hover': {
-                                border: '.2rem solid #00bcd4',
-                                color: '#00bcd4',
-                                fontSize: 'large'
-                            },
-                        }}
-                        onClick={handleIsEditingGroup}
-                    >
-                        {isEditingGroup ? 'Done' : 'Edit'}
-                    </Button>
-                </div>
-                )}
-
-            </Box>
+            
             {isShowingGroup && (
                 <div>
-                    {groupData.map((item, index) => (
+                    {groupData.filter(( item ) => item.name !== 'None' ).map((item, index) => (
                         <Link
                             to={`/search/page/${item.id}`}
                             key={index}
@@ -435,7 +378,7 @@ function Bookmark() {
                                         }}
                                         onClick={(e) => {
                                             e.preventDefault();
-                                            // handleRemoveBookmark(item.page_id);
+                                            handleRemoveBookmarkGroup(item.name);
                                         }}
                                     />
                                     <AddCircleOutline
@@ -453,7 +396,7 @@ function Bookmark() {
                                         }}
                                         onClick={(e) => {
                                             e.preventDefault();
-                                            // setSelectedGroup(item.page_id);
+                                            setSelectedGroup( item.name );
                                             // handleOpenBackdrop();
                                             console.log(`You clicked to add something related to the ${item.name } group!`);
                                         }}
@@ -486,7 +429,7 @@ function Bookmark() {
                         </Link>
                     ))}
                 </div>
-            )}
+            )} 
 
             {backdrop && (
                 <Backdrop
