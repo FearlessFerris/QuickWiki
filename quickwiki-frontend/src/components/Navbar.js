@@ -1,39 +1,53 @@
-// Navbar Component Implementation 
+// Navbar Component Implementation
 
 
-// Dependencies 
-import React, { useState, useEffect } from 'react';
+// Dependencies
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Avatar, AppBar, Box, Button, Container, createTheme, IconButton, Menu, MenuItem, TextField, Toolbar, Typography, ThemeProvider } from '@mui/material';
+import { Avatar, AppBar, Box, Button, Menu, MenuItem, Toolbar } from '@mui/material';
 
 
-// Components & Necessary Files 
+// Components & Necessary Files
 import { useLoggedIn } from './ContextDirectory.js/LoggedInContext';
 import MenuSearchbar from './MenuSearchbar';
 
 
-// Navbar Component 
+// Navbar Component
 function Navbar() {
-
     const navigate = useNavigate();
     const { isLoggedIn, logout, userImage } = useLoggedIn();
+    const [anchorEl, setAnchorEl] = useState(null);
+
+    const handleAvatarClick = (e) => {
+        setAnchorEl(e.currentTarget);
+    };
+
+    const handleMenuClose = () => {
+        setAnchorEl(null);
+    };
+
+    const handleProfileClick = () => {
+        handleMenuClose();
+        navigate( '/user/profile' );
+    }
 
     const handleLogout = () => {
         logout();
-        navigate( '/user/login' );
-    }
+        handleMenuClose();
+        navigate('/user/login');
+    };
 
     return (
-        <div 
-            className='navbar-container' 
-            style = {{ 
-                width: '100%' 
+        <div
+            className="navbar-container"
+            style={{
+                width: '100%',
             }}
         >
-            <AppBar 
-                position='static' 
-                sx={{ 
-                    backgroundColor: '#212121' 
+            <AppBar
+                position="static"
+                sx={{
+                    backgroundColor: '#212121',
                 }}
             >
                 <Toolbar
@@ -51,7 +65,7 @@ function Navbar() {
                     >
                         <Button
                             component={Link}
-                            to='/'
+                            to="/"
                             variant="outlined"
                             size="large"
                             sx={{
@@ -69,7 +83,7 @@ function Navbar() {
                         {!isLoggedIn && (
                             <Button
                                 component={Link}
-                                to='/user/create'
+                                to="/user/create"
                                 variant="outlined"
                                 size="large"
                                 sx={{
@@ -87,7 +101,7 @@ function Navbar() {
                         )}
                         <Button
                             component={Link}
-                            to='/searches'
+                            to="/searches"
                             variant="outlined"
                             size="large"
                             sx={{
@@ -102,28 +116,11 @@ function Navbar() {
                         >
                             Articles
                         </Button>
-                        {isLoggedIn ? (
+                        {isLoggedIn && (
                             <>
                                 <Button
                                     component={Link}
-                                    to='/user/profile'
-                                    variant="outlined"
-                                    size="large"
-                                    sx={{
-                                        color: '#00bcd4',
-                                        border: '.2rem solid #212121',
-                                        fontSize: 'large',
-                                        margin: '0 8px',
-                                        '&:hover': {
-                                            border: '.2rem solid #00bcd4',
-                                        },
-                                    }}
-                                >
-                                    Profile
-                                </Button>
-                                <Button
-                                    component={Link}
-                                    to='/user/bookmark'
+                                    to="/user/bookmark"
                                     variant="outlined"
                                     size="large"
                                     sx={{
@@ -138,27 +135,85 @@ function Navbar() {
                                 >
                                     Bookmarks
                                 </Button>
-                                <Button
-                                    onClick={handleLogout}
-                                    variant="outlined"
-                                    size="large"
+                            </>
+                        )}
+                    </Box>
+
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                        }}
+                    >
+                        <MenuSearchbar />
+                        {isLoggedIn ? (
+                            <>
+                                <Avatar
+                                    src={userImage}
+                                    alt="User Avatar"
                                     sx={{
-                                        color: '#00bcd4',
-                                        border: '.2rem solid #212121',
-                                        fontSize: 'large',
-                                        margin: '0 8px',
-                                        '&:hover': {
-                                            border: '.2rem solid #00bcd4',
-                                        },
+                                        marginLeft: '3rem',
+                                        marginRight: '1rem',
+                                        marginTop: '.3rem',
+                                        width: '3.5rem',
+                                        height: '3.5rem',
+                                        cursor: 'pointer',
                                     }}
-                                >
-                                    Logout
-                                </Button>
+                                    onClick={handleAvatarClick}
+                                />
+                                <Menu
+                                    anchorEl={anchorEl}
+                                    open={Boolean(anchorEl)}
+                                    onClose={handleMenuClose}
+                                    sx = {{
+                                        mt: '.5rem',
+                                        marginLeft: '-.5rem',
+                                        '& .MuiPaper-root': {
+                                            backgroundColor: '#212121',
+                                            color: '#00bcd4',
+                                            width: '6rem',
+                                            borderRadius: '.4rem'
+                                        }
+                                    }}
+                                >   
+                                    <MenuItem 
+                                        onClick = { handleProfileClick }
+                                        sx = {{
+                                            '&:hover': {
+                                                backgroundColor: '#00bcd4',
+                                                color: '#212121'
+                                            }
+                                        }}
+                                    >
+                                        Profile     
+                                    </MenuItem>
+                                    <MenuItem 
+                                        sx = {{
+                                            '&:hover': {
+                                                backgroundColor: '#00bcd4',
+                                                color: '#212121'
+                                            }
+                                        }}
+                                    >
+                                        Settings     
+                                    </MenuItem>
+                                    <MenuItem 
+                                        onClick = { handleLogout }
+                                        sx = {{
+                                            '&:hover': {
+                                                backgroundColor: '#00bcd4',
+                                                color: '#212121'
+                                            }
+                                        }}
+                                    >
+                                        Logout
+                                    </MenuItem>
+                                </Menu>
                             </>
                         ) : (
                             <Button
                                 component={Link}
-                                to='/user/login'
+                                to="/user/login"
                                 variant="outlined"
                                 size="large"
                                 sx={{
@@ -174,22 +229,6 @@ function Navbar() {
                                 Login
                             </Button>
                         )}
-                    </Box>
-                    <Box
-                        sx={{
-                            display: 'flex',
-                            alignItems: 'center',
-                        }}
-                    >
-                        <MenuSearchbar />
-                        <Avatar
-                                    src={userImage}
-                                    alt="User Avatar"
-                                    sx={{ 
-                                        marginLeft: '1rem',
-                                        marginTop: '.6rem' 
-                                    }}
-                                />
                     </Box>
                 </Toolbar>
             </AppBar>

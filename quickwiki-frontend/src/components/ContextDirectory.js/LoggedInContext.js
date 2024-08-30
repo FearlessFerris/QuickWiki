@@ -53,7 +53,6 @@ export const LoggedInProvider = ({ children }) => {
             const response = await apiClient.get( '/profile' );
             const userProfile = response.data.user;
             setUserImage( userProfile.image_url || userProfile.uploaded_image );
-            console.log( userImage );
         }
         catch( error ){
             console.error( 'Error fetching user profile' );
@@ -61,7 +60,6 @@ export const LoggedInProvider = ({ children }) => {
     }
 
     const login = ( id ) => {
-        console.log( 'Logging in!' );
         setIsLoggedIn( true );
         setUserId( id );
         localStorage.setItem( 'user_id', id );
@@ -70,7 +68,6 @@ export const LoggedInProvider = ({ children }) => {
     }
 
     const logout = () => {
-        console.log( 'Logging out!' );
         localStorage.removeItem( 'access_token' );
         localStorage.removeItem( 'user_id' );
         setIsLoggedIn( false );

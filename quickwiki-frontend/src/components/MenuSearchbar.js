@@ -47,7 +47,7 @@ function MenuSearchbar() {
                         },
                     }}
                     sx={{
-                        marginTop: '.6rem',
+                        marginTop: '.2rem',
                         backgroundColor: '#263238',
                         borderRadius: '.6rem',
                         width: '20rem',
