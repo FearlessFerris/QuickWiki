@@ -134,7 +134,7 @@ function Login() {
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
-                        marginBottom: '2rem'
+                        marginBottom: '1rem'
                     }}
                 >
                     <TextField
@@ -299,7 +299,7 @@ function Login() {
                     style={{
                         display: 'flex',
                         justifyContent: 'center',
-                        marginTop: '3rem'
+                        marginTop: '1rem'
                     }}
                 >
                     <Button
@@ -311,12 +311,13 @@ function Login() {
                             color: '#00bcd4',
                             fontSize: 'large',
                             margin: '.5rem',
+                            marginBottom: '2rem',
                             padding: '.6rem 2rem',
                             '&:hover': {
+                                backgroundColor: '#00bcd4',
                                 border: '.2rem solid #00bcd4',
-                                color: '#00bcd4',
-                                fontSize: 'large',
-                                padding: '.6rem 2rem'
+                                color: '#212121',
+                                fontSize: 'large'
                             },
                         }}
                     >

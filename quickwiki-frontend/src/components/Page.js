@@ -262,11 +262,11 @@ function Page() {
                         }
                     }}
                 >
-                    {/* <GroupForm 
+                    <GroupForm 
                         handleCloseBackdrop = { handleCloseBackdrop }
                         existingGroups = { groupData }
                         title = { title }
-                    />  */}
+                    /> 
                 </Backdrop>
             )}
         </div>
