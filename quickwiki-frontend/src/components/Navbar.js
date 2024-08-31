@@ -28,7 +28,7 @@ function Navbar() {
 
     const handleProfileClick = () => {
         handleMenuClose();
-        navigate( '/user/profile' );
+        navigate('/user/profile');
     }
 
     const handleLogout = () => {
@@ -45,7 +45,7 @@ function Navbar() {
             }}
         >
             <AppBar
-                position="static"
+                position="fixed"
                 sx={{
                     backgroundColor: '#212121',
                 }}
@@ -74,7 +74,9 @@ function Navbar() {
                                 fontSize: 'large',
                                 margin: '0 8px',
                                 '&:hover': {
+                                    backgroundColor: '#00bcd4',
                                     border: '.2rem solid #00bcd4',
+                                    color: '#212121'
                                 },
                             }}
                         >
@@ -92,7 +94,9 @@ function Navbar() {
                                     fontSize: 'large',
                                     margin: '0 8px',
                                     '&:hover': {
+                                        backgroundColor: '#00bcd4',
                                         border: '.2rem solid #00bcd4',
+                                        color: '#212121'
                                     },
                                 }}
                             >
@@ -110,7 +114,9 @@ function Navbar() {
                                 fontSize: 'large',
                                 margin: '0 8px',
                                 '&:hover': {
+                                    backgroundColor: '#00bcd4',
                                     border: '.2rem solid #00bcd4',
+                                    color: '#212121'
                                 },
                             }}
                         >
@@ -129,7 +135,9 @@ function Navbar() {
                                         fontSize: 'large',
                                         margin: '0 8px',
                                         '&:hover': {
+                                            backgroundColor: '#00bcd4',
                                             border: '.2rem solid #00bcd4',
+                                            color: '#212121'
                                         },
                                     }}
                                 >
@@ -165,7 +173,7 @@ function Navbar() {
                                     anchorEl={anchorEl}
                                     open={Boolean(anchorEl)}
                                     onClose={handleMenuClose}
-                                    sx = {{
+                                    sx={{
                                         mt: '.5rem',
                                         marginLeft: '-.5rem',
                                         '& .MuiPaper-root': {
@@ -175,31 +183,31 @@ function Navbar() {
                                             borderRadius: '.4rem'
                                         }
                                     }}
-                                >   
-                                    <MenuItem 
-                                        onClick = { handleProfileClick }
-                                        sx = {{
+                                >
+                                    <MenuItem
+                                        onClick={handleProfileClick}
+                                        sx={{
                                             '&:hover': {
                                                 backgroundColor: '#00bcd4',
                                                 color: '#212121'
                                             }
                                         }}
                                     >
-                                        Profile     
+                                        Profile
                                     </MenuItem>
-                                    <MenuItem 
-                                        sx = {{
+                                    <MenuItem
+                                        sx={{
                                             '&:hover': {
                                                 backgroundColor: '#00bcd4',
                                                 color: '#212121'
                                             }
                                         }}
                                     >
-                                        Settings     
+                                        Settings
                                     </MenuItem>
-                                    <MenuItem 
-                                        onClick = { handleLogout }
-                                        sx = {{
+                                    <MenuItem
+                                        onClick={handleLogout}
+                                        sx={{
                                             '&:hover': {
                                                 backgroundColor: '#00bcd4',
                                                 color: '#212121'
@@ -222,7 +230,9 @@ function Navbar() {
                                     fontSize: 'large',
                                     margin: '0 8px',
                                     '&:hover': {
+                                        backgroundColor: '#00bcd4',
                                         border: '.2rem solid #00bcd4',
+                                        color: '#212121'
                                     },
                                 }}
                             >

@@ -124,11 +124,11 @@ function UserForm({ initialData = {}, setFormVisible, updateProfileData }) {
 
             const response = await apiClient.patch('/profile', formData);
             console.log(response);
-            if( response.status === 200 ){
-                updateProfileData( response.data.user );
+            if (response.status === 200) {
+                updateProfileData(response.data.user);
             }
             displayAlert(`User ${formData.username} Successfully Updated!`, 'success');
-            setFormData(( previousData ) => ({
+            setFormData((previousData) => ({
                 ...previousData,
                 password: '',
                 confirmPassword: ''
@@ -614,8 +614,9 @@ function UserForm({ initialData = {}, setFormVisible, updateProfileData }) {
                                     color: '#00bcd4',
                                     fontSize: 'large',
                                     '&:hover': {
+                                        backgroundColor: '#00bcd4',
                                         border: '.2rem solid #00bcd4',
-                                        color: '#00bcd4',
+                                        color: '#212121',
                                         fontSize: 'large'
                                     },
                                 }}
@@ -641,14 +642,16 @@ function UserForm({ initialData = {}, setFormVisible, updateProfileData }) {
                                 border: '.2rem solid #212121',
                                 color: '#00bcd4',
                                 fontSize: 'large',
+                                marginRight: '2rem',
                                 '&:hover': {
+                                    backgroundColor: '#00bcd4',
                                     border: '.2rem solid #00bcd4',
-                                    color: '#00bcd4',
+                                    color: '#212121',
                                     fontSize: 'large'
                                 },
                             }}
                         >
-                            Apply Changes
+                            Apply
                         </Button>
                         <Button
                             variant='outlined'
@@ -659,8 +662,9 @@ function UserForm({ initialData = {}, setFormVisible, updateProfileData }) {
                                 color: '#00bcd4',
                                 fontSize: 'large',
                                 '&:hover': {
+                                    backgroundColor: '#00bcd4',
                                     border: '.2rem solid #00bcd4',
-                                    color: '#00bcd4',
+                                    color: '#212121',
                                     fontSize: 'large'
                                 },
                             }}

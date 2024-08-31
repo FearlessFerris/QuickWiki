@@ -330,9 +330,13 @@ def search(query):
     print( f'Query: { query }' )
     try:
         headers = get_headers()
-        params = {'q': query, 'limit': '100'}
+        params = { 'q': query, 'limit': '25' }
         res = requests.get(search_pages_base, headers=headers, params=params)
         data = res.json()
+        # pages = data[ 'pages' ]
+        # for page in pages:
+        #     print( page[ 'title' ] ) 
+       
 
         if user_id:
             Search.create_search( user_id, query )

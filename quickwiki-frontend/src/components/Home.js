@@ -52,7 +52,9 @@ function Home() {
 
     return( 
         <div className='home-container'> 
-            <div className='centered'>
+            <div 
+                className='centered'
+            >
                 <SearchBar results={results} setResults={setResults} />
                 <div className='results-container'>
                     {displayedResults.map((item, index) => (
@@ -75,8 +77,8 @@ function Home() {
                                 margin: '1rem', 
                                 padding: '1rem', 
                                 boxShadow: '0 3px 5px rgba(0, 0, 0, 0.1)',
-                                width: '50rem',
-                                height: '8rem',
+                                width: '36rem',
+                                height: '6rem',
                                 flexGrow: 1,
                             }}
                             >

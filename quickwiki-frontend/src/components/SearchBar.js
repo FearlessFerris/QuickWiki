@@ -100,7 +100,7 @@ function SearchBar({ results, setResults }) {
           if (query.trim() !== '') {
               fetchResults( query, userId );
           }
-      }, 200),
+      }, 150),
       [ userId ]
   );
 
@@ -161,7 +161,20 @@ function SearchBar({ results, setResults }) {
                     type = 'submit'
                     className = 'search-button'
                     variant = 'outlined'
-                    >
+                    sx={{
+                      backgroundColor: '#212121',
+                      border: '.2rem solid #212121',
+                      color: '#00bcd4',
+                      fontSize: 'large',
+                      width: '8rem',
+                      '&:hover': {
+                          backgroundColor: '#00bcd4',
+                          border: '.2rem solid #00bcd4',
+                          color: '#212121',
+                          fontSize: 'large'
+                      },
+                  }}
+                >
                 Search
                 </Button>
                 </div>

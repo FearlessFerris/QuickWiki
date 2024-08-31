@@ -135,7 +135,10 @@ function Page() {
                     <Card
                         sx={{
                             backgroundColor: '#212121',
-                            margin: '12rem',
+                            marginLeft: '20rem',
+                            marginRight: '20rem',
+                            marginTop: '12rem',
+                            marginBottom: '10rem',
                             padding: '2rem',
                             width: '100%',
                             position: 'relative'

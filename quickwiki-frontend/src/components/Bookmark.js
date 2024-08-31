@@ -155,11 +155,11 @@ function Bookmark() {
                         marginBottom: '2rem'
                     }}
                 >
-                { isShowingGroup ? 'Bookmarks' : 'Groups' }
+                { isShowingGroup ? 'Groups' : 'Bookmarks' }
                 </Typography>
 
 
-                <div
+                {/* <div
                     className='buton-container'
                     style={{
                         display: 'flex',
@@ -205,7 +205,7 @@ function Bookmark() {
                     >
                      { isShowingGroup ? 'Groups' : 'Bookmarks' }    
                     </Button>
-                </div>
+                </div> */}
 
                 {isShowingBookmark && (
                     <div
@@ -218,16 +218,17 @@ function Bookmark() {
                         }}
                     >
                         <Button
-                            variant='outlined'
+                            variant='filled'
                             sx={{
                                 backgroundColor: '#212121',
                                 border: '.2rem solid #212121',
                                 color: '#00bcd4',
                                 fontSize: 'large',
-                                width: '12rem',
+                                width: '8rem',
                                 '&:hover': {
                                     border: '.2rem solid #00bcd4',
-                                    color: '#00bcd4',
+                                    backgroundColor: '#00bcd4',
+                                    color: '#212121',
                                     fontSize: 'large'
                                 },
                             }}
@@ -331,7 +332,7 @@ function Bookmark() {
                 </div>
             )}
             
-            {isShowingGroup && (
+            {/* {isShowingGroup && (
                 <div>
                     {groupData.filter(( item ) => item.name !== 'None' ).map((item, index) => (
                         <Link
@@ -429,7 +430,7 @@ function Bookmark() {
                         </Link>
                     ))}
                 </div>
-            )} 
+            )}  */}
 
             {backdrop && (
                 <Backdrop
