@@ -91,7 +91,7 @@ function Profile() {
                             backgroundColor: '#212121',
                             border: '.2rem solid #00bcd4',
                             borderRadius: '.6rem',
-                            marginTop: '8rem',
+                            marginTop: '12rem',
                             marginBottom: '2rem',
                             width: '36rem'
                         }}

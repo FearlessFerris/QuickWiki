@@ -80,11 +80,9 @@ function Page() {
             const response = await apiClient.post( '/user/bookmark/add', {
                 title
             });
-            console.log( response.data );
             displayAlert( `${ title } was successfully added to Bookmarks`, 'success' );
         }
         catch( error ){
-            // console.error( error.response.data.message );
             console.error( `Error adding ${ title } to Bookmarks` );
             displayAlert( `${ title }, is already in Bookmarks`, 'error' );
         }

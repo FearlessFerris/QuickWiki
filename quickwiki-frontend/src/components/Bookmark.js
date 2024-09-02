@@ -61,6 +61,27 @@ function Bookmark() {
         });
     }, [bookmarks]);
 
+    useEffect(() => {
+        groupData.forEach((_, index ) => {
+            setTimeout(() => {
+                setVisibleIndexes( previous => [...previous, index ]);
+            }, index * 400 );
+        });
+    }, [ groupData ]);
+
+    const handleGroupCreated = ( groupName, title = '' ) => {
+        if( !groupName && !title ){        
+            return;
+        }
+        displayAlert( `${ groupName } was successfully created!`, 'success' );
+        handleCloseBackdrop();
+    }
+
+    const handleGroupAdded = ( title, selectedGroupName ) => {
+        displayAlert( `${ title } was successfully added to ${ selectedGroupName }` );
+        handleCloseBackdrop(); 
+    }
+
     const handleRemoveBookmark = async (pageId) => {
         try {
             await apiClient.delete(`/user/bookmark/remove/${pageId}`);
@@ -74,7 +95,7 @@ function Bookmark() {
 
     const handleRemoveBookmarkGroup = async (name) => {
         try {
-            await apiClient.delete(`/user/bookmark/group/remove/${name}`);
+            await apiClient.delete(`/user/bookmark/groups/remove/${name}`);
             setGroupData((prevGroups) => prevGroups.filter((group) => group.name !== name));
             displayAlert(`${name} group was successfully removed!`, 'success');
         } catch (error) {
@@ -122,7 +143,7 @@ function Bookmark() {
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'center',
-                    marginTop: '8rem',
+                    marginTop: '12rem',
                     marginBottom: '2rem',
                     width: '36rem',
                     minWidth: '36rem',
@@ -359,6 +380,8 @@ function Bookmark() {
                     handleCloseBackdrop = { handleCloseBackdrop }
                     existingGroups = { groupData }
                     title = { selectedGroup }
+                    handleGroupCreated = { handleGroupCreated }
+                    handleGroupAdded = { handleGroupAdded }
                 />
             </Backdrop>
         </div>

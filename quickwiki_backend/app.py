@@ -253,9 +253,9 @@ def get_bookmark_groups():
         return jsonify({'message': 'Internal server error, could not retrieve bookmark groups', 'error': str(e)}), 500
 
 
-@app.route( '/api/user/bookmark/groups/add', methods = [ 'POST' ])
+@app.route( '/api/user/bookmark/groups/create', methods = [ 'POST' ])
 @jwt_required()
-def create_and_add_bookmark_groups():
+def create_bookmark_group():
     """ Create and add new Bookmark Groups """
 
     current_user = get_jwt_identity()
@@ -265,8 +265,7 @@ def create_and_add_bookmark_groups():
         return jsonify({ 'message': 'Error, must be logged in to create bookmark group' }), 401
     
     data = request.get_json()
-    title, groupName, groupImage, groupNotes = ( 
-        data.get( 'title' ),
+    groupName, groupImage, groupNotes = ( 
         data.get( 'groupName' ),
         data.get( 'groupImage' ),
         data.get( 'groupNotes' )
@@ -284,11 +283,50 @@ def create_and_add_bookmark_groups():
         error_message = traceback.format_exc()
         print(f'Error: {error_message}')
         return jsonify({ 'message': 'Internal server error, could not create bookmark group', 'error': str(e)}), 500 
+    
 
-
-@app.route( '/api/user/bookmark/group/remove/<name>', methods = [ 'DELETE' ])
+@app.route( '/api/user/bookmark/groups/add', methods = [ 'POST' ])
 @jwt_required()
-def remove_bookmark_from_group( name ):
+def add_bookmark_to_existing_group():
+    """ Adds a bookmark to group """
+
+    current_user = get_jwt_identity()
+    user_id = current_user.get( 'user_id' )
+
+    if not current_user:
+        return jsonify({ 'message': 'Error, must be logged in to add a bookmark to a group' })
+    
+    data = request.get_json()
+    selected_group = data.get( 'id', '' );
+    bookmark_title = data.get( 'title', '' );
+
+    if not bookmark_title:
+        return jsonify({ 'message': 'Error, no bookmark provided' }), 400
+
+    if not selected_group: 
+        return jsonify({ 'message': 'Error, no group selected' }), 400 
+
+    try: 
+        group = BookmarkGroup.query.filter_by( id = selected_group, user_id = user_id ).first()
+        print( f'Group: { group }' )
+        if group:
+            existing_bookmark = Bookmark.query.filter_by( user_id = user_id, page_id = bookmark_title ).first()
+            print( f'Group Bookmarks: { group.bookmark }' )
+            if existing_bookmark in group.bookmark: 
+                return jsonify({ 'message': f'Error, bookmark is already in { group.name }' }), 400
+            group.bookmark.append( existing_bookmark )
+            db.session.commit()
+            return jsonify({ 'message': f'Bookmark was successfully added to group { group.name }', 'data': group.name }), 200 
+        else: 
+            return jsonify({ 'message': 'Error, group not found' }), 400 
+    except Exception as e: 
+        print( f'Error adding bookmark to group: { e }' )
+    return jsonify({ 'message': 'Error adding bookmark to group' }), 500  
+
+
+@app.route( '/api/user/bookmark/groups/remove/<name>', methods = [ 'DELETE' ])
+@jwt_required()
+def remove_bookmark_group( name ):
     """ Removes BookmarkGroup"""
 
     current_user = get_jwt_identity()
@@ -303,7 +341,7 @@ def remove_bookmark_from_group( name ):
         if not removed_groups:
             return jsonify({'message': f'No bookmark group found with the name "{name}"'}), 404
         
-        ActivityLog.create_activity_log( user_id, 'bookmarkgroup', '/api/user/bookmark/groups/remove', 'Remove BookmarkGroup DELET Successful' )
+        ActivityLog.create_activity_log( user_id, 'bookmarkgroup', '/api/user/bookmark/groups/remove', 'Remove BookmarkGroup DELETE Successful' )
         return jsonify({ 'message': f'You have successfully removed { name } bookmark group' }), 200
     except Exception as e:
         db.session.rollback()
