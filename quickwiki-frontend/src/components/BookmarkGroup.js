@@ -2,19 +2,41 @@
 
 
 // Dependencies 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { Box, Container, Typography } from '@mui/material';
+import { Box, Card, CardContent, CardMedia, Container, Typography } from '@mui/material';
 
 
 // Components & Necessary Files 
-
+import apiClient from '../api/apiClient';
 
 
 // Bookmark Group Component 
 function BookmarkGroup() {
 
-    const { title } = useParams();
+    const { groupId } = useParams();
+    const [ groupName, setGroupName ] = useState( null );
+    const [ bookmarks, setBookmarks ] = useState([]);
+
+    const fetchBookmarkGroupsBookmarks = async ( groupId ) => {
+        try{
+            const response = await apiClient.get( `/user/bookmark/groups/${ groupId }/bookmarks` );
+            console.log( response.data );
+            setGroupName( response.data.group );
+            setBookmarks( response.data.bookmarks );
+        }
+        catch( error ){
+            console.error('Error fetching Bookmark Groups Bookmarks');
+            console.error('Error message:', error.message);
+        if (error.response) {
+            console.error('Error response data:', error.response.data);  
+        }
+    }
+    }
+
+    useEffect( () => {
+        fetchBookmarkGroupsBookmarks( groupId );
+    }, [ groupName ]);
 
     return(
         <Container
@@ -46,8 +68,18 @@ function BookmarkGroup() {
                         textAlign: 'center'
                     }}
                 >
-                { title }
+                { groupName }
                 </Typography>
+                <CardMedia 
+                    component = 'img'
+                    sx = {{
+                        borderRadius: '.4rem',
+                        width: 'auto',
+                        maxWidth: '20rem',
+                        height: 'auto',
+                        maxHeight: '20rem'
+                    }}
+                />
             </Box>
         </Container>
     )

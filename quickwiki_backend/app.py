@@ -253,6 +253,38 @@ def get_bookmark_groups():
         return jsonify({'message': 'Internal server error, could not retrieve bookmark groups', 'error': str(e)}), 500
 
 
+@app.route( '/api/user/bookmark/groups/<group_id>/bookmarks', methods = [ 'GET' ])
+@jwt_required()
+def get_bookmarks_in_group( group_id ):
+    """ Get all bookmarks in a specific group """
+
+    current_user = get_jwt_identity()
+    user_id = current_user.get( 'user_id' )
+
+    if not current_user: 
+        return jsonify({ 'message': 'Error, must be logged in to show bookmarks '}), 401 
+
+    try: 
+        group = BookmarkGroup.query.filter_by( id = group_id, user_id = user_id ).first()
+        bookmarks = group.bookmark
+        print( f'Bookmarks: { bookmarks }' )
+        bookmarks_data = [
+            {
+                'id': bookmark.id,
+                'user_id': bookmark.user_id,
+                'page_id': bookmark.page_id,
+                'page_url': bookmark.page_url,
+                'created_at': bookmark.created_at,
+            }
+            for bookmark in bookmarks
+        ]
+
+        return jsonify({'group': group.name, 'bookmarks': bookmarks_data}), 200
+    except Exception as e:
+        print(f'Error fetching bookmarks for group {group_id}: {e}')
+        return jsonify({'message': 'Error retrieving bookmarks in group'}), 500 
+
+
 @app.route( '/api/user/bookmark/groups/create', methods = [ 'POST' ])
 @jwt_required()
 def create_bookmark_group():

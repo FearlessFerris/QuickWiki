@@ -39,7 +39,7 @@ function App() {
           <Route exact path = '/user/create' element = { <CreateUserForm /> } />
           <Route exact path = '/user/profile' element = { <PrivateRoute component = { Profile } /> } />  
           <Route exact path = '/user/bookmark' element = { <PrivateRoute component = { Bookmark } /> } /> 
-          <Route exact path = '/user/bookmark/group/:title' element = { <PrivateRoute component = { BookmarkGroup } /> } /> 
+          <Route exact path = '/user/bookmark/group/:groupId' element = { <PrivateRoute component = { BookmarkGroup } /> } /> 
           <Route exact path = '/user/login' element = { <Login /> } /> 
           <Route exact path = '/search/page/:title' element = { <Page /> } /> 
         </Routes>

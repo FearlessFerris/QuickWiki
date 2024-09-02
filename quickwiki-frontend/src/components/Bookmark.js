@@ -296,7 +296,7 @@ function Bookmark() {
                 <div>
                     {groupData.filter(item => item.name !== 'None').map((item, index) => (
                         <Link 
-                            to = { `/user/bookmark/group/${ item.name }` }
+                            to = { `/user/bookmark/group/${ item.id }` }
                             key = { index }
                             style = {{
                                 textDecoration: 'none'

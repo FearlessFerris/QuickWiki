@@ -47,16 +47,12 @@ function GroupForm({ handleCloseBackdrop, existingGroups, title, handleGroupCrea
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            console.log( `Selected Group: ${ selectedGroup }` );
-
             if( selectedGroup !== '' ){
                 const response = await apiClient.post( '/user/bookmark/groups/add', {
                     id: selectedGroup,
                     title
                 });
-                console.log( response.data );
                 const groupName = response.data.data;
-                console.log( groupName );
                 if( handleGroupAdded ){
                     handleGroupAdded( title, groupName );
                 }
@@ -71,7 +67,6 @@ function GroupForm({ handleCloseBackdrop, existingGroups, title, handleGroupCrea
                 if( handleGroupCreated ){
                     handleGroupCreated( groupName );
                 }
-                console.log( response.data );
             }
         }
             catch (error) {

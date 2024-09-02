@@ -87,6 +87,19 @@ function Page() {
             displayAlert( `${ title }, is already in Bookmarks`, 'error' );
         }
     }
+
+    const handleGroupCreated = ( groupName, title = '' ) => {
+        if( !groupName && !title ){        
+            return;
+        }
+        displayAlert( `${ groupName } was successfully created!`, 'success' );
+        handleCloseBackdrop();
+    }
+
+    const handleGroupAdded = ( title, selectedGroupName ) => {
+        displayAlert( `${ title } was successfully added to ${ selectedGroupName }`, 'success' );
+        handleCloseBackdrop(); 
+    }
     
     const handleInputChange = (field, value) => {
         setGroupInformation(previousState => ({
@@ -264,6 +277,8 @@ function Page() {
                         handleCloseBackdrop = { handleCloseBackdrop }
                         existingGroups = { groupData }
                         title = { title }
+                        handleGroupCreated = { handleGroupCreated }
+                        handleGroupAdded = { handleGroupAdded }
                     /> 
                 </Backdrop>
             )}
