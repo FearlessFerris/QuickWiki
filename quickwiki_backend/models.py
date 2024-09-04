@@ -231,7 +231,6 @@ class Bookmark(Base):
         return bookmark
 
 
-
 class BookmarkGroup( Base ): 
     """ Bookmark Group Model """
 

@@ -17,7 +17,21 @@ function BookmarkGroup() {
     const { groupId } = useParams();
     const [ groupName, setGroupName ] = useState( null );
     const [ bookmarks, setBookmarks ] = useState([]);
+    const [ groupData, setGroupData ] = useState( null );
 
+
+    const fetchGroupData = async ( groupId ) => {
+        try{
+            const response = await apiClient.get( `/user/bookmark/groups?group_id=${ groupId }` );
+            const { data } = response.data;
+            setGroupData( data );
+            console.log( data );
+        }
+        catch( error ){
+            console.error( 'Error fetching groupData' )
+        }
+    }
+    
     const fetchBookmarkGroupsBookmarks = async ( groupId ) => {
         try{
             const response = await apiClient.get( `/user/bookmark/groups/${ groupId }/bookmarks` );
@@ -35,14 +49,17 @@ function BookmarkGroup() {
     }
 
     useEffect( () => {
+        fetchGroupData( groupId );
         fetchBookmarkGroupsBookmarks( groupId );
-    }, [ groupName ]);
+    }, [ groupId ]);
 
     return(
         <Container
             sx = {{
                 display: 'flex',
+                flexDirection: 'column',
                 justifyContent: 'center',
+                alignItems: 'center',
                 marginTop: '12rem'
             }}
         >
@@ -54,6 +71,7 @@ function BookmarkGroup() {
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'center',
+                    alignItems: 'center',
                     marginBottom: '2rem',
                     width: '36rem',
                     minWidth: '36rem',
@@ -70,16 +88,42 @@ function BookmarkGroup() {
                 >
                 { groupName }
                 </Typography>
-                <CardMedia 
+            </Box>
+                    
+            <Box 
+                sx={{
+                    backgroundColor: '#212121',
+                    border: '.2rem solid #00bcd4',
+                    borderRadius: '.6rem',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    marginBottom: '2rem',
+                    width: '36rem',
+                    minWidth: '36rem',
+                    boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.4), 0px 2px 4px rgba(0, 0, 0, 0.2)',
+                    padding: '1rem'
+                }}
+            >
+
+                { groupData && groupData[0].image_url && (
+                    <CardMedia 
                     component = 'img'
+                    src = { groupData[0].image_url }
                     sx = {{
                         borderRadius: '.4rem',
                         width: 'auto',
-                        maxWidth: '20rem',
                         height: 'auto',
+                        marginTop: '2rem',
+                        marginBottom: '2rem',
+                        maxWidth: '20rem',
                         maxHeight: '20rem'
                     }}
-                />
+                    />
+                )}
+
+
             </Box>
         </Container>
     )

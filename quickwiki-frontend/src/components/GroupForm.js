@@ -11,7 +11,6 @@ import apiClient from '../api/apiClient';
 import { useAlert } from './ContextDirectory.js/AlertContext';
 
 
-
 // Group Creation Form Component 
 function GroupForm({ handleCloseBackdrop, existingGroups, title, handleGroupCreated = null, handleGroupAdded = null }) {
 

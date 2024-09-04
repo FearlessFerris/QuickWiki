@@ -47,6 +47,7 @@ def homepage():
     print( 'hello' )
     return ''' Welcome to QuickWiki '''
     
+    
 # User Routes
 @app.route( '/api/create', methods = [ 'POST' ])
 def create():
@@ -242,9 +243,16 @@ def get_bookmark_groups():
     if not current_user:
         return jsonify({'message': 'Error, must be logged in to retrieve bookmark groups!'}), 401
     
+    group_id = request.args.get( 'group_id' ) 
     try:
-        user_groups = BookmarkGroup.query.filter_by(user_id=user_id).all()
-        group_list = [group.convert_to_dictionary() for group in user_groups]
+        if group_id: 
+            bookmark_group = BookmarkGroup.query.filter_by( user_id = user_id, id = group_id ).first()
+            if not bookmark_group: 
+                return jsonify({ 'message': 'Bookmark Group not found' }), 404
+            group_list = [ bookmark_group.convert_to_dictionary() ]
+        else: 
+            user_groups = BookmarkGroup.query.filter_by(user_id=user_id).all()
+            group_list = [group.convert_to_dictionary() for group in user_groups]
         ActivityLog.create_activity_log(user_id, 'bookmark', '/api/user/bookmark/groups', 'All Bookmark Groups GET Successful')
         return jsonify({'message': 'Here is a list of your bookmark groups.', 'data': group_list}), 200
     except Exception as e:
@@ -406,7 +414,6 @@ def search(query):
         # pages = data[ 'pages' ]
         # for page in pages:
         #     print( page[ 'title' ] ) 
-       
 
         if user_id:
             Search.create_search( user_id, query )

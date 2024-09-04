@@ -372,9 +372,9 @@ function Bookmark() {
             )}
             
             <Backdrop
-            sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, backgroundColor: 'rgba(0, 0, 0, 0.8)' }}
-            open={backdrop}
-            onClick={handleCloseBackdrop}
+                sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, backgroundColor: 'rgba(0, 0, 0, 0.8)' }}
+                open={backdrop}
+                onClick={handleCloseBackdrop}
             >
                 <GroupForm
                     handleCloseBackdrop = { handleCloseBackdrop }
