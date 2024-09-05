@@ -1,3 +1,7 @@
+// Bookmark Component Implementation 
+
+
+// Dependencies 
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Box, Button, Card, CardContent, CardMedia, Typography, Backdrop } from '@mui/material';
@@ -180,7 +184,7 @@ function Bookmark() {
                             color: '#00bcd4',
                             fontSize: 'large',
                             marginRight: '2rem',
-                            width: '8rem',
+                            width: '8.5rem',
                             '&:hover': {
                                 border: '.2rem solid #00bcd4',
                                 backgroundColor: '#00bcd4',
@@ -199,7 +203,7 @@ function Bookmark() {
                             border: '.2rem solid #212121',
                             color: '#00bcd4',
                             fontSize: 'large',
-                            width: '8rem',
+                            width: '8.5rem',
                             '&:hover': {
                                 border: '.2rem solid #00bcd4',
                                 backgroundColor: '#00bcd4',
@@ -235,7 +239,7 @@ function Bookmark() {
                                     margin: '1rem',
                                     padding: '1rem',
                                     width: '34rem',
-                                    height: '2rem',
+                                    height: '3rem',
                                     opacity: visibleIndexes.includes(index) ? 1 : 0,
                                     transform: visibleIndexes.includes(index) ? 'translateY(0)' : 'translateY(20px)',
                                     transition: 'opacity 0.6s ease, transform 0.6s ease',
@@ -279,11 +283,30 @@ function Bookmark() {
                                         />
                                     </>
                                 )}
-                                <CardContent>
+                                <CardContent
+                                    sx = {{
+                                        alignItems: 'center',
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        flexGrow: 1,
+                                        justifyContent: 'center',
+                                        overflow: 'hidden',
+                                        maxWidth: '80%',
+                                        marginTop: '1rem',
+                                        padding: 0,
+                                    }}
+                                >
                                     <Typography
                                         variant='h4'
                                         color='#00bcd4'
-                                        sx={{ textAlign: 'center', marginTop: '2rem', marginBottom: '2rem' }}
+                                        sx={{ 
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                            whiteSpace: 'nowrap',
+                                            textAlign: 'center', 
+                                            maxWidth: '100%',
+                                            padding: '0'
+                                         }}
                                     >
                                         {item.page_id}
                                     </Typography>

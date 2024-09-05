@@ -160,9 +160,10 @@ function Navbar() {
                                     src={userImage}
                                     alt="User Avatar"
                                     sx={{
+                                        border: '.1rem solid #00bcd4',
                                         marginLeft: '3rem',
                                         marginRight: '1rem',
-                                        marginTop: '.3rem',
+                                        marginTop: '.1rem',
                                         width: '3.5rem',
                                         height: '3.5rem',
                                         cursor: 'pointer',

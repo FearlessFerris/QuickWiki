@@ -10,6 +10,7 @@ import { Box, Card, CardContent, CardMedia, Typography } from '@mui/material';
 // Components & Necessary Files 
 import SearchBar from './SearchBar';
 import '../static/Home.css';
+import ParticleBackground from './ParticleBackground';
 
 
 // Home Component 

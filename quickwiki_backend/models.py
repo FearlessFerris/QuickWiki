@@ -290,7 +290,6 @@ class BookmarkGroup( Base ):
         return groups
 
 
-
 class Authorization(Base):
     """ Authorization Info Model """
 
