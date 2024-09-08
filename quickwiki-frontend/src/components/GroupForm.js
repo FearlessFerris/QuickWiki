@@ -9,14 +9,14 @@ import { Box, Button, Card, CardContent, FormControl, InputLabel, MenuItem, Sele
 // Components & Necessary Files 
 import apiClient from '../api/apiClient';
 import { useAlert } from './ContextDirectory.js/AlertContext';
-
+import { useLoggedIn } from './ContextDirectory.js/LoggedInContext';
 
 // Group Creation Form Component 
 function GroupForm({ handleCloseBackdrop, existingGroups, title, handleGroupCreated = null, handleGroupAdded = null }) {
 
+    const { isLoggedIn } = useLoggedIn();
     const [groups, setGroups] = useState([]);
     const [selectedGroup, setSelectedGroup] = useState('');
-    const [ visibleIndexes, setVisibleIndexes ] = useState([]);
     const [groupInformation, setGroupInformation] = useState({
         groupName: '',
         groupImage: '',
@@ -25,68 +25,63 @@ function GroupForm({ handleCloseBackdrop, existingGroups, title, handleGroupCrea
 
     useEffect(() => {
         if (existingGroups.length > 0) {
+            console.log( existingGroups[0].id );
             setSelectedGroup(existingGroups[0].id);
         }
     }, [existingGroups]);
 
     const fetchGroups = async () => {
-        try{ 
-            const response = await apiClient.get( '/user/bookmark/groups' );
-            setGroups( response.data.data );
+        try {
+            const response = await apiClient.get('/user/bookmark/groups');
+            setGroups(response.data.data);
+        } catch (error) {
+            console.error('Error fetching groups', error);
         }
-        catch( error ){
-            console.error( 'Error fetching groups' );
-        }
-    }
+    };
 
     useEffect(() => {
-        fetchGroups();
-    }, []);
+        if (isLoggedIn) {
+            fetchGroups();
+        }
+    }, [isLoggedIn]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            if( selectedGroup !== '' ){
-                const response = await apiClient.post( '/user/bookmark/groups/add', {
+            if (selectedGroup !== '') {
+                const response = await apiClient.post('/user/bookmark/groups/add', {
                     id: selectedGroup,
                     title
                 });
                 const groupName = response.data.data;
-                if( handleGroupAdded ){
-                    handleGroupAdded( title, groupName );
+                if (handleGroupAdded) {
+                    handleGroupAdded(groupName, title);
                 }
-            }
-            else{
+            } else {
                 const { groupName, groupImage, groupNotes } = groupInformation;
                 const response = await apiClient.post('/user/bookmark/groups/create', {
                     groupName,
                     groupImage,
                     groupNotes
                 });
-                if( handleGroupCreated ){
-                    handleGroupCreated( groupName );
+                if (handleGroupCreated) {
+                    handleGroupCreated(response.data.data);
                 }
             }
+        } catch (error) {
+            console.error('Error adding / creating new group!', error);
         }
-            catch (error) {
-                console.error(error);
-                console.error(error.response.data);
-            console.error('Error adding / creating new group!');
-        }
-    }
+    };
 
     const handleInputChange = (field, value) => {
         setGroupInformation((previousState) => ({
             ...previousState,
             [field]: value
         }));
-        console.log(`Field: ${field} || Value: ${value}`);
     };
 
     return (
-        <div
-            className='groupform-container'
-        >
+        <div className='groupform-container'>
             <Box
                 component='form'
                 onSubmit={handleSubmit}
@@ -113,195 +108,116 @@ function GroupForm({ handleCloseBackdrop, existingGroups, title, handleGroupCrea
                     Create / Add Group
                 </Typography>
 
-                {selectedGroup !== '' ? (
-                    <>
-                        <FormControl
-                            sx={{
-                                marginTop: '1rem',
-                                '& .MuiOutlinedInput-root': {
-                                    '& fieldset': {
-                                        borderWidth: '.2rem',
-                                        borderColor: '#00bcd4',
+                <FormControl
+                    sx={{
+                        marginTop: '1rem',
+                        '& .MuiOutlinedInput-root': {
+                            '& fieldset': {
+                                borderWidth: '.2rem',
+                                borderColor: '#00bcd4',
+                            },
+                            '&:hover fieldset': {
+                                borderWidth: '.2rem',
+                                borderColor: '#00bcd4',
+                            },
+                            '&.Mui-focused fieldset': {
+                                borderWidth: '.2rem',
+                                borderColor: '#00bcd4',
+                            }
+                        },
+                        '& .MuiInputLabel-root': {
+                            color: '#00bcd4',
+                        },
+                        '& .MuiInputLabel-root.Mui-focused': {
+                            color: '#00bcd4'
+                        },
+                        '& .MuiSelect-root': {
+                            color: '#00bcd4',
+                        },
+                        '& .MuiSvgIcon-root': {
+                            color: '#00bcd4',
+                        },
+                        '& .MuiPaper-root': {
+                            backgroundColor: '#424242',
+                            color: '#00bcd4',
+                        },
+                    }}
+                >
+                    <InputLabel>Select Existing Group</InputLabel>
+                    <Select
+                        label="Select Existing Group"
+                        value={selectedGroup}
+                        onChange={(e) => setSelectedGroup(e.target.value)}
+                        sx={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            borderRadius: '.3rem',
+                            color: '#00bcd4'
+                        }}
+                        MenuProps={{
+                            PaperProps: {
+                                sx: {
+                                    bgcolor: '#424242',
+                                    color: '#00bcd4',
+                                    '& .MuiMenuItem-root': {
+                                        color: '#00bcd4',
                                     },
-                                    '&:hover fieldset': {
-                                        borderWidth: '.2rem',
-                                        borderColor: '#00bcd4',
-                                    },
-                                    '&.Mui-focused fieldset': {
-                                        borderWidth: '.2rem',
-                                        borderColor: '#00bcd4',
+                                    '& .MuiMenuItem-root:hover': {
+                                        bgcolor: '#616161',
                                     }
                                 },
-                                '& .MuiInputLabel-root': {
-                                    color: '#00bcd4',
-                                },
-                                '& .MuiInputLabel-root.Mui-focused': {
-                                    color: '#00bcd4'
-                                },
-                                '& .MuiSelect-root': {
-                                    color: '#00bcd4',
-                                },
-                                '& .MuiSvgIcon-root': {
-                                    color: '#00bcd4',
-                                },
-                                '& .MuiPaper-root': {
-                                    backgroundColor: '#424242',
-                                    color: '#00bcd4',
-                                },
-                            }}
-                        >
-                            <InputLabel> Select Existing Group </InputLabel>
-                            <Select
-                                label="Select Existing Group"
-                                value={selectedGroup}
-                                onChange={(e) => setSelectedGroup(e.target.value)}
-                                sx={{
-                                    display: 'flex',
-                                    justifyContent: 'center',
-                                    borderRadius: '.3rem',
-                                    color: '#00bcd4'
-                                }}
-                                MenuProps={{
-                                    PaperProps: {
-                                        sx: {
-                                            bgcolor: '#424242',
-                                            color: '#00bcd4',
-                                            '& .MuiMenuItem-root': {
-                                                color: '#00bcd4',
-                                            },
-                                            '& .MuiMenuItem-root:hover': {
-                                                bgcolor: '#616161',
-                                            }
-                                        },
+                            },
+                            MenuListProps: {
+                                sx: {
+                                    padding: 0,
+                                    '& .MuiMenuItem-root': {
+                                        height: '2rem',
                                     },
-                                    MenuListProps: {
-                                        sx: {
-                                            padding: 0,
-                                            '& .MuiMenuItem-root': {
-                                                height: '2rem',
-                                            },
-                                        }
-                                    }
-                                }}
-                            >
-                                <MenuItem value=''></MenuItem>
-                                {groups.map((group) => (
-                                    <MenuItem key={group.id} value={group.id}>
-                                        {group.name}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
+                                }
+                            }
+                        }}
+                    >
+                        <MenuItem value=''></MenuItem>
+                        {groups.map((group) => (
+                            <MenuItem key={group.id} value={group.id}>
+                                {group.name}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
 
-                        <div
-                            style={{
-                                display: 'flex',
-                                flexDirection: 'row',
-                                justifyContent: 'center',
-                                marginTop: '2rem'
-                            }}
-                        >
-                            <Button
-                                type='submit'
-                                variant='solid'
-                                sx={{
-                                    backgroundColor: '#212121',
-                                    border: '.2rem solid #212121',
-                                    color: '#00bcd4',
-                                    fontSize: 'large',
-                                    '&:hover': {
-                                        border: '.2rem solid #00bcd4',
-                                        backgroundColor: '#00bcd4',
-                                        color: '#212121',
-                                        fontSize: 'large'
-                                    },
-                                }}
-                            onClick={handleSubmit}
-                            >
-                                Add
-                            </Button>
-                        </div>
-
-                    </>
-                ) : (
-                    <>
-                        <FormControl
+                {selectedGroup !== '' && (
+                    <div
+                        style={{
+                            display: 'flex',
+                            flexDirection: 'row',
+                            justifyContent: 'center',
+                            marginTop: '2rem'
+                        }}
+                    >
+                        <Button
+                            type='submit'
+                            variant='solid'
                             sx={{
-                                marginTop: '1rem',
-                                '& .MuiOutlinedInput-root': {
-                                    '& fieldset': {
-                                        borderWidth: '.2rem',
-                                        borderColor: '#00bcd4',
-                                    },
-                                    '&:hover fieldset': {
-                                        borderWidth: '.2rem',
-                                        borderColor: '#00bcd4',
-                                    },
-                                    '&.Mui-focused fieldset': {
-                                        borderWidth: '.2rem',
-                                        borderColor: '#00bcd4',
-                                    }
-                                },
-                                '& .MuiInputLabel-root': {
-                                    color: '#00bcd4',
-                                },
-                                '& .MuiInputLabel-root.Mui-focused': {
-                                    color: '#00bcd4'
-                                },
-                                '& .MuiSelect-root': {
-                                    color: '#00bcd4',
-                                },
-                                '& .MuiSvgIcon-root': {
-                                    color: '#00bcd4',
-                                },
-                                '& .MuiPaper-root': {
-                                    backgroundColor: '#424242',
-                                    color: '#00bcd4',
+                                backgroundColor: '#212121',
+                                border: '.2rem solid #212121',
+                                color: '#00bcd4',
+                                fontSize: 'large',
+                                '&:hover': {
+                                    border: '.2rem solid #00bcd4',
+                                    backgroundColor: '#00bcd4',
+                                    color: '#212121',
+                                    fontSize: 'large'
                                 },
                             }}
                         >
-                            <InputLabel> Select Existing Group </InputLabel>
-                            <Select
-                                label="Select Existing Group"
-                                value={selectedGroup}
-                                onChange={(e) => setSelectedGroup(e.target.value)}
-                                sx={{
-                                    display: 'flex',
-                                    justifyContent: 'center',
-                                    borderRadius: '.3rem',
-                                    color: '#00bcd4'
-                                }}
-                                MenuProps={{
-                                    PaperProps: {
-                                        sx: {
-                                            bgcolor: '#424242',
-                                            color: '#00bcd4',
-                                            '& .MuiMenuItem-root': {
-                                                color: '#00bcd4',
-                                            },
-                                            '& .MuiMenuItem-root:hover': {
-                                                bgcolor: '#616161',
-                                            }
-                                        },
-                                    },
-                                    MenuListProps: {
-                                        sx: {
-                                            padding: 0,
-                                            '& .MuiMenuItem-root': {
-                                                height: '2rem',
-                                            },
-                                        }
-                                    }
-                                }}
-                            >
-                                <MenuItem value=''></MenuItem>
-                                {groups.map((group) => (
-                                    <MenuItem key={group.id} value={group.id}>
-                                        {group.name}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
+                            Add to Group
+                        </Button>
+                    </div>
+                )}
+
+                {selectedGroup === '' && (
+                    <>
                         <TextField
                             label='Group Name'
                             name='group-name'
@@ -400,6 +316,8 @@ function GroupForm({ handleCloseBackdrop, existingGroups, title, handleGroupCrea
                             placeholder='Ex: These articles are very interesting'
                             value={groupInformation.groupNotes}
                             onChange={(e) => handleInputChange('groupNotes', e.target.value)}
+                            multiline
+                            rows={3}
                             sx={{
                                 marginTop: '1rem',
                                 '& .MuiOutlinedInput-root': {
@@ -463,26 +381,23 @@ function GroupForm({ handleCloseBackdrop, existingGroups, title, handleGroupCrea
                                         fontSize: 'large'
                                     },
                                 }}
-                                onClick = { handleSubmit }
                             >
                                 Create
                             </Button>
                             <Button
+                                onClick={handleCloseBackdrop}
                                 variant='solid'
                                 sx={{
-                                    backgroundColor: '#212121',
-                                    border: '.2rem solid #212121',
-                                    color: '#00bcd4',
-                                    fontSize: 'large',
                                     marginLeft: '1rem',
+                                    color: '#00bcd4',
+                                    borderColor: '#00bcd4',
+                                    fontSize: 'large',
                                     '&:hover': {
-                                        border: '.2rem solid #00bcd4',
                                         backgroundColor: '#00bcd4',
                                         color: '#212121',
-                                        fontSize: 'large'
+                                        borderColor: '#00bcd4',
                                     },
                                 }}
-                                onClick={handleCloseBackdrop}
                             >
                                 Cancel
                             </Button>
@@ -491,7 +406,7 @@ function GroupForm({ handleCloseBackdrop, existingGroups, title, handleGroupCrea
                 )}
             </Box>
         </div>
-    )
+    );
 }
 
 export default GroupForm;

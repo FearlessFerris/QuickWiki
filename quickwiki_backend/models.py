@@ -267,7 +267,9 @@ class BookmarkGroup( Base ):
     @classmethod
     def create_group( cls, user_id, name, notes = None, image_url = None, uploaded_image = None ):
         """ Create a Bookmark Group Instance """
-
+        
+        if not name or name.strip() == '':
+            raise ValueError( 'Name field cannot be Null or Empty String' )
         new_group = cls( user_id = user_id, name = name, notes = notes, image_url = image_url, uploaded_image = uploaded_image )
         print( f'You have just created a new group!!!! { new_group }' )
         db.session.add( new_group )

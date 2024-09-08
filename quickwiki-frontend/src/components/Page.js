@@ -15,12 +15,14 @@ import { parse } from 'node-html-parser';
 import apiClient from '../api/apiClient';
 import { useAlert } from './ContextDirectory.js/AlertContext';
 import GroupForm from './GroupForm';
+import { useLoggedIn } from './ContextDirectory.js/LoggedInContext';
 
 
 // Page Component 
-
 function Page() {
+
     const { title } = useParams();
+    const { isLoggedIn } = useLoggedIn();
     const [pageData, setPageData] = useState(null);
     const [htmlData, setHtmlData] = useState('');
     const [loading, setLoading] = useState(true);
@@ -49,7 +51,8 @@ function Page() {
     const fetchGroups = async () => {
         try {
             const response = await apiClient.get('/user/bookmark/groups');
-            setGroupData(response.data.data); 
+            const groups = [{ id: '', name: 'None' }, ...response.data.data];
+            setGroupData( groups ); 
         } catch (error) {
             console.error('Error fetching Bookmark Groups!');
         }
@@ -57,8 +60,10 @@ function Page() {
 
     useEffect(() => {
         fetchPageData();
-        fetchGroups(); 
-    }, []);
+        if( isLoggedIn ){
+            fetchGroups(); 
+        }
+    }, [ isLoggedIn ]);
 
     const transformHtmlLinks = (html) => {
         const root = parse(html);
@@ -83,8 +88,25 @@ function Page() {
             displayAlert( `${ title } was successfully added to Bookmarks`, 'success' );
         }
         catch( error ){
-            console.error( `Error adding ${ title } to Bookmarks` );
-            displayAlert( `${ title }, is already in Bookmarks`, 'error' );
+            if( error.response ){
+                console.log( `Status Code: ${ error.response.status }` );
+                if( error.response.status === 401 ){
+                    console.error( error.response.status );
+                    displayAlert( `Error, must be logged in to add a Bookmark`, 'error' );
+                }
+                else if( error.response.status === 409 ){ 
+                    console.error( error.response.status );
+                    displayAlert( `${ title } is already in Bookmarks`, 'error' );
+                }
+                else {
+                    console.error( error.response );
+                    displayAlert( `Error occurred while adding Bookmark`, 'error' );
+                }
+            }
+            else{
+                console.error( `Error: `, error.message );
+                displayAlert( 'Error occurred while adding Bookmark', 'error' );
+            }
         }
     }
 
@@ -114,7 +136,12 @@ function Page() {
     };
 
     const handleOpenBackdrop = () => {
-        setBackdrop(true);
+        if( isLoggedIn ){
+            setBackdrop(true);
+        }
+        else {
+            displayAlert( 'Error, must be logged in to add Bookmark to Group', 'error' );
+        }
     };
 
     const handleCloseBackdrop = () => {

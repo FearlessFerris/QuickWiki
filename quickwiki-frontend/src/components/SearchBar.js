@@ -68,10 +68,10 @@ function SearchBar({ results, setResults }) {
     const { userId } = useLoggedIn();
     const [ search, setSearch ] = useState( '' );
     const [ isTyping, setIsTyping ] = useState( false );
-    const [exampleIndex, setExampleIndex] = useState(0);
+    const [ animationSeen, setAnimationSeen ] = useState( false );
+    const [ exampleIndex, setExampleIndex ] = useState(0);
     const [ typingInterval, setTypingInterval ] = useState( null );
-    const animationSeen = sessionStorage.getItem( 'animationSeen') === 'true';
-    const exampleSearches = [ 'Anthony Bourdain', 'Switzerland', 'David Gilmour', 'Banksy', 'Philip Seymour Hoffman' ];
+    const exampleSearches = [ 'Anthony Bourdain', 'Michael Giacchino', 'David Gilmour', 'Banksy', 'Philip Seymour Hoffman', 'Jurassic Park' ];
 
     const handleChange = ( e ) => {
         const { value } = e.target;
@@ -106,15 +106,15 @@ function SearchBar({ results, setResults }) {
               fetchResults( query, userId );
           }
           else{
-            setResults([]);
+            setSearch( [] );
           }
       }, 200),
       [ userId ]
   );
 
   useEffect(() => {
-    if ( isTyping || animationSeen === true ) return;
-    
+    if (isTyping || animationSeen) return;
+
     const startTypingEffect = () => {
       let charIndex = 0;
       const currentSearch = exampleSearches[exampleIndex];
@@ -131,33 +131,28 @@ function SearchBar({ results, setResults }) {
       }, 50);
       setTypingInterval( intervalId );
     };
-    
+
     const startAnimationDelay = setTimeout( () => {
       startTypingEffect();
     }, 5000 );
-    
+
     const animationInterval = setInterval(() => {
-      if (!isTyping && animationSeen ) {
+      if (!isTyping && !animationSeen) {
         startTypingEffect();
       }
     }, 25000 ); 
-    
-    sessionStorage.setItem( 'animationSeen', 'true' );
 
     return () => {
       clearTimeout( startAnimationDelay );
       clearInterval(animationInterval);
-      if( typingInterval ) {
-        clearInterval( typingInterval );
-        setTypingInterval( null );
-      }
-    }
-  }, [ exampleIndex, isTyping ]);
+      if( typingInterval ) clearInterval( typingInterval );
+    };
+  }, [exampleIndex, isTyping, animationSeen ]);
 
   const handleFocus = () => {
     setSearch( '' );
     setIsTyping(true);
-    sessionStorage.setItem( 'animationSeen', true );
+    setAnimationSeen(true); 
     if( typingInterval ){
       clearInterval( typingInterval );
       setTypingInterval( null );
@@ -170,7 +165,6 @@ function SearchBar({ results, setResults }) {
     } else {
       debouncedFetchResults(search);
     }
-    console.log( search.trim() );
   }, [search, debouncedFetchResults]);
 
   const handleSubmit = async (e) => {

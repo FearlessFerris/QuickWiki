@@ -311,6 +311,9 @@ def create_bookmark_group():
         data.get( 'groupNotes' )
     )
     
+    if groupName or groupName.split() == '':
+        return jsonify({ 'message': 'Error, the GroupName field cannot be empty' }), 400
+     
     try:
         new_bookmark_group = BookmarkGroup.create_group( user_id, groupName, groupNotes, groupImage, None )
         print( f'New Bookmark Group: { new_bookmark_group }' )
