@@ -311,7 +311,8 @@ def create_bookmark_group():
         data.get( 'groupNotes' )
     )
     
-    if groupName or groupName.split() == '':
+    if not groupName.strip():
+        print( 'One of these is true' )
         return jsonify({ 'message': 'Error, the GroupName field cannot be empty' }), 400
      
     try:
@@ -340,8 +341,8 @@ def add_bookmark_to_existing_group():
         return jsonify({ 'message': 'Error, must be logged in to add a bookmark to a group' })
     
     data = request.get_json()
-    selected_group = data.get( 'id', '' );
-    bookmark_title = data.get( 'title', '' );
+    selected_group = data.get( 'id', '' )
+    bookmark_title = data.get( 'title', '' )
 
     if not bookmark_title:
         return jsonify({ 'message': 'Error, no bookmark provided' }), 400
@@ -414,9 +415,6 @@ def search(query):
         params = { 'q': query, 'limit': '25' }
         res = requests.get(search_pages_base, headers=headers, params=params)
         data = res.json()
-        # pages = data[ 'pages' ]
-        # for page in pages:
-        #     print( page[ 'title' ] ) 
 
         if user_id:
             Search.create_search( user_id, query )

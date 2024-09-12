@@ -160,15 +160,30 @@ function BookmarkGroup() {
                             boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.5)'
                         }}
                     >
-                        <CardContent>
+                        <CardContent
+                            sx = {{
+                                alignItems: 'center',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                flexGrow: 1,
+                                justifyContent: 'center',
+                                overflow: 'hidden',
+                                maxWidth: '80%',
+                                marginTop: '1rem',
+                                padding: 0,
+                            }}
+                        >
                             <Typography
                                 variant='h4'
                                 color='#00bcd4'
-                                sx={{
-                                    textAlign: 'center',
-                                    marginTop: '2rem',
-                                    marginBottom: '2rem'
-                                }}
+                                sx={{ 
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    whiteSpace: 'nowrap',
+                                    textAlign: 'center', 
+                                    maxWidth: '100%',
+                                    padding: '0'
+                                 }}
                             >
                                 {item.page_id}
                             </Typography>

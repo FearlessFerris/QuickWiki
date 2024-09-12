@@ -11,6 +11,7 @@ import apiClient from '../api/apiClient';
 import { useAlert } from './ContextDirectory.js/AlertContext';
 import { useLoggedIn } from './ContextDirectory.js/LoggedInContext';
 
+
 // Group Creation Form Component 
 function GroupForm({ handleCloseBackdrop, existingGroups, title, handleGroupCreated = null, handleGroupAdded = null }) {
 
@@ -25,7 +26,6 @@ function GroupForm({ handleCloseBackdrop, existingGroups, title, handleGroupCrea
 
     useEffect(() => {
         if (existingGroups.length > 0) {
-            console.log( existingGroups[0].id );
             setSelectedGroup(existingGroups[0].id);
         }
     }, [existingGroups]);
@@ -55,20 +55,22 @@ function GroupForm({ handleCloseBackdrop, existingGroups, title, handleGroupCrea
                 });
                 const groupName = response.data.data;
                 if (handleGroupAdded) {
-                    handleGroupAdded(groupName, title);
+                    handleGroupAdded( title, groupName );
                 }
             } else {
                 const { groupName, groupImage, groupNotes } = groupInformation;
+                console.log( groupName );
                 const response = await apiClient.post('/user/bookmark/groups/create', {
                     groupName,
-                    groupImage,
+                    groupImage, 
                     groupNotes
                 });
                 if (handleGroupCreated) {
-                    handleGroupCreated(response.data.data);
+                    handleGroupCreated( groupInformation.groupName );
                 }
             }
         } catch (error) {
+            console.error( error.response.data.message );
             console.error('Error adding / creating new group!', error);
         }
     };

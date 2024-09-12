@@ -81,7 +81,7 @@ function Bookmark() {
         handleCloseBackdrop();
     }
 
-    const handleGroupAdded = ( title, selectedGroupName ) => {
+    const handleGroupAdded = ( selectedGroupName, title ) => {
         displayAlert( `${ title } was successfully added to ${ selectedGroupName }` );
         handleCloseBackdrop(); 
     }
