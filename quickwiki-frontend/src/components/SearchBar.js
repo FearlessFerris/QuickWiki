@@ -64,6 +64,7 @@ const customTheme = createTheme({
 });
 
 function SearchBar({ results, setResults }) {
+ 
   const { userId } = useLoggedIn();
   const [search, setSearch] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -71,13 +72,12 @@ function SearchBar({ results, setResults }) {
   const [exampleIndex, setExampleIndex] = useState(0);
   const [typingInterval, setTypingInterval] = useState(null);
   const exampleSearches = ['Anthony Bourdain', 'Michael Giacchino', 'David Gilmour', 'Banksy', 'Philip Seymour Hoffman', 'Jurassic Park'];
-  const latestQuery = useRef('');
 
   const handleChange = (e) => {
     const { value } = e.target;
-    setSearch(value);
-    setIsTyping(true);
-    latestQuery.current = value; 
+    setSearch( value );
+    setIsTyping( true );
+    setAnimationSeen( true );
   };
 
   const fetchResults = async (query, userId) => {
@@ -97,7 +97,7 @@ function SearchBar({ results, setResults }) {
 
   const debouncedFetchResults = useCallback(
     debounce((query) => {
-      if (query === latestQuery.current) {
+      if ( query !== '' ) {
         fetchResults(query, userId);
       }
     }, 250),
@@ -106,28 +106,36 @@ function SearchBar({ results, setResults }) {
 
   useEffect(() => {
     if (search.trim() === '') {
+      setSearch( '' );
       setResults([]);
     } else {
-      debouncedFetchResults(search);
+      debouncedFetchResults( search );
     }
-  }, [search, debouncedFetchResults]);
+  }, [search, debouncedFetchResults ]);
 
   useEffect(() => {
     if (isTyping || animationSeen) return;
 
     const startTypingEffect = () => {
+      console.log( 'Starting typing effect' );
       let charIndex = 0;
       const currentSearch = exampleSearches[exampleIndex];
       const intervalId = setInterval(() => {
-        setSearch((prevSearch) => currentSearch.substring(0, charIndex + 1));
+        setSearch(() => currentSearch.substring(0, charIndex + 1));
         charIndex++;
         if (charIndex >= currentSearch.length) {
           clearInterval(intervalId);
           setTimeout(() => {
             setSearch('');
-            setExampleIndex((prevIndex) => (prevIndex + 1) % exampleSearches.length);
-          }, 8000);
-        }
+            setExampleIndex((prevIndex) => {
+              const nextIndex = ( prevIndex + 1 ) % exampleSearches.length;
+              if( nextIndex === 0 ){
+                setAnimationSeen( true );
+              }
+              return nextIndex;
+            });
+        }, 8000 );
+      }
       }, 50);
       setTypingInterval(intervalId);
     };
@@ -142,7 +150,7 @@ function SearchBar({ results, setResults }) {
       if (!isTyping && !animationSeen) {
         startTypingEffect();
       }
-    }, 20000);
+    }, 48000);
 
     return () => {
       clearTimeout(startAnimationDelay);
@@ -174,7 +182,7 @@ function SearchBar({ results, setResults }) {
     <ThemeProvider theme={customTheme}>
       <div className='form-container'>
         <Box
-          onSubmit={handleSubmit}
+          onSubmit = { handleSubmit }
           component='form'
           sx={{
             display: 'flex',
@@ -205,7 +213,7 @@ function SearchBar({ results, setResults }) {
           <div>
             <Button
               type='submit'
-              disabled={search.trim() === ''}
+              disabled = { search.trim() === '' }
               className='search-button'
               variant='outlined'
               sx={{

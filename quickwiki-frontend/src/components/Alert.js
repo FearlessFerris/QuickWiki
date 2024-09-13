@@ -15,6 +15,10 @@ function AlertComponent() {
 
     const { alert, hideAlert } = useAlert();
 
+    if( !alert ){
+        return null 
+    }
+    
     return(
         <Snackbar 
             open = { !!alert }

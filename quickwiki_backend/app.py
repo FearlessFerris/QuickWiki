@@ -465,10 +465,28 @@ def search_page(title):
         base_tag = soup.find( 'base' )
         if base_tag:
             base_tag.decompose()
-        
+
+        head = soup.find('head')
+
+        if head:
+            for link in head.find_all('link', {'rel': 'stylesheet'}):
+                print( link )
+                href = link.get('href')
+                if href and href.startswith('/w/load.php'):
+                    print(f'Removing problematic CSS link: {href}')
+                    link.decompose() 
+
+            for script in head.find_all('script', src=True):
+                src = script['src']
+                if src and 'some-problematic-script' in src:
+                    print(f'Removing problematic script: {src}')
+                    script.decompose() 
+
         for anchor in soup.find_all('a', href=True):
             href = anchor['href']
-            if href.startswith('/wiki/'):
+            if href.startswith('./'):
+                anchor['href'] = f'/search/page/{href[2:]}'
+            elif href.startswith('/wiki/'):
                 anchor['href'] = f'/search/page/{href[6:]}'
             elif href.startswith('//en.wikipedia.org/wiki/'):
                 anchor['href'] = f'/search/page/{href.split("/")[-1]}'

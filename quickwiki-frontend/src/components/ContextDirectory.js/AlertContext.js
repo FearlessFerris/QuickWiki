@@ -19,7 +19,7 @@ const AlertContext = createContext();
 
 export const AlertProvider = ({ children }) => {
 
-    const [ alert, setAlert ] = useState({});
+    const [ alert, setAlert ] = useState( null );
 
     const displayAlert = ( message, type = 'info' ) => {
         setAlert({ message, type });

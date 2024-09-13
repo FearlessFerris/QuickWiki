@@ -3,7 +3,7 @@
 
 // Dependencies 
 import React, { useState, useEffect } from 'react';
-import { useParams, Link as RouterLink } from 'react-router-dom';
+import { useParams, Link as RouterLink, useNavigate } from 'react-router-dom';
 import { Alert, Backdrop, Box, Button, Card, CardContent, CardMedia, CircularProgress, FormControl, InputLabel, LinearProgress, MenuItem, Select, TextField, Typography, } from '@mui/material';
 import { AddCircleOutline, RemoveCircleOutline } from '@mui/icons-material';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
@@ -23,6 +23,7 @@ function Page() {
 
     const { title } = useParams();
     const { isLoggedIn } = useLoggedIn();
+    const navigate = useNavigate();
     const [pageData, setPageData] = useState(null);
     const [htmlData, setHtmlData] = useState('');
     const [loading, setLoading] = useState(true);
@@ -79,6 +80,34 @@ function Page() {
         });
         return root.toString();
     };
+
+    const handleLinkClick = (e) => {
+        const target = e.target;
+        if (target.tagName === 'A') {
+            console.log( target[ 'href' ] );
+            const href = target.getAttribute('href');
+            const cleanHref = href.split('#')[0]; // Remove hash fragment
+            if (cleanHref && cleanHref.startsWith('/search/page/')) {
+                e.preventDefault();
+                navigate(cleanHref);
+            }
+        }
+    };
+    
+    
+
+    useEffect(() => {
+        const pageContent = document.querySelector('.page-content');
+        if (pageContent) {
+            pageContent.addEventListener('click', handleLinkClick);
+        }
+        return () => {
+            if (pageContent) {
+                pageContent.removeEventListener('click', handleLinkClick);
+            }
+        };
+    }, [htmlData]);
+    
 
     const addBookmark = async () => {
         try{
@@ -267,7 +296,7 @@ function Page() {
                                     color: '#bdbdbd',
                                     lineHeight: '1.6',
                                     '& p': {
-                                        margin: '1rem 0',
+                                        margin: '1rem 0',   
                                     },
                                     '& img': {
                                         maxWidth: '100%',
