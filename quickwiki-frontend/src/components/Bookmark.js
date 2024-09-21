@@ -19,7 +19,7 @@ function Bookmark() {
     const [bookmarks, setBookmarks] = useState([]);
     const [isShowingBookmark, setIsShowingBookmark] = useState(true);
     const [isEditingBookmark, setIsEditingBookmark] = useState(false);
-    const [isShowingGroup, setIsShowingGroup] = useState(false);
+    // const [isShowingGroup, setIsShowingGroup] = useState(false);
     const [isEditingGroup, setIsEditingGroup] = useState(false);
     const [backdrop, setBackdrop] = useState(false);
     const [selectedGroup, setSelectedGroup] = useState('');
