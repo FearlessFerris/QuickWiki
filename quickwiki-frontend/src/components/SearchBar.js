@@ -13,7 +13,7 @@ import apiClient from '../api/apiClient';
 import { useLoggedIn } from './ContextDirectory.js/LoggedInContext';
 
 
-// // SearchBar Component 
+// SearchBar Component 
 const customTheme = createTheme({
   palette: {
     primary: {
@@ -117,7 +117,6 @@ function SearchBar({ results, setResults }) {
     if (isTyping || animationSeen) return;
 
     const startTypingEffect = () => {
-      console.log( 'Starting typing effect' );
       let charIndex = 0;
       const currentSearch = exampleSearches[exampleIndex];
       const intervalId = setInterval(() => {
